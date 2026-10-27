@@ -31,6 +31,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Backups locais de edição (otimização de performance)
+/.backup-perf/
+*.bak
+
 # OS
 .DS_Store
 Thumbs.db

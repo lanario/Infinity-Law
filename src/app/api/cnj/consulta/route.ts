@@ -5,6 +5,11 @@ import { getCurrentProfile } from "@/lib/server/current-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DataJudAdapter } from "@/lib/cnj/DataJudAdapter";
 import { validateCNJ } from "@/lib/cnj/cnj-validator";
+import {
+  dataJudUpstreamFailureMessage,
+  describeFailureForLog,
+  PERSISTENCE_FAILURE_MESSAGE,
+} from "@/lib/cnj/datajud-error.mjs";
 
 const bodySchema = z.object({
   numeroCNJ: z.string(),
@@ -122,20 +127,34 @@ export async function POST(request: NextRequest) {
 
   const adapter = new DataJudAdapter({ apiKey, baseUrl });
 
+  let resultado;
   try {
-    const resultado = await adapter.consultarPorNumero(normalized);
-
-    if (!resultado) {
-      return NextResponse.json(
-        { error: "Processo não encontrado no DataJud" },
-        { status: 404 }
-      );
+    resultado = await adapter.consultarPorNumero(normalized);
+  } catch (error) {
+    console.error("[CNJ consulta] falha", describeFailureForLog("datajud", error));
+    try {
+      await createAdminClient().from("cnj_sync_errors").insert({
+        numero_cnj: normalized,
+        mensagem: "Erro ao consultar DataJud",
+      });
+    } catch (logError) {
+      console.error("[CNJ consulta] Falha ao registrar cnj_sync_errors:", describeFailureForLog("persistencia", logError));
     }
+    return NextResponse.json(
+      { error: dataJudUpstreamFailureMessage(error as { status?: number; kind?: string }) },
+      { status: 503 }
+    );
+  }
 
-    // Atualiza cache no banco se processoId fornecido
-    if (processoConfirmado && escritorioId) {
+  if (!resultado) {
+    return NextResponse.json({ error: "Processo não encontrado no DataJud" }, { status: 404 });
+  }
+
+  // Atualiza cache no banco se processoId fornecido; falha aqui não descarta os dados já obtidos.
+  if (processoConfirmado && escritorioId) {
+    try {
       const adminClient = createAdminClient();
-      await Promise.all([
+      const [upd, ups] = await Promise.all([
         adminClient
           .from("processos")
           .update({ ultima_sync_cnj: new Date().toISOString() })
@@ -153,24 +172,16 @@ export async function POST(request: NextRequest) {
           { onConflict: "processo_id,data_movimento,descricao" }
         ),
       ]);
-    }
-
-    return NextResponse.json({ source: "datajud", resultado });
-  } catch {
-    // Log do erro de sync
-    try {
-      const adminClient = createAdminClient();
-      await adminClient.from("cnj_sync_errors").insert({
-        numero_cnj: normalized,
-        mensagem: "Erro ao consultar DataJud",
+      if (upd.error || ups.error) throw upd.error ?? ups.error;
+    } catch (error) {
+      console.error("[CNJ consulta] falha", describeFailureForLog("persistencia", error));
+      return NextResponse.json({
+        source: "datajud",
+        resultado,
+        aviso: PERSISTENCE_FAILURE_MESSAGE,
       });
-    } catch (logError) {
-      console.error("[CNJ consulta] Falha ao registrar cnj_sync_errors:", logError);
     }
-
-    return NextResponse.json(
-      { error: "Falha ao consultar API do CNJ. Tente novamente em alguns minutos." },
-      { status: 503 }
-    );
   }
+
+  return NextResponse.json({ source: "datajud", resultado });
 }

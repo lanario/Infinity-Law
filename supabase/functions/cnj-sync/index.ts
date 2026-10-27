@@ -90,32 +90,28 @@ async function syncProcesso(
   const tribunal = inferTribunal(processo.numero_cnj);
   if (!tribunal) return;
 
-  const url = `${baseUrl}/api_publica/${tribunal}/_search`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `ApiKey ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: { match: { numeroProcesso: processo.numero_cnj } },
-    }),
-  });
+  // Formato documentado: <base>/api_publica_<alias>/_search; numeroProcesso só com 20 dígitos.
+  const url = `${baseUrl.trim().replace(/\/+$/, "")}/api_publica_${tribunal}/_search`;
+  const digits = processo.numero_cnj.replace(/\D/g, "");
+  const doFetch = () =>
+    fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `ApiKey ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: { match: { numeroProcesso: digits } } }),
+      signal: AbortSignal.timeout(10_000),
+    });
 
-  if (!res.ok) {
-    if (res.status === 429) {
-      // Rate limited — aguarda 2s e tenta 1x
-      await new Promise((r) => setTimeout(r, 2000));
-      const retry = await fetch(url, {
-        method: "POST",
-        headers: { Authorization: `ApiKey ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ query: { match: { numeroProcesso: processo.numero_cnj } } }),
-      });
-      if (!retry.ok) throw new Error(`HTTP ${retry.status}`);
-    } else {
-      throw new Error(`HTTP ${res.status}`);
-    }
+  let res = await doFetch();
+  if (res.status === 429) {
+    // Rate limited — aguarda 2s e tenta 1x
+    await new Promise((r) => setTimeout(r, 2000));
+    res = await doFetch();
   }
+  // 404/401/403/5xx são erro do endpoint, nunca "processo não encontrado" (isso é 200 com hits vazios).
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   // deno-lint-ignore no-explicit-any
   const json = await res.json() as any;
@@ -153,6 +149,7 @@ async function syncProcesso(
   ]);
 }
 
+// Tabela J.TR espelhada de src/lib/cnj/tribunais.ts (fonte única; não importável aqui). Altere as duas juntas.
 function inferTribunal(numeroCNJ: string): string | null {
   const match = numeroCNJ.match(/^\d{7}-\d{2}\.\d{4}\.(\d)\.(\d{2})\.\d{4}$/);
   if (!match) return null;
@@ -172,17 +169,18 @@ function inferTribunal(numeroCNJ: string): string | null {
     "01": "trf1", "02": "trf2", "03": "trf3", "04": "trf4", "05": "trf5", "06": "trf6",
   };
   const eleitoralMap: Record<string, string> = {
-    "01": "tre-ac", "02": "tre-al", "03": "tre-am", "04": "tre-ap", "05": "tre-ba",
+    "01": "tre-ac", "02": "tre-al", "03": "tre-ap", "04": "tre-am", "05": "tre-ba",
     "06": "tre-ce", "07": "tre-dft", "08": "tre-es", "09": "tre-go", "10": "tre-ma",
-    "11": "tre-mg", "12": "tre-ms", "13": "tre-mt", "14": "tre-pa", "15": "tre-pb",
-    "16": "tre-pe", "17": "tre-pi", "18": "tre-pr", "19": "tre-rj", "20": "tre-rn",
-    "21": "tre-ro", "22": "tre-rr", "23": "tre-rs", "24": "tre-sc", "25": "tre-se",
+    "11": "tre-mt", "12": "tre-ms", "13": "tre-mg", "14": "tre-pa", "15": "tre-pb",
+    "16": "tre-pr", "17": "tre-pe", "18": "tre-pi", "19": "tre-rj", "20": "tre-rn",
+    "21": "tre-rs", "22": "tre-ro", "23": "tre-rr", "24": "tre-sc", "25": "tre-se",
     "26": "tre-sp", "27": "tre-to",
   };
   const militarEstadualMap: Record<string, string> = {
     "13": "tjmmg", "21": "tjmrs", "26": "tjmsp",
   };
 
+  if (j === "1") return null; // STF: sem alias documentado
   if (j === "3") return tt === "00" ? "stj" : null;
   if (j === "4") return federalMap[tt] ?? null;
   if (j === "5") {

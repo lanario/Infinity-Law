@@ -94,6 +94,68 @@ export function parseDjenResponse(payload: unknown): DjenApiResponse {
   return parsed.data;
 }
 
+// Página de uma consulta paginada: valida status e formato, mas não exige count === items.length
+// (count é o total da consulta, não o da página).
+export function parseDjenPage(payload: unknown): DjenApiResponse {
+  const parsed = responseSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new Error("Resposta do DJEN fora do formato esperado.");
+  }
+  if (parsed.data.status.trim().toLowerCase() !== "success") {
+    throw new Error("O DJEN retornou um status desconhecido ou sem sucesso.");
+  }
+  return parsed.data;
+}
+
+export type DjenCollectOptions = {
+  maxPages: number;
+  maxItems: number;
+  /** Instante (Date.now()) após o qual não se busca nova página. */
+  deadline: number;
+};
+
+/**
+ * Percorre pagina=1..N até acumular `count` itens. Falha (sem resultado parcial) se uma página
+ * vier vazia antes do total ou não trouxer item novo; devolve truncated=true se bater nos tetos.
+ */
+export async function collectDjenPages(
+  fetchPage: (pagina: number) => Promise<DjenApiResponse>,
+  options: DjenCollectOptions
+): Promise<{ count: number; items: DjenCommunication[]; truncated: boolean }> {
+  const items: DjenCommunication[] = [];
+  const seen = new Set<string>();
+  let count = 0;
+
+  for (let pagina = 1; pagina <= options.maxPages; pagina++) {
+    if (pagina > 1 && Date.now() >= options.deadline) return { count, items, truncated: true };
+
+    const page = await fetchPage(pagina);
+    if (pagina === 1) count = page.count;
+
+    if (page.items.length === 0) {
+      if (items.length < count) {
+        throw new Error("O DJEN retornou página vazia antes do total informado.");
+      }
+      return { count, items, truncated: false };
+    }
+
+    let added = 0;
+    for (const item of page.items) {
+      items.push(item);
+      if (!seen.has(item.hash)) {
+        seen.add(item.hash);
+        added++;
+      }
+    }
+    if (added === 0) throw new Error("A paginação do DJEN não avançou.");
+
+    if (items.length >= count) return { count, items, truncated: false };
+    if (items.length >= options.maxItems) return { count, items, truncated: true };
+  }
+
+  return { count, items, truncated: true };
+}
+
 export function normalizeCnjNumber(value: string | null | undefined): string | null {
   if (!value) return null;
   const digits = value.replace(/\D/g, "");

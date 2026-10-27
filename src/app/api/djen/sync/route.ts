@@ -4,7 +4,8 @@ import { authorizeDjen } from "@/lib/djen/server-auth";
 import {
   getSaoPauloDate,
   normalizeCnjNumber,
-  parseDjenResponse,
+  collectDjenPages,
+  parseDjenPage,
   syncInputSchema,
   toDjenDate,
   toSafeHttpUrl,
@@ -15,6 +16,12 @@ import {
 const CNJ_COMMUNICATIONS_URL = "https://comunicaapi.pje.jus.br/api/v1/comunicacao";
 const DATABASE_BATCH_SIZE = 100;
 const PROCESS_PAGE_SIZE = 500;
+const DJEN_PAGE_SIZE = 100;
+// Tetos de segurança: 20 páginas x 100 itens; orçamento de rede coerente com maxDuration.
+const DJEN_MAX_PAGES = 20;
+const DJEN_MAX_ITEMS = DJEN_PAGE_SIZE * DJEN_MAX_PAGES;
+const DJEN_FETCH_BUDGET_MS = 40_000;
+export const maxDuration = 60;
 const RATE_LIMIT_HEADERS = [
   "retry-after",
   "ratelimit-limit",
@@ -24,6 +31,12 @@ const RATE_LIMIT_HEADERS = [
   "x-ratelimit-remaining",
   "x-ratelimit-reset",
 ];
+
+class UpstreamStop extends Error {
+  constructor(public response: NextResponse) {
+    super("upstream");
+  }
+}
 
 type ProcessRow = { id: string; numero_cnj: string | null };
 
@@ -186,70 +199,94 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não foi possível iniciar a consulta." }, { status: 500 });
     }
 
-    const url = new URL(CNJ_COMMUNICATIONS_URL);
-    url.searchParams.set("numeroOab", monitoramento.numero_oab);
-    url.searchParams.set("ufOab", monitoramento.uf_oab);
-    url.searchParams.set("dataDisponibilizacaoInicio", parsed.data.dataInicio);
-    url.searchParams.set("dataDisponibilizacaoFim", parsed.data.dataFim);
+    // Parâmetros pagina/itensPorPagina (100 é um dos valores aceitos): confirmados só por fontes
+    // secundárias; o swagger oficial não pôde ser lido. Ver docs/integracoes-cnj-djen.md.
+    let lastUpstream: Response | null = null;
+    const fetchPage = async (pagina: number) => {
+      const url = new URL(CNJ_COMMUNICATIONS_URL);
+      url.searchParams.set("numeroOab", monitoramento.numero_oab);
+      url.searchParams.set("ufOab", monitoramento.uf_oab);
+      url.searchParams.set("dataDisponibilizacaoInicio", parsed.data.dataInicio);
+      url.searchParams.set("dataDisponibilizacaoFim", parsed.data.dataFim);
+      url.searchParams.set("pagina", String(pagina));
+      url.searchParams.set("itensPorPagina", String(DJEN_PAGE_SIZE));
 
-    let upstream: Response;
-    try {
-      upstream = await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        signal: AbortSignal.timeout(20_000),
-        headers: { accept: "application/json" },
-      });
-    } catch {
-      return NextResponse.json(
-        { error: "Não foi possível consultar o DJEN. Tente novamente mais tarde." },
-        { status: 502 }
-      );
-    }
-
-    if (upstream.status === 429) {
-      const rateLimit = readRateLimitDetails(upstream);
-      const waitSeconds = retryAfterSeconds(rateLimit.retryAfter);
-      const headers = forwardRateLimitHeaders(upstream);
-      if (!headers.has("retry-after") && waitSeconds !== null) {
-        headers.set("retry-after", String(waitSeconds));
+      let upstream: Response;
+      try {
+        upstream = await fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          signal: AbortSignal.timeout(Math.max(1_000, Math.min(20_000, fetchDeadline - Date.now()))),
+          headers: { accept: "application/json" },
+        });
+      } catch {
+        throw new UpstreamStop(
+          NextResponse.json(
+            { error: "Não foi possível consultar o DJEN. Tente novamente mais tarde." },
+            { status: 502 }
+          )
+        );
       }
-      return NextResponse.json(
-        {
-          error: "O CNJ limitou as consultas neste momento. Aguarde antes de tentar novamente.",
-          waitSeconds,
-          rateLimit,
-        },
-        { status: 429, headers }
-      );
-    }
+      lastUpstream = upstream;
 
-    if (!upstream.ok) {
-      return NextResponse.json(
-        { error: "O DJEN não concluiu a consulta. Nenhum resultado foi marcado como vazio." },
-        { status: 502 }
-      );
-    }
+      if (upstream.status === 429) {
+        const rateLimit = readRateLimitDetails(upstream);
+        const waitSeconds = retryAfterSeconds(rateLimit.retryAfter);
+        const headers = forwardRateLimitHeaders(upstream);
+        if (!headers.has("retry-after") && waitSeconds !== null) {
+          headers.set("retry-after", String(waitSeconds));
+        }
+        throw new UpstreamStop(
+          NextResponse.json(
+            {
+              error: "O CNJ limitou as consultas neste momento. Aguarde antes de tentar novamente.",
+              waitSeconds,
+              rateLimit,
+            },
+            { status: 429, headers }
+          )
+        );
+      }
 
-    let payload: unknown;
-    try {
-      payload = await upstream.json();
-    } catch {
-      return NextResponse.json(
-        { error: "O DJEN retornou uma resposta inválida. Nenhum resultado foi marcado como vazio." },
-        { status: 502 }
-      );
-    }
+      if (!upstream.ok) {
+        throw new UpstreamStop(
+          NextResponse.json(
+            { error: "O DJEN não concluiu a consulta. Nenhum resultado foi marcado como vazio." },
+            { status: 502 }
+          )
+        );
+      }
 
+      let payload: unknown;
+      try {
+        payload = await upstream.json();
+      } catch {
+        throw new UpstreamStop(
+          NextResponse.json(
+            { error: "O DJEN retornou uma resposta inválida. Nenhum resultado foi marcado como vazio." },
+            { status: 502 }
+          )
+        );
+      }
+      return parseDjenPage(payload);
+    };
+
+    const fetchDeadline = Date.now() + DJEN_FETCH_BUDGET_MS;
     let response;
     try {
-      response = parseDjenResponse(payload);
-    } catch {
+      response = await collectDjenPages(fetchPage, {
+        maxPages: DJEN_MAX_PAGES,
+        maxItems: DJEN_MAX_ITEMS,
+        deadline: fetchDeadline,
+      });
+    } catch (error) {
+      if (error instanceof UpstreamStop) return error.response;
       return NextResponse.json(
         { error: "Não foi possível validar a resposta do DJEN. Nenhum resultado foi marcado como vazio." },
         { status: 502 }
       );
     }
+    const upstream = lastUpstream as Response | null;
 
     const uniqueItems = Array.from(
       new Map(response.items.map((item) => [item.hash, item])).values()
@@ -361,15 +398,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const syncAt = new Date().toISOString();
-    const { error: syncError } = await admin
-      .from("djen_oab_monitoramentos")
-      .update({ ultima_sincronizacao_em: syncAt })
-      .eq("id", monitoramento.id)
-      .eq("escritorio_id", auth.escritorioId);
+    // Consulta truncada pelos tetos não é marcada como sincronizada por completo.
+    if (!response.truncated) {
+      const syncAt = new Date().toISOString();
+      const { error: syncError } = await admin
+        .from("djen_oab_monitoramentos")
+        .update({ ultima_sincronizacao_em: syncAt })
+        .eq("id", monitoramento.id)
+        .eq("escritorio_id", auth.escritorioId);
 
-    if (syncError) {
-      return syncFailure("Não foi possível atualizar o status da consulta.", writesStarted);
+      if (syncError) {
+        return syncFailure("Não foi possível atualizar o status da consulta.", writesStarted);
+      }
     }
 
     return NextResponse.json(
@@ -382,9 +422,10 @@ export async function POST(request: NextRequest) {
           0
         ),
         semResultados: response.count === 0 && response.items.length === 0,
-        rateLimit: readRateLimitDetails(upstream),
+        truncado: response.truncated,
+        rateLimit: upstream ? readRateLimitDetails(upstream) : null,
       },
-      { headers: forwardRateLimitHeaders(upstream) }
+      { headers: upstream ? forwardRateLimitHeaders(upstream) : undefined }
     );
   } catch {
     return syncFailure(
