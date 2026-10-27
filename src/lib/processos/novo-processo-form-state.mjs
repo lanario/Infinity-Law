@@ -17,6 +17,11 @@ export function createNovoProcessoFormDefaults(currentUserId) {
     percentualHonorarios: "",
     contingenciamento: "nao",
     observacoes: "",
+    tribunal: "",
+    vara: "",
+    uf: "",
+    classeProcessual: "",
+    dataDistribuicao: "",
   };
 }
 

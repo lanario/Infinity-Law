@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { validateCNJ } from "@/lib/cnj/cnj-validator";
 import { dataJudConsultationGuidance } from "@/lib/cnj/datajud-error.mjs";
+import { applyDataJudAutofill, DATAJUD_FIELD_LABELS } from "@/lib/cnj/datajud-autofill.mjs";
 import { salvarProcesso } from "@/app/actions/processos";
 import { formatCNJ } from "@/lib/utils";
 import {
@@ -60,6 +61,11 @@ interface NovoProcessoFormState {
   percentualHonorarios: string;
   contingenciamento: string;
   observacoes: string;
+  tribunal: string;
+  vara: string;
+  uf: string;
+  classeProcessual: string;
+  dataDistribuicao: string;
 }
 
 interface DataJudResultado {
@@ -71,6 +77,10 @@ interface DataJudResultado {
   uf: string;
   partes: Array<{ nome: string; tipo: string }>;
   movimentacoes: Array<{ data: string; descricao: string; codigo?: string }>;
+  dataAjuizamento?: string;
+  grau?: string;
+  sistema?: string;
+  nivelSigilo?: number;
 }
 
 const GROUP_OPTIONS = [
@@ -129,6 +139,15 @@ interface FormValidationFocusRequest {
   sectionId: ProcessFormSectionId;
   target: HTMLElement;
   requestId: number;
+}
+
+function ViaDataJud({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span className="ml-1.5 inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-emerald-700">
+      via DataJud
+    </span>
+  );
 }
 
 function FormSection({
@@ -233,6 +252,12 @@ export function NovoProcessoForm({
     responsavelId: currentUserId ?? "",
   }), [currentUserId]);
   const [form, setForm] = useState<NovoProcessoFormState>(() => initialForm);
+  // Campo -> valor que o DataJud preencheu (o selo "via DataJud" some quando o usuário edita).
+  const [autoFilled, setAutoFilled] = useState<Record<string, string>>({});
+  const [sigiloAviso, setSigiloAviso] = useState(false);
+  const latest = useRef({ form, autoFilled });
+  latest.current = { form, autoFilled };
+  const viaDataJud = (key: keyof NovoProcessoFormState) => autoFilled[key] !== undefined && autoFilled[key] === form[key];
 
   const { valid } = validateCNJ(numeroCNJ);
   const actionTypes = ACTION_TYPES[form.grupoAcao] ?? [];
@@ -291,6 +316,7 @@ export function NovoProcessoForm({
     if (!valid) return;
     setErro(null);
     setResultado(null);
+    setSigiloAviso(false);
     setBuscando(true);
     try {
       const res = await fetch("/api/cnj/consulta", {
@@ -301,6 +327,13 @@ export function NovoProcessoForm({
       const data = await res.json();
       if (!res.ok) {
         setErro(dataJudConsultationGuidance(res.status, data.error) ?? data.error ?? "Erro ao consultar CNJ");
+        return;
+      }
+      const applied = applyDataJudAutofill(latest.current.form, latest.current.autoFilled, data.resultado);
+      setForm(applied.form as NovoProcessoFormState);
+      setAutoFilled(applied.filled);
+      if (applied.sigilo) {
+        setSigiloAviso(true);
         return;
       }
       setResultado(data.resultado);
@@ -373,11 +406,12 @@ export function NovoProcessoForm({
         valor_honorarios: valorHonorarios,
         percentual_honorarios: percentualHonorarios,
         contingenciamento: form.contingenciamento,
-        tribunal: resultado?.tribunal || null,
-        vara: resultado?.orgaoJulgador || null,
+        tribunal: form.tribunal.trim() || null,
+        vara: form.vara.trim() || null,
         comarca: null,
-        uf: resultado?.uf || null,
-        classe_processual: resultado?.classe || null,
+        uf: form.uf.trim().toUpperCase() || null,
+        classe_processual: form.classeProcessual.trim() || null,
+        data_distribuicao: form.dataDistribuicao || null,
         observacoes: form.observacoes || null,
         consulta_cnj: Boolean(resultado),
         movimentacoes: resultado?.movimentacoes ?? [],
@@ -502,7 +536,7 @@ export function NovoProcessoForm({
       >
         <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
           <label className={labelClass}>
-            Grupo de ação <span className="text-gold-dark">*</span>
+            Grupo de ação <span className="text-gold-dark">*</span><ViaDataJud show={viaDataJud("grupoAcao")} />
             <select
               required
               value={form.grupoAcao}
@@ -525,7 +559,7 @@ export function NovoProcessoForm({
               transition={{ duration: 0.16 }}
               className={labelClass}
             >
-              Tipo de ação <span className="text-gold-dark">*</span>
+              Tipo de ação <span className="text-gold-dark">*</span><ViaDataJud show={viaDataJud("tipoAcao")} />
               <select
                 required
                 disabled={!form.grupoAcao}
@@ -610,6 +644,13 @@ export function NovoProcessoForm({
                   setNumeroCNJ(formatted);
                   setResultado(null);
                   setErro(null);
+                  setSigiloAviso(false);
+                  // Os dados preenchidos pertenciam ao número anterior.
+                  if (Object.keys(latest.current.autoFilled).length > 0) {
+                    const cleared = applyDataJudAutofill(latest.current.form, latest.current.autoFilled, null);
+                    setForm(cleared.form as NovoProcessoFormState);
+                    setAutoFilled({});
+                  }
                 }}
                 onKeyDown={(event) => event.key === "Enter" && valid && !buscando && buscarCNJ()}
                 placeholder="0000000-00.0000.0.00.0000"
@@ -672,6 +713,64 @@ export function NovoProcessoForm({
             />
           </div>
 
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className={labelClass}>
+              Tribunal<ViaDataJud show={viaDataJud("tribunal")} />
+              <input
+                value={form.tribunal}
+                onChange={(event) => setForm((state) => ({ ...state, tribunal: event.target.value }))}
+                maxLength={60}
+                placeholder="Ex.: TJSP"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Órgão julgador / vara<ViaDataJud show={viaDataJud("vara")} />
+              <input
+                value={form.vara}
+                onChange={(event) => setForm((state) => ({ ...state, vara: event.target.value }))}
+                maxLength={160}
+                placeholder="Ex.: 1ª Vara Cível"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Classe processual<ViaDataJud show={viaDataJud("classeProcessual")} />
+              <input
+                value={form.classeProcessual}
+                onChange={(event) => setForm((state) => ({ ...state, classeProcessual: event.target.value }))}
+                maxLength={160}
+                placeholder="Ex.: Procedimento Comum Cível"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              UF<ViaDataJud show={viaDataJud("uf")} />
+              <input
+                value={form.uf}
+                onChange={(event) => setForm((state) => ({ ...state, uf: event.target.value.toUpperCase().replace(/[^A-Z]/g, "") }))}
+                maxLength={2}
+                placeholder="Ex.: SP"
+                className={inputClass}
+              />
+            </label>
+            <DatePicker
+              label={viaDataJud("dataDistribuicao") ? "Data de distribuição (via DataJud)" : "Data de distribuição"}
+              labelClassName={labelClass}
+              value={form.dataDistribuicao}
+              onChange={(dataDistribuicao) => setForm((state) => ({ ...state, dataDistribuicao }))}
+              inputClassName="bg-white text-[#242627] shadow-sm"
+            />
+          </div>
+
+          <div role="status" aria-live="polite">
+            {sigiloAviso && (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-medium text-amber-800">
+                Este processo tem nível de sigilo. Por segurança, os dados do DataJud não foram usados; preencha manualmente.
+              </p>
+            )}
+          </div>
+
           {resultado && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -687,7 +786,14 @@ export function NovoProcessoForm({
                 <p><span className="text-stone-500">Classe processual:</span> <strong>{resultado.classe || "—"}</strong></p>
                 <p><span className="text-stone-500">Órgão julgador:</span> <strong>{resultado.orgaoJulgador || "—"}</strong></p>
                 <p><span className="text-stone-500">Assunto:</span> <strong>{resultado.assunto || "—"}</strong></p>
+                {resultado.grau && <p><span className="text-stone-500">Grau:</span> <strong>{resultado.grau}</strong></p>}
+                {resultado.sistema && <p><span className="text-stone-500">Sistema:</span> <strong>{resultado.sistema}</strong></p>}
               </div>
+              {Object.keys(autoFilled).length > 0 && (
+                <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600">
+                  Preenchido automaticamente (campos vazios): {Object.keys(autoFilled).map((key) => DATAJUD_FIELD_LABELS[key as keyof typeof DATAJUD_FIELD_LABELS]).join(", ")}. Revise antes de cadastrar.
+                </p>
+              )}
               {resultado.partes.length > 0 && (
                 <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600">
                   {resultado.partes.length} partes identificadas no processo.

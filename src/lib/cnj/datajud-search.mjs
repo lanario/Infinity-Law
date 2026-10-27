@@ -4,7 +4,7 @@
 export const DATAJUD_TOTAL_BUDGET_MS = 50_000;
 
 // Só os campos que o DataJudAdapter mapeia.
-export const DATAJUD_SOURCE_FIELDS = ["tribunal", "classe", "assuntos", "orgaoJulgador", "partes", "movimentos"];
+export const DATAJUD_SOURCE_FIELDS = ["tribunal", "classe", "assuntos", "orgaoJulgador", "partes", "movimentos", "dataAjuizamento", "grau", "sistema", "nivelSigilo", "dataHoraUltimaAtualizacao"];
 
 /**
  * kind: "http" (status do endpoint), "timeout", "network" ou "invalid_response".

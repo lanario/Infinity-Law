@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/lib/djen/validation.test.mjs src/lib/djen/association-write.test.mjs src/lib/security-hardening.test.mjs src/lib/server/query-error-state.test.mjs src/lib/server/processos-list-select.test.mjs src/lib/processos/processos-list-filters.test.mjs src/lib/processos/novo-processo-form-state.test.mjs src/lib/cnj/datajud-error.test.mjs src/lib/cnj/tribunais.test.mjs src/lib/cnj/datajud-search.test.mjs src/lib/agenda/team-timeline.test.mjs src/lib/agenda/calendar-layout.test.mjs"
+    "test": "node --test src/lib/djen/validation.test.mjs src/lib/djen/association-write.test.mjs src/lib/security-hardening.test.mjs src/lib/server/query-error-state.test.mjs src/lib/server/processos-list-select.test.mjs src/lib/processos/processos-list-filters.test.mjs src/lib/processos/novo-processo-form-state.test.mjs src/lib/cnj/datajud-error.test.mjs src/lib/cnj/tribunais.test.mjs src/lib/cnj/datajud-search.test.mjs src/lib/cnj/datajud-autofill.test.mjs src/lib/agenda/team-timeline.test.mjs src/lib/agenda/calendar-layout.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

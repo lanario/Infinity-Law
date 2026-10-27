@@ -14,6 +14,12 @@ export interface ProcessoDataJud {
   partes: Array<{ nome: string; tipo: string }>;
   movimentacoes: Movimentacao[];
   dataUltimaMovimentacao?: string;
+  dataAjuizamento?: string;
+  grau?: string;
+  sistema?: string;
+  nivelSigilo?: number;
+  dataHoraUltimaAtualizacao?: string;
+  codigoMunicipioIBGE?: string;
 }
 
 export interface IProcessoProvider {
