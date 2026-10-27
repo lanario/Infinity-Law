@@ -11,7 +11,6 @@ export const LoginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Informe um e-mail válido"),
   password: z.string().min(1, "Informe sua senha"),
   lembrarAcesso: z.boolean().optional().default(false),
-  turnstileToken: z.string().max(2048).optional(),
 });
 
 const ACEITE_DOS_TERMOS = z.literal(true, {
@@ -43,7 +42,6 @@ export const SignupSchema = z
       .refine((senha) => forcaDaSenha(senha).aceitavel, "A senha não atende aos requisitos mínimos"),
     confirmarSenha: z.string().min(1, "Confirme sua senha"),
     aceiteDosTermos: ACEITE_DOS_TERMOS,
-    turnstileToken: z.string().max(2048).optional(),
   })
   .refine((dados) => dados.password === dados.confirmarSenha, {
     message: "As senhas não conferem",

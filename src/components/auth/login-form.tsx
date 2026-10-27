@@ -16,7 +16,6 @@ import {
   item,
 } from "@/components/auth/campos";
 import { signIn } from "@/app/actions/auth";
-import { TurnstileField } from "@/components/auth/turnstile-field";
 import { cn } from "@/lib/utils";
 
 interface LoginFormProps {
@@ -29,7 +28,6 @@ interface LoginFormProps {
 export function LoginForm({
   aoTrocarParaCadastro,
   avisoInicial,
-  ativo = true,
 }: LoginFormProps) {
   const router = useRouter();
   const semMovimento = useReducedMotion();
@@ -45,29 +43,23 @@ export function LoginForm({
   const [lembrarAcesso, setLembrarAcesso] = useState(false);
   const [erro, setErro] = useState<string | null>(avisoInicial ?? null);
   const [entrando, setEntrando] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   async function handleSubmit(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setErro(null);
 
-    if (!turnstileToken) {
-      setErro("Aguarde a verificação de segurança antes de entrar.");
-      return;
-    }
-
     setEntrando(true);
 
-    const resultado = await signIn({
-      email,
-      password: senha,
-      lembrarAcesso,
-      turnstileToken: turnstileToken ?? undefined,
-    });
-
-    setTurnstileToken(null);
-    setTurnstileResetKey((atual) => atual + 1);
+    let resultado: Awaited<ReturnType<typeof signIn>>;
+    try {
+      resultado = await signIn({
+        email,
+        password: senha,
+        lembrarAcesso,
+      });
+    } catch {
+      resultado = { error: "Falha de conexão com o servidor. Verifique sua internet e tente novamente." };
+    }
 
     if (resultado.error) {
       setErro(resultado.error);
@@ -182,16 +174,6 @@ export function LoginForm({
         >
           Esqueci minha senha
         </Link>
-      </motion.div>
-
-      <motion.div variants={item}>
-        {ativo && (
-          <TurnstileField
-            action="login"
-            onTokenChange={setTurnstileToken}
-            resetKey={turnstileResetKey}
-          />
-        )}
       </motion.div>
 
       <motion.button

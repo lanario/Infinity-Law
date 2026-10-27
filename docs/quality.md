@@ -35,3 +35,7 @@ Prompt versionado: `docs/prompts/13-security-review.md` do toolkit (cópia local
 ## Revisão
 
 Escopo proporcional ao risco e ao diff. Revisão independente para mudanças não triviais quando disponível; registrar alvo, achados e riscos residuais.
+
+## Pendência de segurança
+
+Turnstile removido temporariamente; reativar antes do prod real.

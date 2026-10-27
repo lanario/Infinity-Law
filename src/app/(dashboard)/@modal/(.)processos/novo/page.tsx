@@ -3,6 +3,8 @@ import { getCurrentProfile } from "@/lib/server/current-profile";
 import { QueryErrorState } from "@/components/ui/query-error-state";
 import { NovoProcessoPageContent } from "@/components/processos/novo-processo-page-content";
 
+export const dynamic = "force-dynamic";
+
 export default async function NovoProcessoModalPage() {
   const profile = await getCurrentProfile().catch((error) => {
     console.error("[NovoProcessoModalPage] Falha ao carregar perfil:", error);

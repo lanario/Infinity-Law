@@ -15,7 +15,6 @@ import {
   UserRound,
 } from "lucide-react";
 import { signUp } from "@/app/actions/auth";
-import { TurnstileField } from "@/components/auth/turnstile-field";
 import {
   BotaoOlho,
   Campo,
@@ -42,7 +41,7 @@ interface CadastroFormProps {
   ativo?: boolean;
 }
 
-export function CadastroForm({ aoTrocarParaLogin, ativo = true }: CadastroFormProps) {
+export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
   const router = useRouter();
   const semMovimento = useReducedMotion();
 
@@ -67,8 +66,6 @@ export function CadastroForm({ aoTrocarParaLogin, ativo = true }: CadastroFormPr
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [contaCriada, setContaCriada] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const erros = {
     escritorio: escritorio.trim().length < 2 ? "Informe o nome do seu escritório" : null,
@@ -121,25 +118,21 @@ export function CadastroForm({ aoTrocarParaLogin, ativo = true }: CadastroFormPr
       return;
     }
 
-    if (!turnstileToken) {
-      setErro("Aguarde a verificação de segurança antes de criar a conta.");
-      return;
-    }
-
     setSalvando(true);
-    const resultado = await signUp({
-      organizationName: escritorio,
-      nome,
-      telefone,
-      email,
-      password: senha,
-      confirmarSenha: confirmacao,
-      aceiteDosTermos: aceite,
-      turnstileToken: turnstileToken ?? undefined,
-    });
-
-    setTurnstileToken(null);
-    setTurnstileResetKey((atual) => atual + 1);
+    let resultado: Awaited<ReturnType<typeof signUp>>;
+    try {
+      resultado = await signUp({
+        organizationName: escritorio,
+        nome,
+        telefone,
+        email,
+        password: senha,
+        confirmarSenha: confirmacao,
+        aceiteDosTermos: aceite,
+      });
+    } catch {
+      resultado = { error: "Falha de conexão com o servidor. Verifique sua internet e tente novamente." };
+    }
 
     if ("error" in resultado) {
       setErro(resultado.error);
@@ -402,16 +395,6 @@ export function CadastroForm({ aoTrocarParaLogin, ativo = true }: CadastroFormPr
           <p className="pl-6 text-[11px] text-[#EF4444]">
             É preciso aceitar os Termos e a Política para prosseguir.
           </p>
-        )}
-      </motion.div>
-
-      <motion.div variants={item}>
-        {ativo && (
-          <TurnstileField
-            action="signup"
-            onTokenChange={setTurnstileToken}
-            resetKey={turnstileResetKey}
-          />
         )}
       </motion.div>
 

@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import type { ZodError } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { verificarTurnstile } from "@/lib/turnstile";
+import { mensagemDeErroAuth } from "@/lib/auth-errors";
 import {
   LoginSchema,
   SignupSchema,
@@ -16,35 +16,6 @@ function primeiraMensagemDeValidacao(erro: ZodError): string {
   return erro.issues[0]?.message ?? "Revise os dados enviados e tente novamente.";
 }
 
-function mensagemDoLogin(error: { code?: string; message: string }): string {
-  const code = error.code ?? "";
-  const msg = error.message ?? "";
-
-  if (code === "invalid_credentials" || /invalid login credentials/i.test(msg)) {
-    return "E-mail ou senha incorretos. Verifique suas credenciais.";
-  }
-  if (code === "email_not_confirmed" || /email not confirmed/i.test(msg)) {
-    return "Confirme seu e-mail antes de entrar.";
-  }
-  if (code === "user_banned") {
-    return "Este acesso foi bloqueado. Fale com a administração do escritório.";
-  }
-  if (code === "over_request_rate_limit" || /rate limit/i.test(msg)) {
-    return "Muitas tentativas em pouco tempo. Aguarde alguns minutos.";
-  }
-  return "Não foi possível entrar. Confira o e-mail e a senha.";
-}
-
-function mensagemDaCriacao(error: { code?: string; message: string }): string {
-  const codigo = error.code ?? "";
-  const mensagem = error.message ?? "";
-
-  if (codigo === "email_exists" || /already been registered|already exists/i.test(mensagem)) {
-    return "Já existe uma conta com este e-mail. Entre com ela ou utilize outro e-mail.";
-  }
-  return "Não foi possível concluir o cadastro. Verifique os dados e tente novamente.";
-}
-
 export async function signIn(input: unknown): Promise<{ error?: string }> {
   const analisado = LoginSchema.safeParse(input);
   if (!analisado.success) {
@@ -53,11 +24,6 @@ export async function signIn(input: unknown): Promise<{ error?: string }> {
   const data = analisado.data;
 
   try {
-    const turnstileValido = await verificarTurnstile(data.turnstileToken, "login");
-    if (!turnstileValido) {
-      return { error: "Não foi possível confirmar a verificação de segurança. Tente novamente." };
-    }
-
     const cookieStore = cookies();
     cookieStore.set(COOKIE_LEMBRAR_ACESSO, data.lembrarAcesso ? "persistent" : "session", {
       httpOnly: true,
@@ -74,13 +40,14 @@ export async function signIn(input: unknown): Promise<{ error?: string }> {
     });
 
     if (error) {
-      return { error: mensagemDoLogin(error) };
+      console.error("[signIn] Supabase:", error.code ?? error.name, error.status);
+      return { error: mensagemDeErroAuth(error, "login") };
     }
 
     return {};
   } catch (err) {
     console.error("[signIn] Erro inesperado:", err);
-    return { error: "Não foi possível entrar agora. Tente novamente em instantes." };
+    return { error: mensagemDeErroAuth(err as Error, "login") };
   }
 }
 
@@ -94,11 +61,6 @@ export async function signUp(
   const data = analisado.data;
 
   try {
-    const turnstileValido = await verificarTurnstile(data.turnstileToken, "signup");
-    if (!turnstileValido) {
-      return { error: "Não foi possível confirmar a verificação de segurança. Tente novamente." };
-    }
-
     let admin: ReturnType<typeof createAdminClient> | null = null;
     try {
       admin = createAdminClient();
@@ -122,7 +84,8 @@ export async function signUp(
       });
 
       if (erroAdmin) {
-        return { error: mensagemDaCriacao(erroAdmin) };
+        console.error("[signUp] Supabase admin:", erroAdmin.code ?? erroAdmin.name, erroAdmin.status);
+        return { error: mensagemDeErroAuth(erroAdmin, "signup") };
       }
 
       userId = novoUsuario.user?.id ?? null;
@@ -142,7 +105,8 @@ export async function signUp(
       });
 
       if (erroPadrao) {
-        return { error: mensagemDaCriacao(erroPadrao) };
+        console.error("[signUp] Supabase:", erroPadrao.code ?? erroPadrao.name, erroPadrao.status);
+        return { error: mensagemDeErroAuth(erroPadrao, "signup") };
       }
 
       userId = novoUsuario.user?.id ?? null;
@@ -211,6 +175,6 @@ export async function signUp(
     return { entrou: true };
   } catch (err) {
     console.error("[signUp] Erro inesperado:", err);
-    return { error: "Não foi possível concluir o cadastro. Tente novamente em instantes." };
+    return { error: mensagemDeErroAuth(err as Error, "signup") };
   }
 }

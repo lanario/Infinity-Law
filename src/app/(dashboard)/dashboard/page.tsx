@@ -21,6 +21,8 @@ import {
 } from "@/components/dashboard/cnj-radar-card";
 import { QuickDock } from "@/components/dashboard/quick-dock";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dashboard · Infinity Law",
   description: "Indicadores e atividade do escritório",

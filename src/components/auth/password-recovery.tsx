@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, KeyRound, Loader2, Lock, Mail } from "lucide-react";
 import { BotaoOlho, Campo, campoBase, campoComErro, campoNormal } from "@/components/auth/campos";
 import { PasswordStrength } from "@/components/auth/password-strength";
-import { TurnstileField } from "@/components/auth/turnstile-field";
 import { Logo } from "@/components/ui/logo";
+import { mensagemDeErroAuth } from "@/lib/auth-errors";
 import { createClient } from "@/lib/supabase/client";
 import { erroDaSenha, forcaDaSenha } from "@/lib/senha";
 import { cn } from "@/lib/utils";
-
-const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
 function RecoveryShell({ children }: { children: ReactNode }) {
   return (
@@ -45,42 +43,31 @@ function RecoveryShell({ children }: { children: ReactNode }) {
 export function PasswordRecoveryRequest() {
   const supabase = useMemo(() => createClient(), []);
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState<string | null>(null);
-  const [resetKey, setResetKey] = useState(0);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const onTokenChange = useCallback((value: string | null) => setToken(value), []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setSent(false);
 
-    if (captchaEnabled && !token) {
-      setError("Conclua a verificação de segurança para continuar.");
-      return;
-    }
-
     setSending(true);
     try {
       const { error: requestError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/recuperar-senha`,
-        ...(captchaEnabled && token ? { captchaToken: token } : {}),
       });
 
       if (requestError) {
-        setError("Não foi possível enviar o link agora. Aguarde alguns minutos e tente novamente.");
+        setError(mensagemDeErroAuth(requestError, "recuperacao"));
         return;
       }
 
       setSent(true);
-    } catch {
-      setError("Não foi possível enviar o link agora. Aguarde alguns minutos e tente novamente.");
+    } catch (err) {
+      setError(mensagemDeErroAuth(err as Error, "recuperacao"));
     } finally {
       setSending(false);
-      setToken(null);
-      setResetKey((key) => key + 1);
     }
   }
 
@@ -113,15 +100,13 @@ export function PasswordRecoveryRequest() {
           />
         </Campo>
 
-        <TurnstileField action="password_reset" onTokenChange={onTokenChange} resetKey={resetKey} />
-
         <button
           type="submit"
-          disabled={sending || (captchaEnabled && !token)}
+          disabled={sending}
         className="auth-lustro flex w-full items-center justify-center gap-2 rounded-xl gold-sheen py-3 text-sm font-semibold text-[#0A0A0A] shadow-[0_10px_30px_-14px_rgba(212,175,55,0.7)] transition-all hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
-          {sending ? "Enviando…" : captchaEnabled && !token ? "Aguardando verificação…" : "Enviar link de recuperação"}
+          {sending ? "Enviando…" : "Enviar link de recuperação"}
         </button>
 
         <p className="text-center text-sm text-[#A3A3A3]">
