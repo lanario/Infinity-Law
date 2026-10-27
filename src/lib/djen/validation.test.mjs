@@ -3,6 +3,8 @@ import test from "node:test";
 import {
   BRAZILIAN_UFS,
   collectDjenPages,
+  collectDjenWithFallback,
+  DjenHttpError,
   isCalendarDate,
   normalizeCnjNumber,
   oabInputSchema,
@@ -13,13 +15,25 @@ import {
   validateDateRange,
 } from "./validation.ts";
 
-test("OAB keeps the submitted spelling and normalizes only surrounding whitespace and UF", () => {
+test("OAB normaliza espacos, ponto, hifen, letra e UF", () => {
   const result = oabInputSchema.parse({ numeroOab: " 123456-a ", ufOab: "sp" });
-  assert.deepEqual(result, { numeroOab: "123456-a", ufOab: "SP" });
+  assert.deepEqual(result, { numeroOab: "123456A", ufOab: "SP" });
+  assert.equal(oabInputSchema.parse({ numeroOab: "12.345", ufOab: "RJ" }).numeroOab, "12345");
+  assert.equal(oabInputSchema.parse({ numeroOab: "12345N", ufOab: "RJ" }).numeroOab, "12345N");
 });
 
-test("OAB accepts suffixes and separators but rejects a blank number or unknown UF", () => {
-  assert.equal(oabInputSchema.safeParse({ numeroOab: "12.345/2020", ufOab: "RJ" }).success, true);
+test("OAB rejeita numero de processo CNJ e formatos invalidos", () => {
+  for (const bad of ["0002153-76.2026.8.19.0038", "00021537620268190038", "1234567890"]) {
+    const r = oabInputSchema.safeParse({ numeroOab: bad, ufOab: "RJ" });
+    assert.equal(r.success, false, bad);
+    assert.match(r.error.issues[0].message, /processo \(CNJ\)/);
+  }
+  for (const bad of ["12.345/2020", "ABC", "12345AB", "12345678"]) {
+    assert.equal(oabInputSchema.safeParse({ numeroOab: bad, ufOab: "RJ" }).success, false, bad);
+  }
+});
+
+test("OAB rejects a blank number or unknown UF", () => {
   assert.equal(oabInputSchema.safeParse({ numeroOab: "   ", ufOab: "RJ" }).success, false);
   assert.equal(oabInputSchema.safeParse({ numeroOab: "123A", ufOab: "XX" }).success, false);
 });
@@ -117,4 +131,44 @@ test("paginacao: pagina vazia antes do total, pagina repetida e tetos", async ()
 
   const late = await collectDjenPages(async (p) => page(100, [p]), { ...opts, deadline: Date.now() - 1 });
   assert.deepEqual([late.items.length, late.truncated], [1, true]);
+});
+
+test("fallback: 400 na pagina 1 repete sem paginacao uma vez", async () => {
+  const calls = [];
+  let fell = 0;
+  const r = await collectDjenWithFallback(
+    async (p, paginated) => {
+      calls.push([p, paginated]);
+      if (paginated) throw new DjenHttpError(400, 1);
+      return page(2, [1, 2]);
+    },
+    opts,
+    () => fell++
+  );
+  assert.deepEqual(calls, [[1, true], [1, false]]);
+  assert.deepEqual([r.count, r.items.length, r.truncated, fell], [2, 2, false, 1]);
+
+  const partial = await collectDjenWithFallback(
+    async (p, paginated) => {
+      if (paginated) throw new DjenHttpError(400, 1);
+      return page(9, [1, 2]);
+    },
+    opts
+  );
+  assert.equal(partial.truncated, true);
+});
+
+test("fallback: outros erros e falha apos fallback propagam", async () => {
+  for (const status of [403, 500]) {
+    let n = 0;
+    await assert.rejects(
+      collectDjenWithFallback(async () => { n++; throw new DjenHttpError(status, 1); }, opts),
+      (e) => e instanceof DjenHttpError && e.status === status
+    );
+    assert.equal(n, 1);
+  }
+  await assert.rejects(
+    collectDjenWithFallback(async () => { throw new DjenHttpError(400, 1); }, opts),
+    (e) => e instanceof DjenHttpError && e.status === 400
+  );
 });

@@ -92,12 +92,15 @@ export function DjenMonitoringSection({
             <input
               value={numeroOab}
               onChange={(event) => onNumeroOabChange(event.target.value)}
-              maxLength={40}
+              maxLength={12}
               required
               autoComplete="off"
-              placeholder="Ex.: 123456A ou 12.345/2020"
+              placeholder="Ex.: 123456 ou 123456A"
               className="mt-1.5 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
             />
+            <span className="mt-1 block text-[11px] font-normal text-gray-400">
+              Só o número da OAB do advogado (não o número do processo).
+            </span>
           </label>
           <label className="text-xs font-medium text-gray-600">
             Seccional

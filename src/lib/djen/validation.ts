@@ -6,7 +6,13 @@ export const BRAZILIAN_UFS = [
   "RS", "RO", "RR", "SC", "SP", "SE", "TO",
 ] as const;
 
-const oabCharacters = /^[\p{L}\p{N} .\-/]+$/u;
+export const OAB_CNJ_MESSAGE =
+  "Isto parece um número de processo (CNJ). Informe o número da OAB do advogado, com a seccional ao lado.";
+
+// Número da OAB: 1 a 7 dígitos com sufixo opcional de uma letra (ex.: 123456, 123456A, 12345N).
+// Aceita "12.345" e "123456-A", normalizando para "12345" / "123456A".
+const oabNumberFormat = /^\d{1,7}[A-Z]?$/;
+const cnjMasked = /\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
 
 export const oabInputSchema = z.object({
   numeroOab: z
@@ -14,7 +20,21 @@ export const oabInputSchema = z.object({
     .trim()
     .min(1, "Informe o número da OAB.")
     .max(40, "O número da OAB deve ter até 40 caracteres.")
-    .regex(oabCharacters, "Use apenas letras, números, espaços, ponto, hífen ou barra."),
+    .transform((value, ctx) => {
+      if (cnjMasked.test(value) || value.replace(/\D/g, "").length >= 10) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: OAB_CNJ_MESSAGE });
+        return z.NEVER;
+      }
+      const normalized = value.replace(/[.\s-]/g, "").toUpperCase();
+      if (!oabNumberFormat.test(normalized)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Número da OAB inválido. Use apenas dígitos, com letra opcional no final (ex.: 123456 ou 123456A).",
+        });
+        return z.NEVER;
+      }
+      return normalized;
+    }),
   ufOab: z.string().trim().toUpperCase().pipe(z.enum(BRAZILIAN_UFS)),
 });
 
@@ -154,6 +174,36 @@ export async function collectDjenPages(
   }
 
   return { count, items, truncated: true };
+}
+
+/** Falha HTTP do DJEN; carrega só status e página (sem dados da consulta). */
+export class DjenHttpError extends Error {
+  status: number;
+  pagina: number;
+  constructor(status: number, pagina: number) {
+    super(`DJEN HTTP ${status}`);
+    this.status = status;
+    this.pagina = pagina;
+  }
+}
+
+/**
+ * Coleta paginada com fallback: se a página 1 paginada falhar com 400, repete UMA vez sem
+ * parâmetros de paginação e usa só esse resultado (truncated se count > itens recebidos).
+ */
+export async function collectDjenWithFallback(
+  fetchPage: (pagina: number, paginated: boolean) => Promise<DjenApiResponse>,
+  options: DjenCollectOptions,
+  onFallback?: () => void
+): Promise<{ count: number; items: DjenCommunication[]; truncated: boolean }> {
+  try {
+    return await collectDjenPages((pagina) => fetchPage(pagina, true), options);
+  } catch (error) {
+    if (!(error instanceof DjenHttpError) || error.status !== 400 || error.pagina !== 1) throw error;
+  }
+  onFallback?.();
+  const page = await fetchPage(1, false);
+  return { count: page.count, items: page.items, truncated: page.items.length < page.count };
 }
 
 export function normalizeCnjNumber(value: string | null | undefined): string | null {

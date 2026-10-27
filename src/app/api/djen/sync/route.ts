@@ -4,7 +4,8 @@ import { authorizeDjen } from "@/lib/djen/server-auth";
 import {
   getSaoPauloDate,
   normalizeCnjNumber,
-  collectDjenPages,
+  collectDjenWithFallback,
+  DjenHttpError,
   parseDjenPage,
   syncInputSchema,
   toDjenDate,
@@ -31,6 +32,16 @@ const RATE_LIMIT_HEADERS = [
   "x-ratelimit-remaining",
   "x-ratelimit-reset",
 ];
+
+function djenFailureResponse(status: number) {
+  const error =
+    status === 400 || status === 422
+      ? "O DJEN recusou os dados da consulta (verifique o número da OAB e a seccional)."
+      : status === 403
+        ? "O DJEN bloqueou a consulta deste servidor. Tente novamente mais tarde."
+        : "O DJEN não concluiu a consulta. Nenhum resultado foi marcado como vazio.";
+  return NextResponse.json({ error }, { status: 502 });
+}
 
 class UpstreamStop extends Error {
   constructor(public response: NextResponse) {
@@ -202,14 +213,16 @@ export async function POST(request: NextRequest) {
     // Parâmetros pagina/itensPorPagina (100 é um dos valores aceitos): confirmados só por fontes
     // secundárias; o swagger oficial não pôde ser lido. Ver docs/integracoes-cnj-djen.md.
     let lastUpstream: Response | null = null;
-    const fetchPage = async (pagina: number) => {
+    const fetchPage = async (pagina: number, paginated: boolean) => {
       const url = new URL(CNJ_COMMUNICATIONS_URL);
       url.searchParams.set("numeroOab", monitoramento.numero_oab);
       url.searchParams.set("ufOab", monitoramento.uf_oab);
       url.searchParams.set("dataDisponibilizacaoInicio", parsed.data.dataInicio);
       url.searchParams.set("dataDisponibilizacaoFim", parsed.data.dataFim);
-      url.searchParams.set("pagina", String(pagina));
-      url.searchParams.set("itensPorPagina", String(DJEN_PAGE_SIZE));
+      if (paginated) {
+        url.searchParams.set("pagina", String(pagina));
+        url.searchParams.set("itensPorPagina", String(DJEN_PAGE_SIZE));
+      }
 
       let upstream: Response;
       try {
@@ -219,7 +232,16 @@ export async function POST(request: NextRequest) {
           signal: AbortSignal.timeout(Math.max(1_000, Math.min(20_000, fetchDeadline - Date.now()))),
           headers: { accept: "application/json" },
         });
-      } catch {
+      } catch (error) {
+        // Sem PII: nunca logar URL, numeroOab ou mensagem do erro.
+        console.error({
+          stage: "djen",
+          status: null,
+          kind: error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network",
+          page: pagina,
+          elapsedMs: Date.now() - fetchStartedAt,
+          ufOab: monitoramento.uf_oab,
+        });
         throw new UpstreamStop(
           NextResponse.json(
             { error: "Não foi possível consultar o DJEN. Tente novamente mais tarde." },
@@ -248,13 +270,18 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // 404 não significa "vazio" aqui: só HTTP 200 com count 0 é vazio (ver docs/integracoes-cnj-djen.md).
       if (!upstream.ok) {
-        throw new UpstreamStop(
-          NextResponse.json(
-            { error: "O DJEN não concluiu a consulta. Nenhum resultado foi marcado como vazio." },
-            { status: 502 }
-          )
-        );
+        console.error({
+          stage: "djen",
+          status: upstream.status,
+          kind: "http",
+          page: pagina,
+          paginated,
+          elapsedMs: Date.now() - fetchStartedAt,
+          ufOab: monitoramento.uf_oab,
+        });
+        throw new DjenHttpError(upstream.status, pagina);
       }
 
       let payload: unknown;
@@ -271,16 +298,18 @@ export async function POST(request: NextRequest) {
       return parseDjenPage(payload);
     };
 
-    const fetchDeadline = Date.now() + DJEN_FETCH_BUDGET_MS;
+    const fetchStartedAt = Date.now();
+    const fetchDeadline = fetchStartedAt + DJEN_FETCH_BUDGET_MS;
     let response;
     try {
-      response = await collectDjenPages(fetchPage, {
-        maxPages: DJEN_MAX_PAGES,
-        maxItems: DJEN_MAX_ITEMS,
-        deadline: fetchDeadline,
-      });
+      response = await collectDjenWithFallback(
+        fetchPage,
+        { maxPages: DJEN_MAX_PAGES, maxItems: DJEN_MAX_ITEMS, deadline: fetchDeadline },
+        () => console.error({ stage: "djen", paginacao: "indisponivel", ufOab: monitoramento.uf_oab })
+      );
     } catch (error) {
       if (error instanceof UpstreamStop) return error.response;
+      if (error instanceof DjenHttpError) return djenFailureResponse(error.status);
       return NextResponse.json(
         { error: "Não foi possível validar a resposta do DJEN. Nenhum resultado foi marcado como vazio." },
         { status: 502 }
