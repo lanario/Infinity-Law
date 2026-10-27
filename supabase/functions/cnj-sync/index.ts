@@ -97,7 +97,7 @@ async function syncProcesso(
     fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `ApiKey ${apiKey}`,
+        Authorization: `APIKey ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query: { match: { numeroProcesso: digits } } }),

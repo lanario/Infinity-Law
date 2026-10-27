@@ -31,7 +31,7 @@ test("200 com hit: envia URL, ApiKey e numero sem mascara; devolve _source", asy
   const out = await searchDataJud({ ...base, fetchImpl });
   assert.deepEqual(out, { tribunal: "TJSP" });
   assert.equal(seen.url, "https://api.example.test/api_publica_tjsp/_search");
-  assert.equal(seen.init.headers.Authorization, "ApiKey segredo-xyz");
+  assert.equal(seen.init.headers.Authorization, "APIKey segredo-xyz");
   assert.equal(JSON.parse(seen.init.body).query.match.numeroProcesso, "00012345620258260001");
 });
 

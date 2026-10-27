@@ -56,7 +56,7 @@ export async function searchDataJud(opts) {
     try {
       res = await fetchImpl(url, {
         method: "POST",
-        headers: { Authorization: `ApiKey ${String(apiKey).trim()}`, "Content-Type": "application/json" },
+        headers: { Authorization: `APIKey ${String(apiKey).trim()}`, "Content-Type": "application/json" },
         body,
         signal: AbortSignal.timeout(Math.max(1, Math.min(FETCH_TIMEOUT_MS, deadline - Date.now()))),
       });
