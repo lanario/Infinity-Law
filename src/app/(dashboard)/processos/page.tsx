@@ -14,6 +14,14 @@ interface PageProps {
   searchParams: { search?: string; status?: string };
 }
 
+const VALID_PROCESSOS_STATUSES = [
+  "ativo",
+  "todos",
+  "suspenso",
+  "arquivado",
+  "encerrado",
+] as const;
+
 type Joined<T> = T | T[] | null;
 
 interface ProcessoQueryRow {
@@ -119,6 +127,12 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
     honorarios: processo.honorarios?.[0] ?? null,
   }));
 
+  const currentStatus =
+    searchParams.status &&
+    (VALID_PROCESSOS_STATUSES as readonly string[]).includes(searchParams.status)
+      ? searchParams.status
+      : "ativo";
+
   return (
     <div>
       <Header title="Processos" />
@@ -126,7 +140,7 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
         <ProcessosList
           processos={processos}
           currentSearch={searchParams.search ?? ""}
-          currentStatus={searchParams.status ?? "ativo"}
+          currentStatus={currentStatus}
         />
       </div>
     </div>

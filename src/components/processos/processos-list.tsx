@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { Combobox } from "@base-ui/react/combobox";
+import { StatusFilterSelect, type StatusFilterOption } from "@/components/ui/status-filter-select";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn, formatCurrency } from "@/lib/utils";
 import {
@@ -64,12 +65,12 @@ export interface ProcessoListItem {
   } | null;
 }
 
-const STATUS_TABS = [
-  { value: "todos", label: "Todos" },
-  { value: "ativo", label: "Ativos" },
-  { value: "suspenso", label: "Suspensos" },
-  { value: "arquivado", label: "Arquivados" },
-  { value: "encerrado", label: "Encerrados" },
+const STATUS_TABS: StatusFilterOption[] = [
+  { value: "ativo", label: "Ativos", colorDot: "bg-emerald-500" },
+  { value: "todos", label: "Todos", colorDot: "bg-[#17191a]" },
+  { value: "suspenso", label: "Suspensos", colorDot: "bg-amber-500" },
+  { value: "arquivado", label: "Arquivados", colorDot: "bg-stone-400" },
+  { value: "encerrado", label: "Encerrados", colorDot: "bg-sky-500" },
 ];
 
 const STATUS_BADGE: Record<string, string> = {
@@ -184,11 +185,25 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
     setVisibleLimit(PAGE_SIZE);
   }, [filteredProcesses]);
 
+    const statusOptions = useMemo<StatusFilterOption[]>(
+    () =>
+      STATUS_TABS.map((tab) => ({
+        ...tab,
+        count: statusCounts[tab.value] ?? 0,
+      })),
+    [statusCounts]
+  );
+
   function changeStatus(value: string) {
     setSelectedStatus(value);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("status", value);
-    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
+    if (value === "ativo") {
+      params.delete("status");
+    } else {
+      params.set("status", value);
+    }
+    const next = params.toString();
+    window.history.replaceState(null, "", next ? `${pathname}?${next}` : pathname);
   }
 
   return (
@@ -309,24 +324,12 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
         </div>
 
         <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
-          <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl bg-stone-100/80 p-1">
-            {STATUS_TABS.map((tab) => (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => changeStatus(tab.value)}
-                className={cn(
-                  "whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-bold transition-colors",
-                  selectedStatus === tab.value
-                    ? "bg-white text-[#17191a] shadow-sm"
-                    : "text-stone-500 hover:text-stone-800"
-                )}
-              >
-                {tab.label}
-                <span className="ml-1.5 text-[10px] text-stone-400">{statusCounts[tab.value] ?? 0}</span>
-              </button>
-            ))}
-          </div>
+          <StatusFilterSelect
+            value={selectedStatus}
+            onChange={changeStatus}
+            options={statusOptions}
+            ariaLabel="Filtrar processos por status"
+          />
           <div className="hidden shrink-0 rounded-xl border border-stone-200 p-1 sm:flex" aria-label="Formato da visualização">
             <button
               type="button"
