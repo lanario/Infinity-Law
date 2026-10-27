@@ -18,8 +18,8 @@ const bodySchema = z.object({
 
 const CACHE_THRESHOLD_HOURS = 6;
 
-// DataJud tem orçamento de 25s (DATAJUD_TOTAL_BUDGET_MS); margem para auth e escrita no banco.
-export const maxDuration = 30;
+// DataJud tem orçamento de 50s (DATAJUD_TOTAL_BUDGET_MS); margem para auth e escrita no banco. 60s = limite do plano Hobby.
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();

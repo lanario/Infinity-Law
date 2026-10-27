@@ -1,7 +1,7 @@
 // Núcleo da consulta ao DataJud (sem Next/TS) para ser testável com fetch simulado.
 
-// Orçamento total da consulta (tentativas + esperas). A rota usa maxDuration 30s; sobra margem para auth e banco.
-export const DATAJUD_TOTAL_BUDGET_MS = 25_000;
+// Orçamento total da consulta (tentativas + esperas). A rota usa maxDuration 60s (limite do plano Hobby); sobra margem para auth e banco.
+export const DATAJUD_TOTAL_BUDGET_MS = 50_000;
 
 // Só os campos que o DataJudAdapter mapeia.
 export const DATAJUD_SOURCE_FIELDS = ["tribunal", "classe", "assuntos", "orgaoJulgador", "partes", "movimentos"];
