@@ -161,18 +161,28 @@ export async function salvarProcesso(
       }
 
       if (data.movimentacoes && data.movimentacoes.length > 0) {
+        // DataJud repete movimentos com mesma data+descrição; o índice único idx_movimentacoes_upsert_identity rejeitaria (23505).
+        const linhasMovimentacoes = new Map<string, Record<string, unknown>>();
+        for (const movement of data.movimentacoes) {
+          const data_movimento = movement.data.split("T")[0] ?? movement.data;
+          const chave = `${data_movimento}|${movement.descricao}`;
+          if (linhasMovimentacoes.has(chave)) continue;
+          linhasMovimentacoes.set(chave, {
+            processo_id: processo.id,
+            escritorio_id: escritorioId,
+            data_movimento,
+            descricao: movement.descricao,
+            codigo_cnj: movement.codigo ?? null,
+            fonte: "datajud",
+          });
+        }
+
         const { error: movimentacoesError } = await supabase
           .from("processo_movimentacoes")
-          .insert(
-            data.movimentacoes.map((movement) => ({
-              processo_id: processo.id,
-              escritorio_id: escritorioId,
-              data_movimento: movement.data.split("T")[0] ?? movement.data,
-              descricao: movement.descricao,
-              codigo_cnj: movement.codigo ?? null,
-              fonte: "datajud",
-            }))
-          );
+          .upsert([...linhasMovimentacoes.values()], {
+            onConflict: "processo_id,data_movimento,descricao",
+            ignoreDuplicates: true,
+          });
 
         if (movimentacoesError) {
           await rollbackProcesso();
