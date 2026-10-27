@@ -6,7 +6,7 @@ import {
   searchDataJud,
   toDataJudNumber,
 } from "./datajud-search.mjs";
-import { dataJudUpstreamFailureMessage } from "./datajud-error.mjs";
+import { dataJudUpstreamFailureMessage, describeFailureForLog } from "./datajud-error.mjs";
 
 const NUM = "0001234-56.2025.8.26.0001";
 const base = { baseUrl: "https://api.example.test/", apiKey: "segredo-xyz", alias: "tjsp", numeroCNJ: NUM, delayMs: 1 };
@@ -32,7 +32,10 @@ test("200 com hit: envia URL, ApiKey e numero sem mascara; devolve _source", asy
   assert.deepEqual(out, { tribunal: "TJSP" });
   assert.equal(seen.url, "https://api.example.test/api_publica_tjsp/_search");
   assert.equal(seen.init.headers.Authorization, "APIKey segredo-xyz");
-  assert.equal(JSON.parse(seen.init.body).query.match.numeroProcesso, "00012345620258260001");
+  const sent = JSON.parse(seen.init.body);
+  assert.equal(sent.query.match.numeroProcesso, "00012345620258260001");
+  assert.equal(sent.size, 1);
+  assert.ok(sent._source.includes("movimentos"));
 });
 
 test("200 com hits vazios = nao encontrado (null)", async () => {
@@ -87,5 +90,31 @@ test("mensagens amigaveis por status, sem segredos", () => {
   assert.match(dataJudUpstreamFailureMessage({ status: 401, kind: "http" }), /CNJ_DATAJUD_API_KEY/);
   assert.match(dataJudUpstreamFailureMessage({ status: 429, kind: "http" }), /limitou/);
   assert.match(dataJudUpstreamFailureMessage({ status: 503, kind: "http" }), /indisponível/);
-  assert.match(dataJudUpstreamFailureMessage({ status: 0, kind: "timeout" }), /demorou/);
+  assert.match(dataJudUpstreamFailureMessage({ status: 0, kind: "timeout" }), /demorou[\s\S]*lentidão[\s\S]*cadastrar/);
+});
+
+test("timeout real dentro do orcamento: kind timeout com elapsedMs e alias, log sem segredo", async () => {
+  const fetchImpl = (url, init) =>
+    new Promise((_, reject) => init.signal.addEventListener("abort", () => reject(init.signal.reason)));
+  await assert.rejects(
+    searchDataJud({ ...base, fetchImpl, totalBudgetMs: 50 }),
+    (e) => {
+      const log = JSON.stringify(describeFailureForLog("datajud", e));
+      assert.equal(e.kind, "timeout");
+      assert.equal(e.alias, "tjsp");
+      assert.ok(e.elapsedMs >= 40);
+      assert.match(log, /"elapsedMs":\d+/);
+      assert.match(log, /"alias":"tjsp"/);
+      assert.ok(!/segredo|api\.example/.test(log));
+      return true;
+    }
+  );
+});
+
+test("resposta lenta mas dentro do orcamento tem sucesso", async () => {
+  const fetchImpl = async () => {
+    await new Promise((r) => setTimeout(r, 60));
+    return json(200, { hits: { hits: [{ _source: { a: 1 } }] } });
+  };
+  assert.deepEqual(await searchDataJud({ ...base, fetchImpl, totalBudgetMs: 2_000 }), { a: 1 });
 });

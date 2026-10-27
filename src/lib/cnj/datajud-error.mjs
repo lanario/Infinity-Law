@@ -29,7 +29,7 @@ export function dataJudUpstreamFailureMessage(error) {
   const kind = error?.kind;
 
   if (kind === "timeout") {
-    return "A consulta ao DataJud demorou demais e foi interrompida. Tente novamente em alguns minutos.";
+    return "A consulta ao DataJud demorou demais e foi interrompida. Pode ser lentidão do serviço público do CNJ. Você pode cadastrar o processo e consultar de novo depois.";
   }
   if (kind === "network") {
     return "O servidor não conseguiu se conectar ao DataJud. Isso pode ser a configuração CNJ_DATAJUD_BASE_URL/CNJ_DATAJUD_API_KEY ou uma falha de rede; avise o administrador.";
@@ -70,6 +70,8 @@ export function describeFailureForLog(stage, error) {
     kind: e?.kind,
     status: e?.status,
     detail: e?.detail || undefined,
+    elapsedMs: e?.elapsedMs,
+    alias: e?.alias,
     message: raw.replace(/https?:\/\/\S+/g, "[url]").slice(0, 200),
   };
 }
