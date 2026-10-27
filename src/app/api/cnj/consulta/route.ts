@@ -154,23 +154,43 @@ export async function POST(request: NextRequest) {
   if (processoConfirmado && escritorioId) {
     try {
       const adminClient = createAdminClient();
+      // Primeira sincronização: nada é "novo". Re-sync: visto_em omitido (linha nova fica null; existente mantém o valor).
+      const primeiraSync = !processoConfirmado.ultima_sync_cnj;
+      const agora = new Date().toISOString();
+      const linhas = resultado.movimentacoes.map((m) => ({
+        processo_id: processoConfirmado.id,
+        escritorio_id: escritorioId,
+        data_movimento: m.data.split("T")[0] ?? m.data,
+        descricao: m.descricao,
+        codigo_cnj: m.codigo ?? null,
+        fonte: "datajud",
+        data_hora: m.data_hora ?? null,
+        complementos: m.complementos ?? null,
+        ...(primeiraSync ? { visto_em: agora } : {}),
+      }));
+      const gravarMovimentacoes = async () => {
+        const r = await adminClient.from("processo_movimentacoes").upsert(linhas, { onConflict: "processo_id,data_movimento,descricao" });
+        // shortcut: 42703/PGRST204 = migration 20261027180000 pendente; regrava sem colunas novas. Remover após aplicar.
+        if (r.error && (r.error.code === "42703" || r.error.code === "PGRST204")) {
+          console.warn("[CNJ consulta] Migration 20261027180000 pendente; detalhes das movimentações não gravados.");
+          return adminClient.from("processo_movimentacoes").upsert(
+            linhas.map(({ data_hora: _h, complementos: _c, ...resto }) => {
+              const base: Record<string, unknown> = { ...resto };
+              delete base.visto_em;
+              return base;
+            }),
+            { onConflict: "processo_id,data_movimento,descricao" }
+          );
+        }
+        return r;
+      };
       const [upd, ups] = await Promise.all([
         adminClient
           .from("processos")
           .update({ ultima_sync_cnj: new Date().toISOString() })
           .eq("id", processoConfirmado.id)
           .eq("escritorio_id", escritorioId),
-        adminClient.from("processo_movimentacoes").upsert(
-          resultado.movimentacoes.map((m) => ({
-            processo_id: processoConfirmado.id,
-            escritorio_id: escritorioId,
-            data_movimento: m.data.split("T")[0] ?? m.data,
-            descricao: m.descricao,
-            codigo_cnj: m.codigo ?? null,
-            fonte: "datajud",
-          })),
-          { onConflict: "processo_id,data_movimento,descricao" }
-        ),
+        gravarMovimentacoes(),
       ]);
       if (upd.error || ups.error) throw upd.error ?? ups.error;
     } catch (error) {

@@ -162,6 +162,7 @@ export async function salvarProcesso(
 
       if (data.movimentacoes && data.movimentacoes.length > 0) {
         // DataJud repete movimentos com mesma data+descrição; o índice único idx_movimentacoes_upsert_identity rejeitaria (23505).
+        const agora = new Date().toISOString();
         const linhasMovimentacoes = new Map<string, Record<string, unknown>>();
         for (const movement of data.movimentacoes) {
           const data_movimento = movement.data.split("T")[0] ?? movement.data;
@@ -174,15 +175,23 @@ export async function salvarProcesso(
             descricao: movement.descricao,
             codigo_cnj: movement.codigo ?? null,
             fonte: "datajud",
+            data_hora: movement.data_hora ?? null,
+            complementos: movement.complementos ?? null,
+            visto_em: agora, // cadastro inicial: nada é "novo"
           });
         }
 
-        const { error: movimentacoesError } = await supabase
+        const gravar = (linhas: Record<string, unknown>[]) => supabase
           .from("processo_movimentacoes")
-          .upsert([...linhasMovimentacoes.values()], {
-            onConflict: "processo_id,data_movimento,descricao",
-            ignoreDuplicates: true,
-          });
+          .upsert(linhas as never, { onConflict: "processo_id,data_movimento,descricao", ignoreDuplicates: true });
+        let { error: movimentacoesError } = await gravar([...linhasMovimentacoes.values()]);
+        // shortcut: 42703/PGRST204 = migration 20261027180000 pendente; regrava sem colunas novas. Remover após aplicar.
+        if (movimentacoesError && (movimentacoesError.code === "42703" || movimentacoesError.code === "PGRST204")) {
+          console.warn("[salvarProcesso] Migration 20261027180000 pendente; detalhes das movimentações não gravados.");
+          ({ error: movimentacoesError } = await gravar(
+            [...linhasMovimentacoes.values()].map(({ data_hora: _h, complementos: _c, visto_em: _v, ...resto }) => resto),
+          ));
+        }
 
         if (movimentacoesError) {
           await rollbackProcesso();

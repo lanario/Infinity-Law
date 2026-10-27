@@ -2,6 +2,8 @@ export interface Movimentacao {
   data: string;
   descricao: string;
   codigo?: string;
+  data_hora?: string | null;
+  complementos?: Array<{ nome: string; descricao?: string }> | null;
 }
 
 export interface ProcessoDataJud {

@@ -965,6 +965,8 @@ export type Database = {
       processo_movimentacoes: {
         Row: {
           codigo_cnj: string | null
+          complementos: Json | null
+          data_hora: string | null
           data_movimento: string
           descricao: string
           escritorio_id: string
@@ -972,9 +974,12 @@ export type Database = {
           id: string
           processo_id: string
           synced_at: string
+          visto_em: string | null
         }
         Insert: {
           codigo_cnj?: string | null
+          complementos?: Json | null
+          data_hora?: string | null
           data_movimento: string
           descricao: string
           escritorio_id: string
@@ -982,9 +987,12 @@ export type Database = {
           id?: string
           processo_id: string
           synced_at?: string
+          visto_em?: string | null
         }
         Update: {
           codigo_cnj?: string | null
+          complementos?: Json | null
+          data_hora?: string | null
           data_movimento?: string
           descricao?: string
           escritorio_id?: string
@@ -992,6 +1000,7 @@ export type Database = {
           id?: string
           processo_id?: string
           synced_at?: string
+          visto_em?: string | null
         }
         Relationships: [
           {

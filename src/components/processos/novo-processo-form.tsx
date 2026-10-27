@@ -86,7 +86,7 @@ interface DataJudResultado {
   orgaoJulgador: string;
   uf: string;
   partes: Array<{ nome: string; tipo: string }>;
-  movimentacoes: Array<{ data: string; descricao: string; codigo?: string }>;
+  movimentacoes: Array<{ data: string; descricao: string; codigo?: string; data_hora?: string | null; complementos?: Array<{ nome: string; descricao?: string }> | null }>;
   dataAjuizamento?: string;
   grau?: string;
   sistema?: string;

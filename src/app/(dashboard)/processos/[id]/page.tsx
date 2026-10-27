@@ -7,6 +7,8 @@ import { Header } from "@/components/layout/header";
 import { ProcessoSyncButton } from "@/components/processos/processo-sync-button";
 import { ChevronLeft, Calendar, MapPin, Scale, User, BriefcaseBusiness, FolderKanban, CircleDollarSign, FileText } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
+import { MarcarMovimentacoesVistas } from "@/components/processos/marcar-movimentacoes-vistas";
+import { movimentoEmDestaque } from "@/lib/processos/movimento-destaque.mjs";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -23,6 +25,13 @@ const STATUS_BADGE: Record<string, string> = {
   arquivado: "bg-gray-50 text-gray-500 border-gray-200",
   encerrado: "bg-blue-50 text-blue-700 border-blue-200",
 };
+
+const dataHoraFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" });
+
+type Complemento = { nome: string; descricao?: string };
+function listaComplementos(value: unknown): Complemento[] {
+  return Array.isArray(value) ? value.filter((c): c is Complemento => typeof c?.nome === "string") : [];
+}
 
 const POLO_LABEL: Record<string, string> = { autor: "Ativo (autor)", reu: "Passivo (réu)", terceiro: "Terceiro interessado" };
 
@@ -46,7 +55,26 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
   const canReadFinanceiro = profile.can("financeiro", "read");
 
   // Queries independentes em paralelo; notFound só depois (RLS devolve null para processo de outro tenant).
-  const [{ data: processo }, { data: movimentacoes }, { data: clienteVinculos }, { data: honorario }, { data: juridico }] = await Promise.all([
+  const buscarMovimentacoes = async () => {
+    const base = supabase.from("processo_movimentacoes");
+    const completo = await base
+      .select("id, data_movimento, descricao, codigo_cnj, fonte, data_hora, complementos, visto_em")
+      .eq("processo_id", params.id)
+      .order("data_hora", { ascending: false, nullsFirst: false })
+      .order("data_movimento", { ascending: false })
+      .limit(100);
+    if (!completo.error) return completo.data;
+    // Migration 20261027180000 pendente: lista sem as colunas novas.
+    const { data } = await supabase
+      .from("processo_movimentacoes")
+      .select("id, data_movimento, descricao, codigo_cnj, fonte")
+      .eq("processo_id", params.id)
+      .order("data_movimento", { ascending: false })
+      .limit(100);
+    return (data ?? []).map((m) => ({ ...m, data_hora: null, complementos: null, visto_em: "" as string | null }));
+  };
+
+  const [{ data: processo }, movimentacoes, { data: clienteVinculos }, { data: honorario }, { data: juridico }] = await Promise.all([
     supabase
       .from("processos")
       .select(`
@@ -58,12 +86,7 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
       `)
       .eq("id", params.id)
       .single(),
-    supabase
-      .from("processo_movimentacoes")
-      .select("id, data_movimento, descricao, codigo_cnj, fonte")
-      .eq("processo_id", params.id)
-      .order("data_movimento", { ascending: false })
-      .limit(100),
+    buscarMovimentacoes(),
     supabase
       .from("processo_clientes")
       .select("papel, clientes ( id, nome )")
@@ -98,6 +121,8 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
   const advogado = Array.isArray(processo.usuarios)
     ? processo.usuarios[0]?.nome
     : (processo.usuarios as { nome: string } | null)?.nome;
+
+  const totalNovos = (movimentacoes ?? []).filter((m) => m.visto_em == null).length;
 
   const syncDate = processo.ultima_sync_cnj
     ? new Date(processo.ultima_sync_cnj)
@@ -266,11 +291,12 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <div className="px-6 py-4 border-b border-gray-50">
             <h2 className="text-sm font-semibold text-gray-700">
-              Movimentações ({movimentacoes?.length ?? 0})
+              Movimentações ({movimentacoes?.length ?? 0}){totalNovos > 0 ? ` · ${totalNovos} nova${totalNovos > 1 ? "s" : ""}` : ""}
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Dados públicos via CNJ — pode haver delay de até 12h
+              Dados públicos via CNJ — pode haver delay de até 12h. Exibindo as 100 mais recentes.
             </p>
+            {totalNovos > 0 && <MarcarMovimentacoesVistas processoId={params.id} />}
           </div>
 
           {!movimentacoes || movimentacoes.length === 0 ? (
@@ -281,31 +307,46 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
               </p>
             </div>
           ) : (
-            <ol className="divide-y divide-gray-50">
-              {movimentacoes.map((mov) => (
-                <li key={mov.id} className="px-6 py-4 flex gap-4">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <span className="h-2 w-2 rounded-full bg-gold/60 block mt-1.5" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <p className="text-xs font-medium text-gray-500">
-                        {mov.data_movimento
-                          ? new Date(mov.data_movimento + "T12:00:00").toLocaleDateString("pt-BR")
-                          : "—"}
+            <ol className="px-6 py-4">
+              {movimentacoes.map((mov, index) => {
+                const novo = mov.visto_em == null;
+                const destaque = movimentoEmDestaque(mov.descricao);
+                const complementos = listaComplementos(mov.complementos);
+                const quando = mov.data_hora
+                  ? dataHoraFmt.format(new Date(mov.data_hora))
+                  : mov.data_movimento
+                    ? new Date(mov.data_movimento + "T12:00:00").toLocaleDateString("pt-BR")
+                    : "—";
+                return (
+                  <li key={mov.id} className="flex gap-4">
+                    <div className="flex flex-col items-center" aria-hidden="true">
+                      <span className={cn("mt-1.5 block h-2.5 w-2.5 rounded-full", destaque ? "bg-gold" : "bg-gray-300")} />
+                      {index < movimentacoes.length - 1 && <span className="mt-1 w-px flex-1 bg-gray-100" />}
+                    </div>
+                    <div className="min-w-0 flex-1 pb-5">
+                      <div className="mb-0.5 flex flex-wrap items-center gap-2">
+                        <time dateTime={mov.data_hora ?? mov.data_movimento ?? undefined} className="text-xs font-medium text-gray-500">
+                          {quando}
+                        </time>
+                        {novo && (
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Novo</span>
+                        )}
+                        {mov.codigo_cnj && (
+                          <span className="font-mono text-[10px] text-gray-400">#{mov.codigo_cnj}</span>
+                        )}
+                      </div>
+                      <p className={cn("text-sm leading-relaxed", destaque ? "font-semibold text-gray-900" : "text-gray-700")}>
+                        {mov.descricao}
                       </p>
-                      {mov.codigo_cnj && (
-                        <span className="text-[10px] text-gray-300 font-mono">
-                          #{mov.codigo_cnj}
-                        </span>
+                      {complementos.length > 0 && (
+                        <p className="mt-0.5 text-xs text-gray-500">
+                          {complementos.map((c) => (c.descricao ? `${c.nome}: ${c.descricao}` : c.nome)).join(" · ")}
+                        </p>
                       )}
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {mov.descricao}
-                    </p>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ol>
           )}
         </div>

@@ -55,6 +55,8 @@ export const processoSchema = z.object({
         data: z.string().min(1),
         descricao: z.string().min(1),
         codigo: z.string().optional(),
+        data_hora: z.string().nullable().optional(),
+        complementos: z.array(z.object({ nome: z.string(), descricao: z.string().optional() })).nullable().optional(),
       })
     )
     .optional(),

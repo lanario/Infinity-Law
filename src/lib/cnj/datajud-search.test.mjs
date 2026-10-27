@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildDataJudSearchUrl,
   DataJudError,
+  mapMovimento,
   searchDataJud,
   toDataJudNumber,
 } from "./datajud-search.mjs";
@@ -117,4 +118,30 @@ test("resposta lenta mas dentro do orcamento tem sucesso", async () => {
     return json(200, { hits: { hits: [{ _source: { a: 1 } }] } });
   };
   assert.deepEqual(await searchDataJud({ ...base, fetchImpl, totalBudgetMs: 2_000 }), { a: 1 });
+});
+
+test("mapMovimento: dataHora e complementos compactos", () => {
+  const m = mapMovimento({
+    dataHora: "2024-05-10T14:30:00.000Z",
+    nome: "Audiência",
+    codigo: 970,
+    complementosTabelados: [
+      { codigo: 1, valor: 2, nome: "tipo_de_audiencia", descricao: "Conciliação" },
+      { codigo: 2, nome: "sem_descricao" },
+      { codigo: 3, descricao: "sem nome" },
+    ],
+  });
+  assert.equal(m.data_hora, "2024-05-10T14:30:00.000Z");
+  assert.equal(m.descricao, "Audiência");
+  assert.equal(m.codigo, "970");
+  assert.deepEqual(m.complementos, [{ nome: "tipo_de_audiencia", descricao: "Conciliação" }, { nome: "sem_descricao" }]);
+});
+
+test("mapMovimento: sem dataHora/complementos vira null e descrição cai no complemento", () => {
+  const m = mapMovimento({ dataHora: "lixo", complementosTabelados: [{ nome: "x", descricao: "Desc" }] });
+  assert.equal(m.data_hora, null);
+  assert.equal(m.descricao, "Desc");
+  const v = mapMovimento({});
+  assert.equal(v.complementos, null);
+  assert.equal(v.descricao, "Movimento sem descrição");
 });

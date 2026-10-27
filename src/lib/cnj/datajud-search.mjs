@@ -27,6 +27,27 @@ export class DataJudError extends Error {
   }
 }
 
+/**
+ * Mapeia um movimento do DataJud. complementos: [{nome, descricao?}] compacto; dataHora ISO ou null.
+ * @param {Record<string, any>} m
+ */
+export function mapMovimento(m) {
+  const compl = Array.isArray(m?.complementosTabelados) ? m.complementosTabelados : [];
+  const complementos = compl.flatMap((c) =>
+    c && typeof c.nome === "string" && c.nome
+      ? [{ nome: c.nome, ...(typeof c.descricao === "string" && c.descricao ? { descricao: c.descricao } : {}) }]
+      : [],
+  );
+  const dataHora = typeof m?.dataHora === "string" && !Number.isNaN(Date.parse(m.dataHora)) ? m.dataHora : null;
+  return {
+    data: String(m?.dataHora ?? ""),
+    descricao: m?.nome ?? compl[0]?.descricao ?? "Movimento sem descrição",
+    codigo: String(m?.codigo ?? ""),
+    data_hora: dataHora,
+    complementos: complementos.length > 0 ? complementos : null,
+  };
+}
+
 /** Só dígitos: o índice do DataJud guarda numeroProcesso sem máscara (20 dígitos). */
 export function toDataJudNumber(numeroCNJ) {
   const digits = String(numeroCNJ).replace(/\D/g, "");

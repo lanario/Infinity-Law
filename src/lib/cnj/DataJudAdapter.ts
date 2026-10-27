@@ -4,7 +4,7 @@ import type {
   Movimentacao,
 } from "./IProcessoProvider";
 import { getTribunalEndpoint } from "./cnj-validator";
-import { searchDataJud } from "./datajud-search.mjs";
+import { mapMovimento, searchDataJud } from "./datajud-search.mjs";
 import { ufFromCnj } from "./datajud-autofill.mjs";
 
 interface DataJudConfig {
@@ -42,16 +42,7 @@ export class DataJudAdapter implements IProcessoProvider {
   ): ProcessoDataJud {
     const opt = (v: unknown) => (v == null || v === "" ? undefined : String(v));
     const arr = (v: unknown) => (Array.isArray(v) ? (v as Array<Record<string, unknown>>) : []);
-    const movimentos = arr(source["movimentos"]).map((m) => ({
-      data: String(m["dataHora"] ?? ""),
-      descricao:
-        (m["nome"] as string) ??
-        ((m["complementosTabelados"] as Array<Record<string, unknown>>)?.[0]?.[
-          "descricao"
-        ] as string) ??
-        "Movimento sem descrição",
-      codigo: String(m["codigo"] ?? ""),
-    }));
+    const movimentos: Movimentacao[] = arr(source["movimentos"]).map(mapMovimento);
 
     return {
       numeroCNJ,
