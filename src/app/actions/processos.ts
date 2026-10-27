@@ -47,7 +47,24 @@ export async function salvarProcesso(
         }
       }
 
-      const { data: processo, error: processoError } = await supabase
+      // Campos novos só entram no INSERT quando preenchidos: sem dados novos o cadastro continua
+      // funcionando mesmo antes da migration 20261027120000 ser aplicada.
+      const camposJuridicos = Object.fromEntries(
+        Object.entries({
+          assunto: data.assunto,
+          assunto_codigo: data.assunto_codigo,
+          classe_codigo: data.classe_codigo,
+          grau: data.grau,
+          sistema: data.sistema,
+          nivel_sigilo: data.nivel_sigilo || undefined,
+          datajud_atualizado_em: data.datajud_atualizado_em,
+          codigo_municipio_ibge: data.codigo_municipio_ibge,
+          parte_contraria: data.parte_contraria,
+          advogado_parte_contraria: data.advogado_parte_contraria,
+        }).filter(([, value]) => value != null && value !== ""),
+      );
+
+      const inserirProcesso = (extra: Record<string, unknown>) => supabase
         .from("processos")
         .insert({
           escritorio_id: escritorioId,
@@ -72,10 +89,18 @@ export async function salvarProcesso(
           pasta_caso: data.pasta_caso || null,
           advogado_id: data.advogado_id ?? null,
           observacoes: data.observacoes || null,
+          ...extra,
           ultima_sync_cnj: data.consulta_cnj && data.numero_cnj ? new Date().toISOString() : null,
         })
         .select("id")
         .single();
+
+      let { data: processo, error: processoError } = await inserirProcesso(camposJuridicos);
+      // shortcut: coluna inexistente (42703/PGRST204) = migration ainda não aplicada; grava sem os campos novos. Remover após aplicar a migration.
+      if (processoError && Object.keys(camposJuridicos).length > 0 && (processoError.code === "42703" || processoError.code === "PGRST204")) {
+        console.warn("[salvarProcesso] Migration 20261027120000 pendente; campos jurídicos novos não foram gravados.");
+        ({ data: processo, error: processoError } = await inserirProcesso({}));
+      }
 
       if (processoError || !processo) {
         console.error("[salvarProcesso] Falha ao criar processo:", processoError);

@@ -66,6 +66,16 @@ interface NovoProcessoFormState {
   uf: string;
   classeProcessual: string;
   dataDistribuicao: string;
+  comarca: string;
+  assunto: string;
+  grau: string;
+  sistema: string;
+  parteContraria: string;
+  advogadoParteContraria: string;
+  assuntoCodigo: string;
+  classeCodigo: string;
+  codigoMunicipioIbge: string;
+  datajudAtualizadoEm: string;
 }
 
 interface DataJudResultado {
@@ -408,7 +418,17 @@ export function NovoProcessoForm({
         contingenciamento: form.contingenciamento,
         tribunal: form.tribunal.trim() || null,
         vara: form.vara.trim() || null,
-        comarca: null,
+        comarca: form.comarca.trim() || null,
+        assunto: form.assunto.trim() || null,
+        assunto_codigo: form.assuntoCodigo || null,
+        classe_codigo: form.classeCodigo || null,
+        grau: form.grau.trim() || null,
+        sistema: form.sistema.trim() || null,
+        nivel_sigilo: resultado?.nivelSigilo ?? 0,
+        datajud_atualizado_em: form.datajudAtualizadoEm || null,
+        codigo_municipio_ibge: form.codigoMunicipioIbge || null,
+        parte_contraria: form.parteContraria.trim() || null,
+        advogado_parte_contraria: form.advogadoParteContraria.trim() || null,
         uf: form.uf.trim().toUpperCase() || null,
         classe_processual: form.classeProcessual.trim() || null,
         data_distribuicao: form.dataDistribuicao || null,
@@ -522,6 +542,27 @@ export function NovoProcessoForm({
                 <option key={responsavel.id} value={responsavel.id}>{responsavel.nome}</option>
               ))}
             </select>
+          </label>
+
+          <label className={labelClass}>
+            Parte contrária
+            <input
+              value={form.parteContraria}
+              onChange={(event) => setForm((state) => ({ ...state, parteContraria: event.target.value }))}
+              maxLength={200}
+              placeholder="Nome da parte contrária"
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>
+            Advogado da parte contrária
+            <input
+              value={form.advogadoParteContraria}
+              onChange={(event) => setForm((state) => ({ ...state, advogadoParteContraria: event.target.value }))}
+              maxLength={200}
+              placeholder="Nome e OAB, se souber"
+              className={inputClass}
+            />
           </label>
         </div>
       </FormSection>
@@ -751,6 +792,46 @@ export function NovoProcessoForm({
                 onChange={(event) => setForm((state) => ({ ...state, uf: event.target.value.toUpperCase().replace(/[^A-Z]/g, "") }))}
                 maxLength={2}
                 placeholder="Ex.: SP"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Comarca
+              <input
+                value={form.comarca}
+                onChange={(event) => setForm((state) => ({ ...state, comarca: event.target.value }))}
+                maxLength={160}
+                placeholder="Ex.: São Paulo"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Assunto<ViaDataJud show={viaDataJud("assunto")} />
+              <input
+                value={form.assunto}
+                onChange={(event) => setForm((state) => ({ ...state, assunto: event.target.value }))}
+                maxLength={300}
+                placeholder="Ex.: Indenização por dano moral"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Grau<ViaDataJud show={viaDataJud("grau")} />
+              <input
+                value={form.grau}
+                onChange={(event) => setForm((state) => ({ ...state, grau: event.target.value }))}
+                maxLength={40}
+                placeholder="Ex.: G1"
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              Sistema<ViaDataJud show={viaDataJud("sistema")} />
+              <input
+                value={form.sistema}
+                onChange={(event) => setForm((state) => ({ ...state, sistema: event.target.value }))}
+                maxLength={80}
+                placeholder="Ex.: PJe"
                 className={inputClass}
               />
             </label>

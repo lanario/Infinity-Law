@@ -1020,23 +1020,33 @@ export type Database = {
       processos: {
         Row: {
           advogado_id: string | null
+          advogado_parte_contraria: string | null
           area_direito_id: number | null
+          assunto_codigo: string | null
+          assunto: string | null
+          classe_codigo: string | null
           classe_processual: string | null
+          codigo_municipio_ibge: string | null
           comarca: string | null
           created_at: string
           data_distribuicao: string | null
           data_requerimento: string | null
+          datajud_atualizado_em: string | null
           escritorio_id: string
           etapa: string | null
           fase: string | null
+          grau: string | null
           grupo_acao: string | null
           id: string
-          numero_cnj: string | null
+          nivel_sigilo: number
           numero_cnj_raw: string | null
+          numero_cnj: string | null
           numero_protocolo: string | null
           observacoes: string | null
+          parte_contraria: string | null
           pasta_caso: string | null
           processo_originario: string | null
+          sistema: string | null
           status: string
           tipo_acao: string | null
           tribunal: string | null

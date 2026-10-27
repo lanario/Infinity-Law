@@ -82,6 +82,8 @@ export class DataJudAdapter implements IProcessoProvider {
       sistema: opt((source["sistema"] as Record<string, unknown>)?.["nome"]),
       nivelSigilo: Number(source["nivelSigilo"] ?? 0) || 0,
       dataHoraUltimaAtualizacao: opt(source["dataHoraUltimaAtualizacao"]),
+      classeCodigo: opt((source["classe"] as Record<string, unknown>)?.["codigo"]),
+      assuntoCodigo: opt((arr(source["assuntos"])[0] as Record<string, unknown> | undefined)?.["codigo"]),
       codigoMunicipioIBGE: opt(
         (source["orgaoJulgador"] as Record<string, unknown>)?.["codigoMunicipioIBGE"]
       ),

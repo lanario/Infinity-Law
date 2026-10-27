@@ -22,6 +22,17 @@ export function createNovoProcessoFormDefaults(currentUserId) {
     uf: "",
     classeProcessual: "",
     dataDistribuicao: "",
+    comarca: "",
+    assunto: "",
+    grau: "",
+    sistema: "",
+    parteContraria: "",
+    advogadoParteContraria: "",
+    // Preenchidos só pelo DataJud (sem campo editável).
+    assuntoCodigo: "",
+    classeCodigo: "",
+    codigoMunicipioIbge: "",
+    datajudAtualizadoEm: "",
   };
 }
 

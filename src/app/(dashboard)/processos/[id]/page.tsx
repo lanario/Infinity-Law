@@ -24,6 +24,8 @@ const STATUS_BADGE: Record<string, string> = {
   encerrado: "bg-blue-50 text-blue-700 border-blue-200",
 };
 
+const POLO_LABEL: Record<string, string> = { autor: "Ativo (autor)", reu: "Passivo (réu)", terceiro: "Terceiro interessado" };
+
 export default async function ProcessoDetailPage({ params }: PageProps) {
   const supabase = createClient();
 
@@ -44,7 +46,7 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
   const canReadFinanceiro = profile.can("financeiro", "read");
 
   // Queries independentes em paralelo; notFound só depois (RLS devolve null para processo de outro tenant).
-  const [{ data: processo }, { data: movimentacoes }, { data: clienteVinculos }, { data: honorario }] = await Promise.all([
+  const [{ data: processo }, { data: movimentacoes }, { data: clienteVinculos }, { data: honorario }, { data: juridico }] = await Promise.all([
     supabase
       .from("processos")
       .select(`
@@ -74,6 +76,12 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
           .limit(1)
           .maybeSingle()
       : Promise.resolve({ data: null }),
+    // Colunas da migration 20261027120000, em query separada: se ainda não existirem, a página segue sem elas.
+    supabase
+      .from("processos")
+      .select("comarca, assunto, grau, sistema, nivel_sigilo, parte_contraria, advogado_parte_contraria")
+      .eq("id", params.id)
+      .maybeSingle(),
   ]);
 
   if (!processo) notFound();
@@ -110,6 +118,12 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
           Voltar para Processos
         </Link>
+
+        {juridico && juridico.nivel_sigilo > 0 && (
+          <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+            Este processo tem nível de sigilo ({juridico.nivel_sigilo}). Compartilhe as informações com cautela.
+          </div>
+        )}
 
         {/* Card principal */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
@@ -207,6 +221,13 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
             <InfoItem icon={<BriefcaseBusiness className="h-3.5 w-3.5" />} label="Grupo de ação" value={processo.grupo_acao} />
             <InfoItem icon={<Scale className="h-3.5 w-3.5" />} label="Tipo de ação" value={processo.tipo_acao} />
             <InfoItem icon={<FileText className="h-3.5 w-3.5" />} label="Classe processual" value={processo.classe_processual} />
+            <InfoItem icon={<FileText className="h-3.5 w-3.5" />} label="Assunto" value={juridico?.assunto} />
+            <InfoItem icon={<Scale className="h-3.5 w-3.5" />} label="Grau" value={juridico?.grau} />
+            <InfoItem icon={<FolderKanban className="h-3.5 w-3.5" />} label="Sistema" value={juridico?.sistema} />
+            <InfoItem icon={<MapPin className="h-3.5 w-3.5" />} label="Comarca" value={juridico?.comarca} />
+            <InfoItem icon={<User className="h-3.5 w-3.5" />} label="Polo do cliente" value={clientes.map((c) => POLO_LABEL[c.papel] ?? c.papel).join(", ")} />
+            <InfoItem icon={<User className="h-3.5 w-3.5" />} label="Parte contrária" value={juridico?.parte_contraria} />
+            <InfoItem icon={<User className="h-3.5 w-3.5" />} label="Advogado da parte contrária" value={juridico?.advogado_parte_contraria} />
             <InfoItem icon={<FolderKanban className="h-3.5 w-3.5" />} label="Etapa" value={processo.etapa?.replaceAll("_", " ")} />
             <InfoItem icon={<FolderKanban className="h-3.5 w-3.5" />} label="Número do protocolo/requerimento" value={processo.numero_protocolo} />
             <InfoItem icon={<FolderKanban className="h-3.5 w-3.5" />} label="Processo originário" value={processo.processo_originario} />
@@ -216,11 +237,13 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
               label="Data do requerimento"
               value={processo.data_requerimento ? new Date(`${processo.data_requerimento}T12:00:00`).toLocaleDateString("pt-BR") : null}
             />
-            <InfoItem
-              icon={<CircleDollarSign className="h-3.5 w-3.5" />}
-              label="Valor da causa"
-              value={processo.valor_causa != null ? formatCurrency(Number(processo.valor_causa)) : null}
-            />
+            {canReadFinanceiro && (
+              <InfoItem
+                icon={<CircleDollarSign className="h-3.5 w-3.5" />}
+                label="Valor da causa"
+                value={processo.valor_causa != null ? formatCurrency(Number(processo.valor_causa)) : null}
+              />
+            )}
             <InfoItem
               icon={<CircleDollarSign className="h-3.5 w-3.5" />}
               label="Valor dos honorários"

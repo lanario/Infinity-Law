@@ -31,6 +31,14 @@ export function normalizeDataJudDate(value) {
   return real && year >= 1900 ? `${match[1]}-${match[2]}-${match[3]}` : "";
 }
 
+/** dataHoraUltimaAtualizacao (ISO ou compacto) -> ISO UTC, ou "". */
+export function normalizeDataJudTimestamp(value) {
+  const text = String(value ?? "").trim();
+  const compact = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(text);
+  const ms = Date.parse(compact ? `${compact[1]}-${compact[2]}-${compact[3]}T${compact[4]}:${compact[5]}:${compact[6]}Z` : text);
+  return Number.isNaN(ms) || new Date(ms).getUTCFullYear() < 1900 ? "" : new Date(ms).toISOString();
+}
+
 const plain = (text) => String(text ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
 /**
@@ -57,6 +65,13 @@ export const DATAJUD_FIELD_LABELS = {
   dataDistribuicao: "Data de distribuição",
   grupoAcao: "Grupo de ação",
   tipoAcao: "Tipo de ação",
+  assunto: "Assunto",
+  grau: "Grau",
+  sistema: "Sistema",
+  assuntoCodigo: "Código do assunto",
+  classeCodigo: "Código da classe",
+  codigoMunicipioIbge: "Município (IBGE)",
+  datajudAtualizadoEm: "Última atualização no DataJud",
 };
 
 const isEmpty = (v) => String(v ?? "").trim() === "";
@@ -85,6 +100,13 @@ export function applyDataJudAutofill(form, previous, resultado) {
     uf: String(resultado.uf ?? "").trim().toUpperCase().slice(0, 2),
     classeProcessual: String(resultado.classe ?? "").trim(),
     dataDistribuicao: normalizeDataJudDate(resultado.dataAjuizamento),
+    assunto: String(resultado.assunto ?? "").trim(),
+    grau: String(resultado.grau ?? "").trim(),
+    sistema: String(resultado.sistema ?? "").trim(),
+    assuntoCodigo: String(resultado.assuntoCodigo ?? "").trim(),
+    classeCodigo: String(resultado.classeCodigo ?? "").trim(),
+    codigoMunicipioIbge: String(resultado.codigoMunicipioIBGE ?? "").trim(),
+    datajudAtualizadoEm: normalizeDataJudTimestamp(resultado.dataHoraUltimaAtualizacao),
   };
   // Grupo e tipo só mudam juntos e só se o usuário não escolheu nenhum dos dois.
   const tipo = isEmpty(next.grupoAcao) && isEmpty(next.tipoAcao) ? inferTipoAcao(resultado.classe) : null;

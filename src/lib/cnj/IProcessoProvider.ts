@@ -20,6 +20,8 @@ export interface ProcessoDataJud {
   nivelSigilo?: number;
   dataHoraUltimaAtualizacao?: string;
   codigoMunicipioIBGE?: string;
+  classeCodigo?: string;
+  assuntoCodigo?: string;
 }
 
 export interface IProcessoProvider {

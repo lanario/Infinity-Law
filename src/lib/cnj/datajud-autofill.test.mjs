@@ -4,11 +4,13 @@ import {
   applyDataJudAutofill,
   inferTipoAcao,
   normalizeDataJudDate,
+  normalizeDataJudTimestamp,
   ufFromCnj,
 } from "./datajud-autofill.mjs";
 
 const empty = {
   tribunal: "", vara: "", uf: "", classeProcessual: "", dataDistribuicao: "", grupoAcao: "", tipoAcao: "",
+  assunto: "", grau: "", sistema: "", assuntoCodigo: "", classeCodigo: "", codigoMunicipioIbge: "", datajudAtualizadoEm: "",
 };
 const resultado = {
   tribunal: "TJSP",
@@ -17,6 +19,13 @@ const resultado = {
   classe: "Procedimento Comum Cível",
   dataAjuizamento: "2023-04-05T00:00:00.000Z",
   nivelSigilo: 0,
+  assunto: "Indenização por Dano Moral",
+  assuntoCodigo: "7779",
+  classeCodigo: "7",
+  grau: "G1",
+  sistema: "PJe",
+  codigoMunicipioIBGE: "3550308",
+  dataHoraUltimaAtualizacao: "2024-01-02T10:30:00.000Z",
 };
 
 test("data: ISO, compacta e inválidas", () => {
@@ -26,6 +35,21 @@ test("data: ISO, compacta e inválidas", () => {
   assert.equal(normalizeDataJudDate(""), "");
   assert.equal(normalizeDataJudDate(undefined), "");
   assert.equal(normalizeDataJudDate("05/04/2023"), "");
+});
+
+test("timestamp: ISO, compacto e inválidos", () => {
+  assert.equal(normalizeDataJudTimestamp("2024-01-02T10:30:00.000Z"), "2024-01-02T10:30:00.000Z");
+  assert.equal(normalizeDataJudTimestamp("20240102103000"), "2024-01-02T10:30:00.000Z");
+  assert.equal(normalizeDataJudTimestamp("lixo"), "");
+  assert.equal(normalizeDataJudTimestamp(undefined), "");
+});
+
+test("não sobrescreve assunto/grau/sistema digitados pelo usuário", () => {
+  const out = applyDataJudAutofill({ ...empty, assunto: "Meu assunto", grau: "G2" }, {}, resultado);
+  assert.equal(out.form.assunto, "Meu assunto");
+  assert.equal(out.form.grau, "G2");
+  assert.equal(out.form.sistema, "PJe");
+  assert.equal(out.filled.assunto, undefined);
 });
 
 test("UF só para Justiça Estadual e Eleitoral", () => {
@@ -57,7 +81,14 @@ test("preenche campos vazios e informa o que veio do DataJud", () => {
   assert.equal(out.form.dataDistribuicao, "2023-04-05");
   assert.equal(out.form.grupoAcao, "contencioso");
   assert.equal(out.form.tipoAcao, "Ação");
-  assert.equal(Object.keys(out.filled).length, 7);
+  assert.equal(out.form.assunto, "Indenização por Dano Moral");
+  assert.equal(out.form.grau, "G1");
+  assert.equal(out.form.sistema, "PJe");
+  assert.equal(out.form.assuntoCodigo, "7779");
+  assert.equal(out.form.classeCodigo, "7");
+  assert.equal(out.form.codigoMunicipioIbge, "3550308");
+  assert.equal(out.form.datajudAtualizadoEm, "2024-01-02T10:30:00.000Z");
+  assert.equal(Object.keys(out.filled).length, 14);
 });
 
 test("nunca sobrescreve o que o usuário preencheu", () => {
