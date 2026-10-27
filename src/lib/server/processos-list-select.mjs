@@ -1,0 +1,29 @@
+export const PROCESSOS_LIST_SELECT = `
+  id,
+  numero_cnj,
+  numero_protocolo,
+  processo_originario,
+  pasta_caso,
+  data_requerimento,
+  grupo_acao,
+  tipo_acao,
+  classe_processual,
+  etapa,
+  status,
+  fase,
+  tribunal,
+  vara,
+  ultima_sync_cnj,
+  valor_causa,
+  observacoes,
+  areas_direito ( nome ),
+  usuarios!processos_advogado_tenant_fkey ( nome ),
+  processo_clientes ( papel, clientes ( id, nome ) ),
+  honorarios!honorarios_processo_tenant_fkey ( valor_fixo, percentual_exito, contingenciamento )
+`;
+
+// Sem financeiro.read: mesmo select, sem o embed de honorários.
+export const PROCESSOS_LIST_SELECT_SEM_HONORARIOS = PROCESSOS_LIST_SELECT.replace(
+  /,\s*honorarios!honorarios_processo_tenant_fkey\s*\([^)]*\)/,
+  ""
+);

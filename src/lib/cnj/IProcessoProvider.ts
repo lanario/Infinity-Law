@@ -1,0 +1,22 @@
+export interface Movimentacao {
+  data: string;
+  descricao: string;
+  codigo?: string;
+}
+
+export interface ProcessoDataJud {
+  numeroCNJ: string;
+  tribunal: string;
+  classe: string;
+  assunto: string;
+  orgaoJulgador: string;
+  uf: string;
+  partes: Array<{ nome: string; tipo: string }>;
+  movimentacoes: Movimentacao[];
+  dataUltimaMovimentacao?: string;
+}
+
+export interface IProcessoProvider {
+  consultarPorNumero(numeroCNJ: string): Promise<ProcessoDataJud | null>;
+  listarMovimentacoes(numeroCNJ: string, desde?: Date): Promise<Movimentacao[]>;
+}

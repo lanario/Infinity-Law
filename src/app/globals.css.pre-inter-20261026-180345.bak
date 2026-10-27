@@ -1,0 +1,595 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);       /* #D4AF37 */
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);   /* #FBF6E9 */
+    --secondary-foreground: oklch(0.205 0 0); /* #9A7A1A */
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: 0 0% 98%;
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+
+    --color-gold: #D4AF37;
+    --color-gold-hover: #C9A227;
+    --color-gold-soft: #FBF6E9;
+    --color-gold-text: #9A7A1A;
+    --gold-gradient: linear-gradient(110deg, #B98B1D 0%, #E2BE4D 31%, #FFF9E8 50%, #E2BE4D 69%, #B98B1D 100%);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+    --font-sans: var(--font-lato), "Lato", system-ui, sans-serif;
+  }
+  .theme {
+    --font-heading: var(--font-lato), "Lato", system-ui, sans-serif;
+  }
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-lato), "Lato", system-ui, sans-serif;
+  }
+  html {
+    @apply font-sans;
+    font-family: var(--font-lato), "Lato", system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .bg-gold {
+    background-image: var(--gold-gradient);
+    background-size: 180% 100%;
+    background-position: 0% 50%;
+    transition: background-position 180ms ease;
+  }
+
+  .bg-gold:hover:not(:disabled) {
+    background-position: 100% 50%;
+  }
+
+  .bg-gold:is(button, a) {
+    box-shadow: 0 8px 24px -14px rgba(185, 139, 29, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    transition: background-position 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .bg-gold:is(button, a):hover:not(:disabled) {
+    box-shadow: 0 10px 28px -12px rgba(185, 139, 29, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
+
+  .bg-gold.text-white {
+    color: #17191a;
+  }
+
+  .gold-sheen {
+    background-image: var(--gold-gradient);
+    background-size: 180% 100%;
+    background-position: 0% 50%;
+    box-shadow: 0 8px 24px -12px rgba(185, 139, 29, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    transition: background-position 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .gold-sheen:hover:not(:disabled) {
+    background-position: 100% 50%;
+    box-shadow: 0 10px 30px -12px rgba(185, 139, 29, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-gold,
+  .gold-sheen {
+    transition: none;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-lato), "Lato", system-ui, sans-serif;
+  }
+}
+
+/* Pulsing dot animation for alerts */
+@keyframes pulse-amber {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-amber {
+  animation: pulse-amber 1.5s ease-in-out infinite;
+}
+
+/* Infinity Law topbar: discreet technical grid inspired by case-file paper. */
+.infinity-header-grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.7;
+  background-image:
+    linear-gradient(to right, rgba(23, 25, 26, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 25, 26, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 62% -120%, rgba(212, 175, 55, 0.16), transparent 38%);
+  background-size: 40px 40px, 40px 40px, auto;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+html[data-performance-mode="on"] *,
+html[data-performance-mode="on"] *::before,
+html[data-performance-mode="on"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   Infinity Law - Unified Auth Portal (Lâmina Inclinada e Efeitos Visuais)
+   ========================================================================== */
+
+.auth-palco {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 5rem clamp(1rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem);
+}
+
+.auth-ambiente {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.auth-brilho {
+  position: absolute;
+  inset: -25%;
+  background:
+    radial-gradient(
+      34% 38% at 46% 34%,
+      rgba(212, 175, 55, 0.22),
+      transparent 68%
+    ),
+    radial-gradient(
+      26% 30% at 82% 78%,
+      rgba(201, 162, 39, 0.16),
+      transparent 70%
+    );
+  filter: blur(20px);
+  will-change: transform;
+}
+
+.auth-malha {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      to right,
+      rgba(245, 245, 245, 0.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(245, 245, 245, 0.04) 1px,
+      transparent 1px
+    );
+  background-size: 76px 76px;
+  -webkit-mask-image: radial-gradient(62% 58% at 50% 45%, #000, transparent 78%);
+  mask-image: radial-gradient(62% 58% at 50% 45%, #000, transparent 78%);
+}
+
+.auth-portal {
+  --auth-rake: 9deg;
+  --auth-lado: 0.58;
+  --auth-w: 100%;
+  --auth-pad: 96px;
+  --auth-cover: 45%;
+  --auth-sweep: 0px;
+
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: 100%;
+  max-width: 30rem;
+  overflow: hidden;
+  border-radius: 26px;
+  border: 1px solid #262626;
+  background: #121212;
+  box-shadow:
+    inset 0 1px 0 0 rgba(212, 175, 55, 0.18),
+    0 40px 90px -50px rgb(0 0 0 / 0.95),
+    0 8px 30px -20px rgb(0 0 0 / 0.85);
+}
+
+.auth-coluna {
+  padding: 1.75rem;
+}
+
+.auth-troca {
+  position: relative;
+}
+
+.auth-lamina {
+  display: none;
+}
+
+.auth-form[data-ativo="false"] {
+  display: none;
+}
+
+.auth-marca-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #262626;
+  padding: 1.25rem 1.75rem;
+  background: linear-gradient(
+    135deg,
+    rgba(212, 175, 55, 0.14),
+    transparent 62%
+  );
+}
+
+@media (min-width: 64rem) {
+  .auth-portal {
+    max-width: 62rem;
+    height: var(--auth-h, auto);
+  }
+
+  .auth-marca-topo {
+    display: none;
+  }
+
+  .auth-coluna {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    height: 100%;
+    width: calc(100% * var(--auth-lado));
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 3rem;
+  }
+
+  .auth-portal[data-modo="entrar"] .auth-coluna {
+    left: 0;
+    padding-right: calc(3rem + var(--auth-pad));
+  }
+
+  .auth-portal[data-modo="cadastrar"] .auth-coluna {
+    left: calc(100% * (1 - var(--auth-lado)));
+    padding-left: calc(3rem + var(--auth-pad));
+  }
+
+  .auth-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .auth-form[data-ativo="true"] {
+    position: relative;
+  }
+
+  .auth-form[data-ativo="false"] {
+    display: block;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .auth-lamina {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    height: 100%;
+    width: var(--auth-cover);
+    overflow: hidden;
+    transform-origin: 0 50%;
+    transform: skewX(calc(-1 * var(--auth-rake))) translateX(var(--auth-sweep));
+    background: linear-gradient(
+      168deg,
+      rgba(212, 175, 55, 0.18) 0%,
+      rgba(201, 162, 39, 0.08) 52%,
+      #080808 100%
+    );
+    will-change: width, transform;
+  }
+
+  .auth-lamina::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      70% 48% at 16% 0%,
+      rgba(243, 208, 106, 0.24),
+      transparent 70%
+    );
+  }
+
+  .auth-fio,
+  .auth-halo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .auth-fio {
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(243, 208, 106, 0.85) 22%,
+      rgba(243, 208, 106, 0.95) 55%,
+      transparent 92%
+    );
+  }
+
+  .auth-halo {
+    width: 88px;
+  }
+
+  .auth-fio[data-borda="inicio"] {
+    left: 0;
+  }
+
+  .auth-fio[data-borda="fim"] {
+    right: 0;
+  }
+
+  .auth-halo[data-borda="inicio"] {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      rgba(212, 175, 55, 0.22),
+      transparent 82%
+    );
+  }
+
+  .auth-halo[data-borda="fim"] {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      rgba(212, 175, 55, 0.22),
+      transparent 82%
+    );
+  }
+
+  .auth-lamina-conteudo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    height: 100%;
+    width: var(--auth-w);
+    transform-origin: 0 50%;
+    transform: translateX(calc(-1 * var(--auth-sweep))) skewX(var(--auth-rake));
+  }
+
+  .auth-marca {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    width: calc(100% * (1 - var(--auth-lado)));
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 2.75rem;
+  }
+
+  .auth-portal[data-modo="entrar"] .auth-marca {
+    right: 0;
+    padding-left: calc(2.75rem + var(--auth-pad) / 2);
+  }
+
+  .auth-portal[data-modo="cadastrar"] .auth-marca {
+    left: 0;
+    padding-right: calc(2.75rem + var(--auth-pad) / 2);
+  }
+}
+
+.auth-serifada {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.auth-lustro {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-lustro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    100deg,
+    transparent 28%,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent 72%
+  );
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-lustro:hover::after,
+.auth-lustro:focus-visible::after {
+  transform: translateX(120%);
+}
+
+/* ==========================================================================
+   Infinity Law - Rapport Visual System (Dashboard Aesthetics)
+   ========================================================================== */
+
+/* Ambient mesh background with neutral, sober & warm institutional tones */
+.rapport-mesh {
+  position: relative;
+  background-color: #F8F8F7;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 162, 158, 0.04) 0px, transparent 48%),
+    radial-gradient(at 50% 100%, rgba(212, 175, 55, 0.02) 0px, transparent 60%);
+  background-attachment: fixed;
+}
+
+.dark .rapport-mesh {
+  background-color: #121316;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.04) 0px, transparent 55%),
+    radial-gradient(at 100% 5%, rgba(168, 162, 158, 0.03) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(212, 175, 55, 0.03) 0px, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Ambient glow orbs - neutral warm & institutional gold (no green tones) */
+.rapport-glow-gold {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, rgba(212, 175, 55, 0) 70%);
+  filter: blur(64px);
+  pointer-events: none;
+}
+
+.dark .rapport-glow-gold {
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, rgba(212, 175, 55, 0) 70%);
+}
+
+.rapport-glow-pine {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(168, 162, 158, 0.04) 0%, rgba(168, 162, 158, 0) 70%);
+  filter: blur(68px);
+  pointer-events: none;
+}
+
+.dark .rapport-glow-pine {
+  background: radial-gradient(circle, rgba(168, 162, 158, 0.05) 0%, rgba(168, 162, 158, 0) 70%);
+}
+
+/* Glassmorphism & Card containers with clean borders and uniform soft shadow */
+.rapport-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.03),
+    0 8px 24px -12px rgba(24, 24, 27, 0.05);
+}
+
+.dark .rapport-glass {
+  background: rgba(24, 26, 30, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 28px -12px rgba(0, 0, 0, 0.45);
+}
+
+.rapport-card,
+.rapport-glass-card {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  background-color: #FFFFFF;
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.03),
+    0 8px 24px -12px rgba(24, 24, 27, 0.05);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .rapport-card,
+.dark .rapport-glass-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background-color: #181A1E;
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.2),
+    0 12px 28px -12px rgba(0, 0, 0, 0.45);
+}
+
+.rapport-card:hover,
+.rapport-glass-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px -2px rgba(24, 24, 27, 0.06),
+    0 12px 28px -12px rgba(24, 24, 27, 0.08);
+}

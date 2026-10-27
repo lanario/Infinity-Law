@@ -1,0 +1,33 @@
+import type { Metadata } from "next";
+import { Lato } from "next/font/google";
+import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+  variable: "--font-lato",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "Infinity Law — Sistema de Gestão Jurídica",
+    template: "%s | Infinity Law",
+  },
+  description: "Sistema de gestão jurídica multi-tenant para escritórios de advocacia",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="pt-BR" suppressHydrationWarning className={cn("font-sans", lato.variable, lato.className)}>
+      <body className={cn(lato.variable, lato.className, "font-sans antialiased")}>
+        {children}
+      </body>
+    </html>
+  );
+}
