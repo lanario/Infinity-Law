@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CheckCircle2, X } from "lucide-react";
 
 export function AvisoCriado() {
-  const router = useRouter();
   const pathname = usePathname();
   const [visivel, setVisivel] = useState(true);
 
   function fechar() {
     setVisivel(false);
-    router.replace(pathname, { scroll: false }); // remove ?criado=1
+    window.history.replaceState(window.history.state, "", pathname); // remove ?criado=1 sem navegar
   }
 
   useEffect(() => {
