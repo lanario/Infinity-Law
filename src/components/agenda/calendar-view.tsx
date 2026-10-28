@@ -11,7 +11,7 @@ import { salvarEvento, excluirEvento } from "@/app/actions/agenda";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
 import { getAgendaDateKey, getISOForAgendaMinute, shiftAgendaDateKey, shiftAgendaMonthKey } from "@/lib/agenda/team-timeline.mjs";
-import { AgendaSidebar, AgendaTopbar, AgendaWorkspaceViews, type AgendaCalendarMode } from "@/components/agenda/agenda-workspace-views";
+import { AgendaSidebar, AgendaTopbar, AgendaWorkspaceViews, type AgendaCalendarMode, type AgendaEventTypeFilter } from "@/components/agenda/agenda-workspace-views";
 
 const localizer = dateFnsLocalizer({
   format,
@@ -141,7 +141,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
   const [view, setView] = useState<View>("day");
   const [teamMode, setTeamMode] = useState(true);
   const [selectedDateKey, setSelectedDateKey] = useState(initialDateKey);
-  const [selectedType, setSelectedType] = useState<EventoTipo | "todos">("todos");
+  const [selectedType, setSelectedType] = useState<AgendaEventTypeFilter>("todos");
   const [selectedMemberIds, setSelectedMemberIds] = useState<Set<string> | null>(null);
   const [memberSearch, setMemberSearch] = useState("");
   const [agendaSidebarCollapsed, setAgendaSidebarCollapsed] = useState(false);
@@ -384,7 +384,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
 
   return (
     <div className="space-y-4">
-      <div className={cn("grid min-w-0 gap-3", agendaSidebarCollapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
+      <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
         <AgendaSidebar
           events={filteredByType}
           members={membros}
@@ -412,14 +412,13 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
             onToday={goToToday}
             onCreate={() => openCreate()}
             onOpenFilters={() => setAgendaSidebarOpen(true)}
+            selectedType={selectedType}
+            eventTypeCounts={eventCounts}
+            totalEventCount={eventos.length}
+            onTypeChange={setSelectedType}
           />
 
           <section className="min-w-0 space-y-3 rounded-2xl border border-stone-200/80 bg-white p-2.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] sm:p-4">
-            <div className="flex flex-wrap gap-1.5 border-b border-stone-100 pb-3" aria-label="Filtrar agenda por tipo">
-              <button type="button" onClick={() => setSelectedType("todos")} aria-pressed={selectedType === "todos"} className={cn("rounded-full border px-3 py-1.5 text-[10px] font-bold transition", selectedType === "todos" ? "border-[#17191a] bg-[#17191a] text-white" : "border-stone-200 text-stone-500 hover:border-gold/40 hover:text-stone-800")}>Todos <span className={cn("ml-1", selectedType === "todos" ? "text-white/60" : "text-stone-400")}>{eventos.length}</span></button>
-              {EVENT_TYPES.map((type) => <button key={type.value} type="button" onClick={() => setSelectedType(type.value)} aria-pressed={selectedType === type.value} className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-bold transition", selectedType === type.value ? "border-gold/45 bg-gold-soft text-gold-dark" : "border-stone-200 text-stone-500 hover:border-gold/35 hover:text-stone-800")}><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: type.color }} aria-hidden="true" />{type.label}<span className="text-stone-400">{eventCounts[type.value]}</span></button>)}
-            </div>
-
             {agendaMode === "agenda" ? (
               <div className="overflow-x-auto">
                 <div className="calendar-container min-w-[620px]" style={{ height: 670 }}>

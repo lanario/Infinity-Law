@@ -130,21 +130,23 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.4, ease: "easeOut" }} aria-label="Agenda da equipe por horário" className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)]">
       <div className="overflow-x-auto overscroll-x-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold" tabIndex={0} aria-label="Linha do tempo. Use as setas de rolagem horizontal para consultar outros horários.">
-        <div className="grid min-w-[900px] grid-cols-[220px_minmax(680px,1fr)]">
+        <div className="grid min-w-[1060px] grid-cols-[220px_minmax(840px,1fr)]">
           <div className="sticky left-0 top-0 z-30 flex h-14 items-center gap-2 border-b border-r border-stone-200 bg-stone-50 px-4 text-[11px] font-bold uppercase tracking-[0.08em] text-stone-600">
             <UserRound className="h-4 w-4 text-gold-dark" aria-hidden="true" /> Equipe <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-[10px] text-stone-500">{assignedMembers.length}</span>
           </div>
-          <div className="sticky top-0 z-20 h-14 border-b border-stone-200 bg-stone-50" aria-label="Eixo de horários">
-            {range.ticks.map((tick) => {
-              const position = positionOnAgendaAxis(tick.minute, tick.minute + 1, range).leftPercent;
-              const isEnd = tick.minute === range.endMinute;
-              return <span key={tick.minute} className={cn("absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-[11px] font-semibold tabular-nums text-stone-500", isEnd ? "-translate-x-full" : "-translate-x-1/2")} style={{ left: `${isEnd ? 100 : position}%` }}>{tick.label}</span>;
-            })}
+          {/* px-7 gutter: first/last hour labels (centered on their line) stay inside the cell, clear of the sticky team column */}
+          <div className="sticky top-0 z-20 h-14 border-b border-stone-200 bg-stone-50 px-7" aria-label="Eixo de horários">
+            <div className="relative h-full">
+              {range.ticks.map((tick) => {
+                const position = positionOnAgendaAxis(tick.minute, tick.minute + 1, range).leftPercent;
+                return <span key={tick.minute} className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-[11px] font-semibold tabular-nums text-stone-500" style={{ left: `${position}%` }}>{tick.label}</span>;
+              })}
+            </div>
           </div>
 
           {laneData.map((lane) => {
             const rowCount = Math.max(1, lane.items.reduce((count, item) => Math.max(count, item.row + 1), 0));
-            const height = Math.max(74, rowCount * 48 + 14);
+            const height = Math.max(73, rowCount * 48 + 14);
             return (
               <div key={lane.id} className="contents">
                 <div className="sticky left-0 z-10 flex min-w-0 items-center gap-3 border-b border-r border-stone-100 bg-white px-3 py-2.5">
@@ -160,8 +162,9 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
                     <span className="mt-0.5 block truncate text-[10px] text-stone-400">{lane.member ? lane.member.ativo ? "Equipe do escritório" : "Responsável inativo" : `${lane.items.length} ${lane.items.length === 1 ? "evento" : "eventos"}`}</span>
                   </span>
                 </div>
+                <div className="border-b border-stone-100 px-7">
                 <div
-                  className={cn("relative border-b border-stone-100", onSelectTime && "cursor-crosshair")}
+                  className={cn("relative border-r border-[#e9e7e3]", onSelectTime && "cursor-crosshair")}
                   style={{
                     height,
                     backgroundImage: axisBackground,
@@ -198,6 +201,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
                       </button>
                     );
                   })}
+                </div>
                 </div>
               </div>
             );
