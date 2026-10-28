@@ -393,7 +393,8 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
   }
 
   return (
-    <div className="space-y-4">
+    // lg:isolate contém os z-index sticky da agenda (z-30..50) abaixo da sidebar global (z-30) quando ela expande no hover; no mobile o drawer da agenda precisa ficar acima do header.
+    <div className="space-y-4 lg:isolate">
       <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
         <AgendaSidebar
           events={filteredByType}
