@@ -11,6 +11,7 @@ import { MarcarMovimentacoesVistas } from "@/components/processos/marcar-movimen
 import { movimentoEmDestaque } from "@/lib/processos/movimento-destaque.mjs";
 import { AvisoCriado } from "@/components/processos/aviso-criado";
 import { ProcessoDetalheDialog } from "@/components/processos/processo-detalhe-dialog";
+import { EditarDadosPedidoDialog, type DadosPedidoInicial } from "@/components/processos/editar-dados-pedido-dialog";
 
 const STATUS_BADGE: Record<string, string> = {
   ativo: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -59,6 +60,8 @@ export async function ProcessoDetalhe({
   if (!profile) redirect("/login");
   if (!profile.can("processos", "read")) redirect("/dashboard");
   const canReadFinanceiro = profile.can("financeiro", "read");
+  const canWriteFinanceiro = profile.can("financeiro", "write");
+  const canEditDadosPedido = profile.can("processos", "write");
 
   // Queries independentes em paralelo; notFound só depois (RLS devolve null para processo de outro tenant).
   const buscarMovimentacoes = async () => {
@@ -80,11 +83,11 @@ export async function ProcessoDetalhe({
     return (data ?? []).map((m) => ({ ...m, data_hora: null, complementos: null, visto_em: "" as string | null }));
   };
 
-  const [{ data: processo }, movimentacoes, { data: clienteVinculos }, { data: honorario }, { data: juridico }] = await Promise.all([
+  const [{ data: processo }, movimentacoes, { data: clienteVinculos }, { data: honorario }, { data: juridico }, { data: clientesDisponiveis }, { data: responsaveisDisponiveis }] = await Promise.all([
     supabase
       .from("processos")
       .select(`
-        numero_cnj, numero_protocolo, pasta_caso, processo_originario, classe_processual,
+        advogado_id, numero_cnj, numero_protocolo, pasta_caso, processo_originario, classe_processual,
         grupo_acao, tipo_acao, status, fase, etapa, tribunal, vara, uf, valor_causa,
         data_requerimento, observacoes, ultima_sync_cnj,
         areas_direito ( nome ),
@@ -97,11 +100,12 @@ export async function ProcessoDetalhe({
       .from("processo_clientes")
       .select("papel, clientes ( id, nome )")
       .eq("processo_id", params.id),
-    canReadFinanceiro
+    canReadFinanceiro || canWriteFinanceiro
       ? supabase
           .from("honorarios")
           .select("valor_fixo, percentual_exito, contingenciamento")
           .eq("processo_id", params.id)
+          .eq("escritorio_id", profile.escritorioId)
           .limit(1)
           .maybeSingle()
       : Promise.resolve({ data: null }),
@@ -111,6 +115,20 @@ export async function ProcessoDetalhe({
       .select("comarca, assunto, grau, sistema, nivel_sigilo, parte_contraria, advogado_parte_contraria")
       .eq("id", params.id)
       .maybeSingle(),
+    canEditDadosPedido
+      ? supabase
+          .from("clientes")
+          .select("id, nome, ativo")
+          .eq("escritorio_id", profile.escritorioId)
+          .order("nome")
+      : Promise.resolve({ data: null }),
+    canEditDadosPedido
+      ? supabase
+          .from("usuarios")
+          .select("id, nome, ativo")
+          .eq("escritorio_id", profile.escritorioId)
+          .order("nome")
+      : Promise.resolve({ data: null }),
   ]);
 
   if (!processo) {
@@ -125,6 +143,33 @@ export async function ProcessoDetalhe({
     const cliente = Array.isArray(vinculo.clientes) ? vinculo.clientes[0] : vinculo.clientes;
     return cliente ? [{ ...cliente, papel: vinculo.papel }] : [];
   });
+
+  const dadosPedido: DadosPedidoInicial = {
+    clientes: clientes.map((cliente) => ({
+      id: cliente.id,
+      nome: cliente.nome,
+      papel: cliente.papel as "autor" | "reu" | "terceiro",
+    })),
+    advogadoResponsavelId: processo.advogado_id,
+    grupoAcao: processo.grupo_acao,
+    tipoAcao: processo.tipo_acao,
+    classeProcessual: processo.classe_processual,
+    assunto: juridico?.assunto,
+    grau: juridico?.grau,
+    sistema: juridico?.sistema,
+    comarca: juridico?.comarca,
+    parteContraria: juridico?.parte_contraria,
+    advogadoParteContraria: juridico?.advogado_parte_contraria,
+    etapa: processo.etapa,
+    numeroProtocolo: processo.numero_protocolo,
+    processoOriginario: processo.processo_originario,
+    pastaCaso: processo.pasta_caso,
+    dataRequerimento: processo.data_requerimento,
+    valorCausa: canReadFinanceiro && processo.valor_causa != null ? Number(processo.valor_causa) : null,
+    valorHonorarios: honorario?.valor_fixo != null ? Number(honorario.valor_fixo) : null,
+    percentualHonorarios: honorario?.percentual_exito != null ? Number(honorario.percentual_exito) : null,
+    contingenciamento: honorario?.contingenciamento as "nao" | "parcial" | "integral" | null ?? null,
+  };
 
   const area = Array.isArray(processo.areas_direito)
     ? processo.areas_direito[0]?.nome
@@ -250,12 +295,24 @@ export async function ProcessoDetalhe({
         </div>
 
         <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="border-b border-gray-50 px-6 py-4">
-            <div className="flex items-center gap-2">
-              <BriefcaseBusiness className="h-4 w-4 text-gold" aria-hidden="true" />
-              <h2 className="text-sm font-semibold text-gray-800">Dados do pedido</h2>
+          <div className="flex items-start justify-between gap-4 border-b border-gray-50 px-6 py-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <BriefcaseBusiness className="h-4 w-4 text-gold" aria-hidden="true" />
+                <h2 className="text-sm font-semibold text-gray-800">Dados do pedido</h2>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">Informações recebidas na abertura e no acompanhamento do caso.</p>
             </div>
-            <p className="mt-1 text-xs text-gray-400">Informações recebidas na abertura e no acompanhamento do caso.</p>
+            {canEditDadosPedido && (
+              <EditarDadosPedidoDialog
+                processoId={params.id}
+                dados={dadosPedido}
+                clientesDisponiveis={clientesDisponiveis ?? []}
+                responsaveisDisponiveis={responsaveisDisponiveis ?? []}
+                canReadFinanceiro={canReadFinanceiro}
+                canWriteFinanceiro={canWriteFinanceiro}
+              />
+            )}
           </div>
           <div className="grid gap-x-6 gap-y-5 p-6 sm:grid-cols-2 lg:grid-cols-3">
             <InfoItem icon={<User className="h-3.5 w-3.5" />} label="Cliente(s)" value={clientes.map((cliente) => cliente.nome).join(", ")} />
@@ -285,21 +342,25 @@ export async function ProcessoDetalhe({
                 value={processo.valor_causa != null ? formatCurrency(Number(processo.valor_causa)) : null}
               />
             )}
-            <InfoItem
-              icon={<CircleDollarSign className="h-3.5 w-3.5" />}
-              label="Valor dos honorários"
-              value={honorario?.valor_fixo != null ? formatCurrency(Number(honorario.valor_fixo)) : null}
-            />
-            <InfoItem
-              icon={<FileText className="h-3.5 w-3.5" />}
-              label="Percentual de honorários"
-              value={honorario?.percentual_exito != null ? `${honorario.percentual_exito}%` : null}
-            />
-            <InfoItem
-              icon={<FileText className="h-3.5 w-3.5" />}
-              label="Contingenciamento"
-              value={honorario?.contingenciamento === "nao" ? "Não" : honorario?.contingenciamento}
-            />
+            {canReadFinanceiro && (
+              <>
+                <InfoItem
+                  icon={<CircleDollarSign className="h-3.5 w-3.5" />}
+                  label="Valor dos honorários"
+                  value={honorario?.valor_fixo != null ? formatCurrency(Number(honorario.valor_fixo)) : null}
+                />
+                <InfoItem
+                  icon={<FileText className="h-3.5 w-3.5" />}
+                  label="Percentual de honorários"
+                  value={honorario?.percentual_exito != null ? `${honorario.percentual_exito}%` : null}
+                />
+                <InfoItem
+                  icon={<FileText className="h-3.5 w-3.5" />}
+                  label="Contingenciamento"
+                  value={honorario?.contingenciamento === "nao" ? "Não" : honorario?.contingenciamento}
+                />
+              </>
+            )}
           </div>
         </div>
 
@@ -336,7 +397,14 @@ export async function ProcessoDetalhe({
                 return (
                   <li key={mov.id} className="flex gap-4">
                     <div className="flex flex-col items-center" aria-hidden="true">
-                      <span className={cn("mt-1.5 block h-2.5 w-2.5 rounded-full", destaque ? "bg-gold" : "bg-gray-300")} />
+                      {index === 0 ? (
+                        <span className="relative mt-1.5 flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75 motion-safe:animate-ping" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-yellow-400" />
+                        </span>
+                      ) : (
+                        <span className={cn("mt-1.5 block h-2.5 w-2.5 rounded-full", destaque ? "bg-gold" : "bg-gray-300")} />
+                      )}
                       {index < movimentacoes.length - 1 && <span className="mt-1 w-px flex-1 bg-gray-100" />}
                     </div>
                     <div className="min-w-0 flex-1 pb-5">
@@ -344,6 +412,9 @@ export async function ProcessoDetalhe({
                         <time dateTime={mov.data_hora ?? mov.data_movimento ?? undefined} className="text-xs font-medium text-gray-500">
                           {quando}
                         </time>
+                        {index === 0 && (
+                          <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-semibold text-yellow-800">Última movimentação</span>
+                        )}
                         {novo && (
                           <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Novo</span>
                         )}

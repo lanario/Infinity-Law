@@ -48,6 +48,11 @@ interface ProcessoQueryRow {
     papel: string | null;
     clientes: Joined<{ id: string; nome: string }>;
   }> | null;
+  processo_movimentacoes: Array<{
+    data_hora: string | null;
+    data_movimento: string;
+    descricao: string;
+  }> | null;
   honorarios: Array<{
     valor_fixo: number | null;
     percentual_exito: number | null;
@@ -83,6 +88,16 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
     .select(
       profile.can("financeiro", "read") ? PROCESSOS_LIST_SELECT : PROCESSOS_LIST_SELECT_SEM_HONORARIOS
     )
+    .order("data_hora", {
+      ascending: false,
+      nullsFirst: false,
+      referencedTable: "processo_movimentacoes",
+    })
+    .order("data_movimento", {
+      ascending: false,
+      referencedTable: "processo_movimentacoes",
+    })
+    .limit(1, { referencedTable: "processo_movimentacoes" })
     .order("created_at", { ascending: false })
     .limit(500);
 
@@ -124,6 +139,7 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
       const cliente = first(vinculo.clientes);
       return cliente ? [{ ...cliente, papel: vinculo.papel }] : [];
     }),
+    ultima_movimentacao: processo.processo_movimentacoes?.[0] ?? null,
     honorarios: processo.honorarios?.[0] ?? null,
   }));
 

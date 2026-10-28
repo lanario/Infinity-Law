@@ -5,6 +5,8 @@ import { getCurrentProfile } from "@/lib/server/current-profile";
 export const dynamic = "force-dynamic";
 
 const NO_STORE = { "cache-control": "no-store" };
+const SOURCE_LIMIT = 12;
+const MAX_NOTIFICATIONS = 24;
 
 export async function GET() {
   try {
@@ -26,13 +28,14 @@ async function handleGet() {
 
   const agendaPermission = { data: profile.can("agenda", "read") };
   const communicationPermission = { data: profile.can("comunicacao", "read") };
+  const processPermission = { data: profile.can("processos", "read") };
 
   const now = new Date();
   const nowIso = now.toISOString();
   const horizonIso = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
   const recentIso = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [eventsResult, publicationsResult] = await Promise.all([
+  const [eventsResult, publicationsResult, processEventsResult] = await Promise.all([
     agendaPermission.data
       ? supabase
           .from("eventos")
@@ -40,7 +43,7 @@ async function handleGet() {
           .gte("inicio", nowIso)
           .lte("inicio", horizonIso)
           .order("inicio", { ascending: true })
-          .limit(12)
+          .limit(SOURCE_LIMIT)
       : Promise.resolve({ data: [], error: null }),
     communicationPermission.data
       ? supabase
@@ -48,12 +51,32 @@ async function handleGet() {
           .select("id, numero_processo_com_mascara, numero_processo, tribunal, tipo_comunicacao, nome_classe, created_at")
           .gte("created_at", recentIso)
           .order("created_at", { ascending: false })
-          .limit(12)
+          .limit(SOURCE_LIMIT)
+      : Promise.resolve({ data: [], error: null }),
+    processPermission.data
+      ? supabase
+          .from("processo_eventos")
+          .select("id, processo_id, titulo, descricao, data_evento")
+          .gte("data_evento", recentIso)
+          .order("data_evento", { ascending: false })
+          .limit(SOURCE_LIMIT)
       : Promise.resolve({ data: [], error: null }),
   ]);
 
-  if (eventsResult.error || publicationsResult.error) {
-    console.error("[api/notificacoes] Falha ao consultar atualizações:", eventsResult.error ?? publicationsResult.error);
+  const processEventsSchemaUnavailable = Boolean(
+    processEventsResult.error &&
+      ["42P01", "PGRST205", "PGRST204"].includes(processEventsResult.error.code ?? "")
+  );
+
+  if (processEventsSchemaUnavailable) {
+    console.warn("[api/notificacoes] Esquema de eventos de processos indisponível; notificações de processos foram omitidas.");
+  }
+
+  if (eventsResult.error || publicationsResult.error || (processEventsResult.error && !processEventsSchemaUnavailable)) {
+    console.error(
+      "[api/notificacoes] Falha ao consultar atualizações:",
+      eventsResult.error ?? publicationsResult.error ?? (processEventsSchemaUnavailable ? null : processEventsResult.error)
+    );
     return NextResponse.json({ error: "Não foi possível carregar as notificações." }, { status: 500, headers: { "cache-control": "no-store" } });
   }
 
@@ -73,6 +96,15 @@ async function handleGet() {
       href: "/agenda",
       sortGroup: 0,
     })),
+    ...(processEventsSchemaUnavailable ? [] : processEventsResult.data ?? []).map((event) => ({
+      id: `processo:${event.id}`,
+      kind: "processo" as const,
+      title: event.titulo,
+      description: event.descricao,
+      date: event.data_evento,
+      href: `/processos/${event.processo_id}`,
+      sortGroup: 1,
+    })),
     ...(publicationsResult.data ?? []).map((publication) => ({
       id: `intimacao:${publication.id}`,
       kind: "intimacao" as const,
@@ -88,6 +120,7 @@ async function handleGet() {
   ].sort((left, right) => left.sortGroup - right.sortGroup || (left.sortGroup === 0
     ? new Date(left.date).getTime() - new Date(right.date).getTime()
     : new Date(right.date).getTime() - new Date(left.date).getTime()))
+    .slice(0, MAX_NOTIFICATIONS)
     .map(({ sortGroup: _sortGroup, ...notification }) => notification);
 
   return NextResponse.json(

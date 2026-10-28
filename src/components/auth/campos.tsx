@@ -6,13 +6,12 @@ import { motion, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export const campoBase =
-  "w-full rounded-xl border bg-[#161616] py-2.5 pl-10 text-sm text-[#F5F5F5] outline-none transition-all placeholder:text-[#A3A3A3]/60";
+  "auth-field w-full rounded-xl border py-2.5 pl-10 text-sm outline-none transition-all";
 
-export const campoNormal =
-  "border-[#2A2A2A] hover:border-[#D4AF37]/40 focus:border-[#D4AF37] focus-visible:ring-2 focus-visible:ring-[#D4AF37]/25";
+export const campoNormal = "auth-field-normal";
 
 export const campoComErro =
-  "border-[#EF4444] focus:border-[#EF4444] focus-visible:ring-2 focus-visible:ring-[#EF4444]/25";
+  "auth-field-error";
 
 /** Curva de saída suave usada nos formulários de autenticação */
 export const SUAVE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -50,27 +49,27 @@ export function Campo({
     <motion.div variants={item}>
       <label
         htmlFor={id}
-        className="mb-1.5 block text-xs font-medium text-[#A3A3A3]"
+        className="auth-field-label mb-1.5 block text-xs font-medium"
       >
         {label}
-        {required && <span className="text-[#D4AF37]"> *</span>}
+        {required && <span className="auth-field-required"> *</span>}
       </label>
       <div className="relative">
         <Icone
           aria-hidden
           className={cn(
             "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors",
-            erro ? "text-[#EF4444]" : "text-[#737373]"
+            erro ? "text-[#B42318]" : "auth-field-icon"
           )}
         />
         {children}
       </div>
       {erro ? (
-        <p id={`${id}-erro`} role="alert" className="mt-1.5 text-[11px] text-[#EF4444]">
+        <p id={`${id}-erro`} role="alert" className="mt-1.5 text-[11px] text-[#B42318]">
           {erro}
         </p>
       ) : hint ? (
-        <p className="mt-1.5 text-[11px] text-[#A3A3A3]/70">{hint}</p>
+        <p className="auth-field-hint mt-1.5 text-[11px]">{hint}</p>
       ) : null}
     </motion.div>
   );
@@ -90,7 +89,7 @@ export function BotaoOlho({
       type="button"
       onClick={onToggle}
       aria-label={visivel ? `Ocultar ${rotulo}` : `Mostrar ${rotulo}`}
-      className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[#A3A3A3] transition-colors hover:bg-[#262626] hover:text-[#F5F5F5] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
+      className="auth-eye-button absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
     >
       {visivel ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
     </button>

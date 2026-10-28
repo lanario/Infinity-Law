@@ -12,6 +12,7 @@ interface Processo {
   numero_cnj: string;
   tribunal: string | null;
   escritorio_id: string;
+  ultima_sync_cnj: string | null;
 }
 
 Deno.serve(async (req) => {
@@ -33,7 +34,7 @@ Deno.serve(async (req) => {
   // Busca processos que precisam de sync
   const { data: processos, error } = await supabase
     .from("processos")
-    .select("id, numero_cnj, tribunal, escritorio_id")
+    .select("id, numero_cnj, tribunal, escritorio_id, ultima_sync_cnj")
     .eq("status", "ativo")
     .or(`ultima_sync_cnj.is.null,ultima_sync_cnj.lt.${cutoff}`)
     .limit(500);
@@ -81,8 +82,7 @@ Deno.serve(async (req) => {
 });
 
 async function syncProcesso(
-  // deno-lint-ignore no-explicit-any
-  supabase: any,
+  supabase: ReturnType<typeof createClient>,
   processo: Processo,
   apiKey: string,
   baseUrl: string
@@ -113,30 +113,52 @@ async function syncProcesso(
   // 404/401/403/5xx são erro do endpoint, nunca "processo não encontrado" (isso é 200 com hits vazios).
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-  // deno-lint-ignore no-explicit-any
-  const json = await res.json() as any;
-  const hits = json?.hits?.hits ?? [];
+  const json: unknown = await res.json();
+  const resultado = asRecord(json);
+  const hitsData = asRecord(resultado?.hits);
+  const hits: unknown[] = Array.isArray(hitsData?.hits) ? hitsData.hits : [];
   if (hits.length === 0) return;
 
-  // deno-lint-ignore no-explicit-any
-  const movimentos: any[] = hits[0]?._source?.movimentos ?? [];
+  const primeiroHit = asRecord(hits[0]);
+  const fonteProcesso = asRecord(primeiroHit?._source);
+  const movimentos: unknown[] = Array.isArray(fonteProcesso?.movimentos) ? fonteProcesso.movimentos : [];
+  const primeiraSync = !processo.ultima_sync_cnj;
+  const sincronizadoEm = new Date().toISOString();
 
-  const movimentacoes = movimentos.map(
-    // deno-lint-ignore no-explicit-any
-    (m: any) => ({
+  const movimentacoes = movimentos.map((rawMovimento) => {
+    const movimento = asRecord(rawMovimento) ?? {};
+    const dataHoraOriginal = typeof movimento.dataHora === "string" ? movimento.dataHora : "";
+    const dataHoraValida = Boolean(dataHoraOriginal) && Number.isFinite(Date.parse(dataHoraOriginal));
+    const complementos = Array.isArray(movimento.complementosTabelados)
+      ? movimento.complementosTabelados.flatMap((rawComplemento: unknown) => {
+        const complemento = asRecord(rawComplemento);
+        const nome = typeof complemento?.nome === "string" ? complemento.nome.trim() : "";
+        if (!nome) return [];
+        const descricao = typeof complemento.descricao === "string" ? complemento.descricao.trim() : "";
+        return [{ nome, ...(descricao ? { descricao } : {}) }];
+      })
+      : [];
+    const codigo = movimento.codigo;
+
+    return {
       processo_id: processo.id,
       escritorio_id: processo.escritorio_id,
-      data_movimento: String(m.dataHora ?? "").split("T")[0] ?? new Date().toISOString().split("T")[0],
-      descricao: String(m.nome ?? "Movimento"),
-      codigo_cnj: m.codigo ? String(m.codigo) : null,
+      data_movimento: dataHoraValida
+        ? (dataHoraOriginal.split("T")[0] || sincronizadoEm.slice(0, 10))
+        : sincronizadoEm.slice(0, 10),
+      descricao: String(movimento.nome ?? "Movimento"),
+      codigo_cnj: codigo == null || codigo === "" ? null : String(codigo),
       fonte: "datajud",
-    })
-  );
+      data_hora: dataHoraValida ? new Date(dataHoraOriginal).toISOString() : null,
+      complementos: complementos.length > 0 ? complementos : null,
+      ...(primeiraSync ? { visto_em: sincronizadoEm } : {}),
+    };
+  });
 
   await Promise.all([
     supabase
       .from("processos")
-      .update({ ultima_sync_cnj: new Date().toISOString() })
+      .update({ ultima_sync_cnj: sincronizadoEm })
       .eq("id", processo.id),
     movimentacoes.length > 0
       ? supabase
@@ -147,6 +169,12 @@ async function syncProcesso(
           })
       : Promise.resolve(),
   ]);
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
 }
 
 // Tabela J.TR espelhada de src/lib/cnj/tribunais.ts (fonte única; não importável aqui). Altere as duas juntas.

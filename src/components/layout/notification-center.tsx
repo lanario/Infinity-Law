@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
-import { Bell, BellRing, CalendarClock, CheckCheck, Clock3, ExternalLink, FileText, LoaderCircle, RefreshCw } from "lucide-react";
+import { Bell, BellRing, BriefcaseBusiness, CalendarClock, CheckCheck, Clock3, ExternalLink, FileText, LoaderCircle, RefreshCw } from "lucide-react";
 import { useUser } from "@/components/layout/user-context";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ const READ_IDS_KEY = "infinity-law:notifications-read:v1";
 
 type NotificationItem = {
   id: string;
-  kind: "agenda" | "intimacao";
+  kind: "agenda" | "intimacao" | "processo";
   title: string;
   description: string;
   date: string;
@@ -201,6 +201,9 @@ export function NotificationCenter() {
 
   const unreadCount = notifications.reduce((count, item) => count + (readIds.has(item.id) ? 0 : 1), 0);
   const hasAgendaNotifications = notifications.some((item) => item.kind === "agenda");
+  const onlyProcessNotifications = notifications.length > 0 && notifications.every((item) => item.kind === "processo");
+  const footerHref = onlyProcessNotifications ? "/processos" : hasAgendaNotifications ? "/agenda" : "/intimacoes";
+  const footerLabel = onlyProcessNotifications ? "Abrir processos" : hasAgendaNotifications ? "Abrir agenda" : "Abrir intimações";
 
   function markRead(id: string) {
     const next = new Set(readIds);
@@ -272,7 +275,7 @@ export function NotificationCenter() {
               <div ref={panelHeaderRef} className="flex items-center justify-between gap-3 border-b border-stone-100 bg-white/90 px-4 py-3.5">
               <div className="flex min-w-0 items-center gap-2.5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold-dark"><BellRing className="h-4 w-4" aria-hidden="true" /></span>
-                <div><h2 className="text-sm font-black text-[#17191a]">Notificações</h2><p className="mt-0.5 text-[10px] text-stone-400">Agenda e publicações recentes</p></div>
+                <div><h2 className="text-sm font-black text-[#17191a]">Notificações</h2><p className="mt-0.5 text-[10px] text-stone-400">Agenda, processos e publicações recentes</p></div>
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 {unreadCount > 0 && <button type="button" onClick={markAllRead} className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold-soft" title="Marcar todas como lidas"><CheckCheck className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">Marcar lidas</span></button>}
@@ -289,16 +292,21 @@ export function NotificationCenter() {
               ) : error && notifications.length === 0 ? (
                 <div className="px-5 py-10 text-center"><p role="alert" className="text-xs leading-relaxed text-red-700">{error}</p><button type="button" onClick={() => void loadNotifications(true)} className="mt-3 rounded-lg bg-gold-soft px-3 py-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold/20">Tentar novamente</button></div>
               ) : notifications.length === 0 ? (
-                <div className="px-5 py-11 text-center"><span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><CheckCheck className="h-5 w-5" aria-hidden="true" /></span><p className="mt-3 text-xs font-bold text-stone-700">Tudo em dia</p><p className="mt-1 text-[10px] text-stone-400">Sem prazos próximos ou publicações recentes.</p></div>
+                <div className="px-5 py-11 text-center"><span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><CheckCheck className="h-5 w-5" aria-hidden="true" /></span><p className="mt-3 text-xs font-bold text-stone-700">Tudo em dia</p><p className="mt-1 text-[10px] text-stone-400">Sem prazos, movimentações ou publicações recentes.</p></div>
               ) : (
                 <ul className="divide-y divide-stone-100">
                   {notifications.map((item) => {
                     const isRead = readIds.has(item.id);
-                    const Icon = item.kind === "agenda" ? CalendarClock : FileText;
+                    const Icon = item.kind === "agenda" ? CalendarClock : item.kind === "processo" ? BriefcaseBusiness : FileText;
+                    const iconStyle = item.kind === "agenda"
+                      ? "bg-gold-soft text-gold-dark"
+                      : item.kind === "processo"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-sky-50 text-sky-700";
                     return (
                       <li key={item.id}>
                         <Link href={item.href} onClick={() => { markRead(item.id); setOpen(false); }} className={cn("group flex gap-3 px-4 py-3.5 transition hover:bg-gold-soft/25", !isRead && "bg-gold-soft/10")}>
-                          <span className={cn("relative mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", item.kind === "agenda" ? "bg-gold-soft text-gold-dark" : "bg-sky-50 text-sky-700")}><Icon className="h-4 w-4" aria-hidden="true" />{!isRead && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border border-white bg-gold" aria-label="Não lida" />}</span>
+                          <span className={cn("relative mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", iconStyle)}><Icon className="h-4 w-4" aria-hidden="true" />{!isRead && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border border-white bg-gold" aria-label="Não lida" />}</span>
                           <span className="min-w-0 flex-1">
                             <span className="flex items-start justify-between gap-2"><span className="line-clamp-2 text-xs font-bold leading-relaxed text-stone-800">{item.title}</span><ExternalLink className="mt-0.5 h-3 w-3 shrink-0 text-stone-300 transition group-hover:text-gold-dark" aria-hidden="true" /></span>
                             <span className="mt-1 block line-clamp-2 text-[10px] leading-relaxed text-stone-500">{item.description}</span>
@@ -312,7 +320,7 @@ export function NotificationCenter() {
               )}
               </div>
 
-              {notifications.length > 0 && <div ref={panelFooterRef} className="flex items-center justify-between border-t border-stone-100 bg-white/80 px-4 py-2.5"><span className="text-[9px] text-stone-400">{notifications.length} {notifications.length === 1 ? "atualização" : "atualizações"}</span><Link href={hasAgendaNotifications ? "/agenda" : "/intimacoes"} onClick={() => setOpen(false)} className="text-[10px] font-bold text-gold-dark transition hover:text-gold">{hasAgendaNotifications ? "Abrir agenda" : "Abrir intimações"}</Link></div>}
+              {notifications.length > 0 && <div ref={panelFooterRef} className="flex items-center justify-between border-t border-stone-100 bg-white/80 px-4 py-2.5"><span className="text-[9px] text-stone-400">{notifications.length} {notifications.length === 1 ? "atualização" : "atualizações"}</span><Link href={footerHref} onClick={() => setOpen(false)} className="text-[10px] font-bold text-gold-dark transition hover:text-gold">{footerLabel}</Link></div>}
             </motion.section>
           )}
         </AnimatePresence>,

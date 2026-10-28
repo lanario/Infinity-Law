@@ -2,7 +2,8 @@
 
 import { requireModuleAccess } from "@/lib/server/module-access";
 import { runWithRequiredAccess } from "@/lib/server/required-access";
-import { processoSchema } from "@/lib/validations/processo.schema";
+import { processoDadosPedidoSchema, processoSchema } from "@/lib/validations/processo.schema";
+import { z } from "zod";
 
 export async function salvarProcesso(
   input: unknown
@@ -202,5 +203,295 @@ export async function salvarProcesso(
 
       return { processoId };
     }
+  );
+}
+
+export async function atualizarDadosPedido(
+  processoId: string,
+  input: unknown,
+): Promise<{ error: string } | { processoId: string }> {
+  return runWithRequiredAccess(
+    () => requireModuleAccess("processos", "write"),
+    (error) => ({ error }),
+    async ({ supabase, escritorioId }) => {
+      if (!z.string().uuid().safeParse(processoId).success) {
+        return { error: "Não foi possível identificar o processo." };
+      }
+
+      const parsed = processoDadosPedidoSchema.safeParse(input);
+      if (!parsed.success) {
+        return { error: parsed.error.issues[0]?.message ?? "Revise os dados do pedido." };
+      }
+
+      const data = parsed.data;
+      const podeAlterarHonorarios =
+        data.valor_honorarios !== undefined ||
+        data.percentual_honorarios !== undefined ||
+        data.contingenciamento !== undefined;
+      const podeAlterarValorCausa = data.valor_causa !== undefined;
+
+      if (podeAlterarValorCausa) {
+        const acessoFinanceiro = await requireModuleAccess("financeiro", "read");
+        if (!acessoFinanceiro.ok || acessoFinanceiro.escritorioId !== escritorioId) {
+          return { error: "Seu perfil não tem permissão para atualizar o valor da causa." };
+        }
+      }
+
+      if (podeAlterarHonorarios) {
+        const acessoFinanceiro = await requireModuleAccess("financeiro", "write");
+        if (!acessoFinanceiro.ok || acessoFinanceiro.escritorioId !== escritorioId) {
+          return { error: "Seu perfil não tem permissão para atualizar os honorários." };
+        }
+      }
+
+      const { data: processoAtual, error: processoReadError } = await supabase
+        .from("processos")
+        .select("id")
+        .eq("id", processoId)
+        .eq("escritorio_id", escritorioId)
+        .maybeSingle();
+
+      if (processoReadError || !processoAtual) {
+        return { error: "Este processo não existe ou você não tem acesso a ele." };
+      }
+
+      if (data.advogado_id) {
+        const { data: advogado, error: advogadoError } = await supabase
+          .from("usuarios")
+          .select("id")
+          .eq("id", data.advogado_id)
+          .eq("escritorio_id", escritorioId)
+          .maybeSingle();
+
+        if (advogadoError || !advogado) {
+          return { error: "O advogado responsável não está disponível neste escritório." };
+        }
+      }
+
+      const idsClientes = data.clientes.map((cliente) => cliente.cliente_id);
+      const { data: clientesDisponiveis, error: clientesError } = await supabase
+        .from("clientes")
+        .select("id")
+        .in("id", idsClientes)
+        .eq("escritorio_id", escritorioId);
+
+      if (clientesError || clientesDisponiveis?.length !== idsClientes.length) {
+        return { error: "Uma das partes selecionadas não está disponível neste escritório." };
+      }
+
+      const { data: vinculosAtuais, error: vinculosReadError } = await supabase
+        .from("processo_clientes")
+        .select("cliente_id, papel")
+        .eq("processo_id", processoId);
+
+      if (vinculosReadError) {
+        console.error("[atualizarDadosPedido] Falha ao consultar partes atuais:", vinculosReadError);
+        return { error: "Não foi possível carregar as partes atuais do processo." };
+      }
+
+      const vinculosAnteriores = (vinculosAtuais ?? []).map((vinculo) => ({
+        cliente_id: vinculo.cliente_id,
+        papel: vinculo.papel as "autor" | "reu" | "terceiro",
+      }));
+      const vinculosNovos = data.clientes.map((cliente) => ({
+        cliente_id: cliente.cliente_id,
+        papel: cliente.papel,
+      }));
+      const serializarVinculos = (vinculos: typeof vinculosNovos) =>
+        vinculos.map(({ cliente_id, papel }) => `${cliente_id}:${papel}`).sort().join("|");
+      const precisaAtualizarVinculos =
+        serializarVinculos(vinculosAnteriores) !== serializarVinculos(vinculosNovos);
+
+      const { data: honorarioAtual, error: honorarioReadError } = podeAlterarHonorarios
+        ? await supabase
+            .from("honorarios")
+            .select("id, cliente_id, valor_fixo, percentual_exito, contingenciamento")
+            .eq("processo_id", processoId)
+            .eq("escritorio_id", escritorioId)
+            .limit(1)
+            .maybeSingle()
+        : { data: null, error: null };
+
+      if (honorarioReadError) {
+        console.error("[atualizarDadosPedido] Falha ao consultar honorários:", honorarioReadError);
+        return { error: "Não foi possível carregar os honorários atuais." };
+      }
+
+      const valorFixo = data.valor_honorarios !== undefined
+        ? data.valor_honorarios ?? null
+        : honorarioAtual?.valor_fixo ?? null;
+      const percentualExito = data.percentual_honorarios !== undefined
+        ? data.percentual_honorarios ?? null
+        : honorarioAtual?.percentual_exito ?? null;
+      const contingenciamento = data.contingenciamento !== undefined
+        ? data.contingenciamento ?? "nao"
+        : honorarioAtual?.contingenciamento ?? "nao";
+      const temHonorarios =
+        valorFixo !== null || percentualExito !== null || contingenciamento !== "nao";
+      const tipoHonorario =
+        valorFixo !== null && percentualExito !== null
+          ? "misto"
+          : percentualExito !== null || contingenciamento !== "nao"
+            ? "exito"
+            : "fixo";
+
+      async function restaurarVinculos() {
+        const { error: limparError } = await supabase
+          .from("processo_clientes")
+          .delete()
+          .eq("processo_id", processoId);
+        if (limparError) {
+          console.error("[atualizarDadosPedido] Falha ao desfazer os vínculos de clientes:", limparError);
+          return;
+        }
+        if (vinculosAnteriores.length === 0) return;
+
+        const { error: restaurarError } = await supabase
+          .from("processo_clientes")
+          .insert(vinculosAnteriores.map((vinculo) => ({ processo_id: processoId, ...vinculo })));
+        if (restaurarError) {
+          console.error("[atualizarDadosPedido] Falha ao restaurar os vínculos de clientes:", restaurarError);
+        }
+      }
+
+      let honorarioCriadoId: string | null = null;
+      let honorarioAtualizado = false;
+
+      async function restaurarHonorarios() {
+        if (honorarioCriadoId) {
+          const { error } = await supabase
+            .from("honorarios")
+            .delete()
+            .eq("id", honorarioCriadoId)
+            .eq("escritorio_id", escritorioId)
+            .eq("processo_id", processoId);
+          if (error) console.error("[atualizarDadosPedido] Falha ao desfazer novo honorário:", error);
+          return;
+        }
+        if (!honorarioAtual || !honorarioAtualizado) return;
+
+        const { error } = await supabase
+          .from("honorarios")
+          .update({
+            cliente_id: honorarioAtual.cliente_id,
+            valor_fixo: honorarioAtual.valor_fixo,
+            percentual_exito: honorarioAtual.percentual_exito,
+            contingenciamento: honorarioAtual.contingenciamento,
+          })
+          .eq("id", honorarioAtual.id)
+          .eq("escritorio_id", escritorioId)
+          .eq("processo_id", processoId);
+        if (error) console.error("[atualizarDadosPedido] Falha ao restaurar honorários:", error);
+      }
+
+      if (precisaAtualizarVinculos) {
+        const { error: apagarVinculosError } = await supabase
+          .from("processo_clientes")
+          .delete()
+          .eq("processo_id", processoId);
+        if (apagarVinculosError) {
+          console.error("[atualizarDadosPedido] Falha ao atualizar partes:", apagarVinculosError);
+          return { error: "Não foi possível atualizar as partes do processo." };
+        }
+
+        const { error: inserirVinculosError } = await supabase
+          .from("processo_clientes")
+          .insert(vinculosNovos.map((vinculo) => ({ processo_id: processoId, ...vinculo })));
+        if (inserirVinculosError) {
+          console.error("[atualizarDadosPedido] Falha ao vincular as novas partes:", inserirVinculosError);
+          await restaurarVinculos();
+          return { error: "Não foi possível atualizar as partes do processo." };
+        }
+      }
+
+      if (podeAlterarHonorarios) {
+        if (honorarioAtual) {
+          const { error } = await supabase
+            .from("honorarios")
+            .update({
+              cliente_id: vinculosNovos[0]!.cliente_id,
+              tipo: tipoHonorario,
+              valor_fixo: valorFixo,
+              percentual_exito: percentualExito,
+              contingenciamento,
+            })
+            .eq("id", honorarioAtual.id)
+            .eq("escritorio_id", escritorioId)
+            .eq("processo_id", processoId);
+
+          if (error) {
+            console.error("[atualizarDadosPedido] Falha ao atualizar honorários:", error);
+            if (precisaAtualizarVinculos) await restaurarVinculos();
+            return { error: "Não foi possível atualizar os honorários do processo." };
+          }
+          honorarioAtualizado = true;
+        } else if (temHonorarios) {
+          const { data: honorarioCriado, error } = await supabase
+            .from("honorarios")
+            .insert({
+              escritorio_id: escritorioId,
+              processo_id: processoId,
+              cliente_id: vinculosNovos[0]!.cliente_id,
+              tipo: tipoHonorario,
+              valor_fixo: valorFixo,
+              percentual_exito: percentualExito,
+              contingenciamento,
+            })
+            .select("id")
+            .single();
+
+          if (error || !honorarioCriado) {
+            console.error("[atualizarDadosPedido] Falha ao registrar honorários:", error);
+            if (precisaAtualizarVinculos) await restaurarVinculos();
+            return { error: "Não foi possível atualizar os honorários do processo." };
+          }
+          honorarioCriadoId = honorarioCriado.id;
+        }
+      }
+
+      const atualizacaoProcesso: Record<string, unknown> = {
+        grupo_acao: data.grupo_acao,
+        tipo_acao: data.tipo_acao,
+        etapa: data.etapa,
+      };
+      const incluirCampo = (chave: string, valor: unknown) => {
+        if (valor !== undefined) atualizacaoProcesso[chave] = valor;
+      };
+
+      incluirCampo("advogado_id", data.advogado_id);
+      incluirCampo("classe_processual", data.classe_processual);
+      incluirCampo("assunto", data.assunto);
+      incluirCampo("grau", data.grau);
+      incluirCampo("sistema", data.sistema);
+      incluirCampo("comarca", data.comarca);
+      incluirCampo("parte_contraria", data.parte_contraria);
+      incluirCampo("advogado_parte_contraria", data.advogado_parte_contraria);
+      incluirCampo("numero_protocolo", data.numero_protocolo);
+      incluirCampo("processo_originario", data.processo_originario);
+      incluirCampo("pasta_caso", data.pasta_caso);
+      incluirCampo("data_requerimento", data.data_requerimento);
+      incluirCampo("valor_causa", data.valor_causa);
+
+      const { data: processoAtualizado, error: processoUpdateError } = await supabase
+        .from("processos")
+        .update(atualizacaoProcesso as never)
+        .eq("id", processoId)
+        .eq("escritorio_id", escritorioId)
+        .select("id")
+        .maybeSingle();
+
+      if (processoUpdateError || !processoAtualizado) {
+        console.error("[atualizarDadosPedido] Falha ao atualizar processo:", processoUpdateError);
+        await restaurarHonorarios();
+        if (precisaAtualizarVinculos) await restaurarVinculos();
+        return {
+          error: processoUpdateError?.code === "42703" || processoUpdateError?.code === "PGRST204"
+            ? "Os campos jurídicos ainda não estão disponíveis no banco. Não foi possível salvar as alterações."
+            : "Não foi possível atualizar os dados do processo.",
+        };
+      }
+
+      return { processoId };
+    },
   );
 }

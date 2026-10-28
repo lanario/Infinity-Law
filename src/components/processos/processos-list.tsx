@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useReducedMotionConfig } from "framer-motion";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -58,6 +58,11 @@ export interface ProcessoListItem {
   areas_direito: { nome: string } | null;
   usuarios: { nome: string } | null;
   clientes: Array<{ id: string; nome: string; papel: string | null }>;
+  ultima_movimentacao: {
+    data_hora: string | null;
+    data_movimento: string;
+    descricao: string;
+  } | null;
   honorarios: {
     valor_fixo: number | null;
     percentual_exito: number | null;
@@ -103,6 +108,26 @@ function displayDate(value: string | null) {
   return new Date(`${value.slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR");
 }
 
+function movementDateLabel(movement: ProcessoListItem["ultima_movimentacao"]): string {
+  if (!movement) return "Data indisponível";
+
+  const dateTime = movement.data_hora ? new Date(movement.data_hora) : null;
+  if (dateTime && !Number.isNaN(dateTime.getTime())) {
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "America/Sao_Paulo",
+    }).format(dateTime);
+  }
+
+  const date = new Date(`${movement.data_movimento.slice(0, 10)}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return "Data indisponível";
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeZone: "America/Sao_Paulo",
+  }).format(date);
+}
+
 function labelize(value: string | null) {
   if (!value) return null;
   return value
@@ -137,6 +162,9 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
   const [view, setView] = useState<"grid" | "list">("grid");
   const [visibleLimit, setVisibleLimit] = useState(PAGE_SIZE);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const reducedMotionConfig = useReducedMotionConfig();
+  const prefersReducedMotion = useReducedMotion();
+  const shouldReduceMotion = reducedMotionConfig === true || prefersReducedMotion === true;
   const debouncedSearch = useDebounce(search, 180);
 
   useEffect(() => setSearch(currentSearch), [currentSearch]);
@@ -422,7 +450,10 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
                         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHoveredId(null);
                       }}
                       className={cn(
-                        "group relative min-w-0 overflow-visible rounded-2xl border bg-white shadow-[0_8px_28px_-22px_rgba(23,25,26,0.45)] transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:shadow-[0_18px_35px_-24px_rgba(23,25,26,0.42)]",
+                        "group relative min-w-0 overflow-visible rounded-2xl border bg-white shadow-[0_8px_28px_-22px_rgba(23,25,26,0.45)]",
+                        shouldReduceMotion
+                          ? "transform-none transition-none"
+                          : "transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:shadow-[0_18px_35px_-24px_rgba(23,25,26,0.42)]",
                         isHovered ? "z-20 border-gold/50" : "border-stone-200/80",
                         view === "list" && "sm:flex sm:items-stretch"
                       )}
@@ -467,15 +498,20 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
                             Abrir <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
                           </span>
                         </div>
+                        <span className="sr-only">
+                          {process.ultima_movimentacao
+                            ? `Última movimentação em ${movementDateLabel(process.ultima_movimentacao)}: ${process.ultima_movimentacao.descricao}`
+                            : "Ainda não há movimentações registradas para este processo."}
+                        </span>
                       </Link>
 
                       <AnimatePresence>
                         {isHovered && (
                           <motion.div
-                            initial={{ opacity: 0, y: 8 }}
+                            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 5 }}
-                            transition={{ duration: 0.16 }}
+                            exit={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 5 }}
+                            transition={{ duration: shouldReduceMotion ? 0 : 0.16 }}
                             aria-hidden="true"
                             className="pointer-events-none absolute inset-x-0 top-0 z-10 flex min-h-[300px] flex-col justify-between rounded-2xl border border-gold/40 bg-white/95 p-4 shadow-[0_18px_40px_-28px_rgba(23,25,26,0.48)] backdrop-blur-sm"
                           >
@@ -500,6 +536,22 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
                                 <Detail label="Processo originário" value={process.processo_originario} />
                                 <Detail label="Classe processual" value={process.classe_processual} />
                                 <Detail label="CNJ" value={process.numero_cnj} />
+                              </div>
+                              <div className="mt-4 rounded-xl border border-gold/20 bg-gold-soft/30 px-3 py-2.5">
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-gold-dark">Última movimentação</p>
+                                  {process.ultima_movimentacao && (
+                                    <time
+                                      dateTime={process.ultima_movimentacao.data_hora ?? process.ultima_movimentacao.data_movimento}
+                                      className="shrink-0 text-[9px] font-semibold text-stone-500"
+                                    >
+                                      {movementDateLabel(process.ultima_movimentacao)}
+                                    </time>
+                                  )}
+                                </div>
+                                <p className="mt-1 line-clamp-2 break-words text-[10px] leading-relaxed text-stone-700">
+                                  {process.ultima_movimentacao?.descricao ?? "Ainda não há movimentações registradas."}
+                                </p>
                               </div>
                               {process.observacoes && (
                                 <p className="mt-3 line-clamp-2 border-t border-stone-100 pt-2 text-[10px] leading-relaxed text-stone-500">

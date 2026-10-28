@@ -155,20 +155,20 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="text-center py-6"
       >
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#34D399]/15 text-[#34D399]">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#DCFCE7] text-[#157347]">
           <ShieldCheck className="h-7 w-7" />
         </span>
-        <h2 className="mt-4 text-xl font-semibold text-[#F5F5F5]">
+        <h2 className="mt-4 text-xl font-semibold text-[#17191A]">
           Conta criada com sucesso
         </h2>
-        <p className="mt-2 text-sm text-[#A3A3A3] max-w-sm mx-auto leading-relaxed">
-          O escritório <strong className="text-[#F5F5F5]">{escritorio.trim()}</strong> está configurado. Acesse com{" "}
-          <span className="text-[#D4AF37]">{email.trim()}</span> e a senha criada.
+        <p className="mt-2 text-sm text-[#5C6367] max-w-sm mx-auto leading-relaxed">
+          O escritório <strong className="text-[#17191A]">{escritorio.trim()}</strong> está configurado. Acesse com{" "}
+          <span className="text-[#805F11]">{email.trim()}</span> e a senha criada.
         </p>
         <Link
           href="/login"
           onClick={irParaLogin}
-          className="mt-6 inline-flex items-center gap-2 rounded-xl gold-sheen px-5 py-2.5 text-sm font-semibold text-[#0A0A0A] transition-all hover:opacity-95"
+          className="auth-lustro mt-6 inline-flex items-center gap-2 rounded-xl gold-sheen px-5 py-2.5 text-sm font-semibold text-[#17191A] transition-all hover:opacity-95"
         >
           Acessar minha conta
           <ArrowRight className="h-4 w-4" />
@@ -187,10 +187,10 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
       noValidate
     >
       <motion.div variants={item} className="space-y-1">
-        <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-[#F5F5F5]">
+        <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-[#17191A]">
           Criar conta
         </h1>
-        <p className="text-sm text-[#A3A3A3]">
+        <p className="text-sm text-[#5C6367]">
           Comece a organizar sua advocacia hoje mesmo.
         </p>
       </motion.div>
@@ -202,7 +202,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            className="rounded-xl border border-[#EF4444]/40 bg-[#EF4444]/10 px-3.5 py-2.5 text-sm text-[#EF4444]"
+            className="rounded-xl border border-[#FDA29B] bg-[#FEF3F2] px-3.5 py-2.5 text-sm text-[#B42318]"
           >
             {erro}
           </motion.p>
@@ -290,14 +290,14 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
       <motion.div variants={item}>
         <label
           htmlFor="cadastro-senha"
-          className="mb-1.5 block text-xs font-medium text-[#A3A3A3]"
+          className="mb-1.5 block text-xs font-medium text-[#4D5559]"
         >
-          Senha<span className="text-[#D4AF37]"> *</span>
+          Senha<span className="text-[#805F11]"> *</span>
         </label>
         <div className="relative">
           <Lock
             aria-hidden
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#737373]"
+            className="auth-field-icon pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
           />
           <input
             id="cadastro-senha"
@@ -321,16 +321,16 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
       <motion.div variants={item}>
         <label
           htmlFor="cadastro-confirmacao"
-          className="mb-1.5 block text-xs font-medium text-[#A3A3A3]"
+          className="mb-1.5 block text-xs font-medium text-[#4D5559]"
         >
-          Confirmação da senha<span className="text-[#D4AF37]"> *</span>
+          Confirmação da senha<span className="text-[#805F11]"> *</span>
         </label>
         <div className="relative">
           <Lock
             aria-hidden
             className={cn(
               "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2",
-              visivel("confirmacao") ? "text-[#EF4444]" : "text-[#737373]"
+              visivel("confirmacao") ? "text-[#B42318]" : "auth-field-icon"
             )}
           />
           <input
@@ -355,7 +355,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
 
       <motion.div variants={item} className="space-y-1.5 pt-1">
         <div className="flex items-start gap-2.5">
-          <label className="flex cursor-pointer items-start gap-2.5 text-xs text-[#A3A3A3]">
+          <label className="flex cursor-pointer items-start gap-2.5 text-xs text-[#5C6367]">
             <input
               type="checkbox"
               checked={aceite}
@@ -364,9 +364,9 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
             />
             <span
               aria-hidden
-              className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border border-[#2A2A2A] bg-[#1A1A1A] transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#D4AF37] peer-checked:border-[#D4AF37] peer-checked:bg-[#D4AF37]"
+              className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border border-[#B8B4A8] bg-white transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#A77D16] peer-checked:border-[#A77D16] peer-checked:bg-[#D4AF37]"
             >
-              {aceite && <ShieldCheck className="h-3 w-3 text-[#0A0A0A]" />}
+              {aceite && <ShieldCheck className="h-3 w-3 text-[#17191A]" />}
             </span>
             <span>
               Li e concordo com os{" "}
@@ -374,7 +374,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
                 href="/termos"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-[#D4AF37] underline-offset-4 hover:underline"
+                className="font-medium text-[#805F11] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
               >
                 Termos de Uso
               </Link>{" "}
@@ -383,7 +383,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
                 href="/privacidade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-[#D4AF37] underline-offset-4 hover:underline"
+                className="font-medium text-[#805F11] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
               >
                 Política de Privacidade
               </Link>
@@ -392,7 +392,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
           </label>
         </div>
         {enviado && !aceite && (
-          <p className="pl-6 text-[11px] text-[#EF4444]">
+          <p className="pl-6 text-[11px] text-[#B42318]">
             É preciso aceitar os Termos e a Política para prosseguir.
           </p>
         )}
@@ -404,7 +404,7 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
         disabled={salvando}
         whileHover={salvando || semMovimento ? undefined : { scale: 1.015 }}
         whileTap={salvando || semMovimento ? undefined : { scale: 0.985 }}
-        className="auth-lustro flex w-full items-center justify-center gap-2 rounded-xl gold-sheen py-3 text-sm font-semibold text-[#0A0A0A] shadow-[0_8px_24px_-12px_rgba(212,175,55,0.7)] transition-all hover:opacity-95 disabled:opacity-50"
+        className="auth-lustro flex w-full items-center justify-center gap-2 rounded-xl gold-sheen py-3 text-sm font-semibold text-[#17191A] shadow-[0_8px_24px_-12px_rgba(212,175,55,0.38)] transition-all hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-55"
       >
         {salvando ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -414,12 +414,12 @@ export function CadastroForm({ aoTrocarParaLogin }: CadastroFormProps) {
         {salvando ? "Criando sua conta..." : "Criar minha conta"}
       </motion.button>
 
-      <motion.p variants={item} className="text-center text-xs text-[#A3A3A3] pt-1">
+      <motion.p variants={item} className="text-center text-xs text-[#5C6367] pt-1">
         Você entrará como gestor do escritório e poderá convidar sua equipe depois. Já tem conta?{" "}
         <Link
           href="/login"
           onClick={irParaLogin}
-          className="font-medium text-[#D4AF37] underline-offset-4 hover:underline hover:opacity-90"
+          className="font-medium text-[#805F11] underline-offset-4 hover:underline hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
         >
           Entrar
         </Link>

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isValidCNJ } from "@/lib/utils";
 
-export const processoSchema = z.object({
+export const processoBaseSchema = z.object({
   numero_cnj: z
     .string()
     .nullable()
@@ -70,11 +70,44 @@ export const processoSchema = z.object({
       })
     )
     .min(1, "Selecione ao menos um cliente"),
-}).superRefine((value, context) => {
+});
+
+function validarClientesDuplicados(
+  value: { clientes: Array<{ cliente_id: string }> },
+  context: z.RefinementCtx,
+) {
   const ids = value.clientes.map((cliente) => cliente.cliente_id);
   if (new Set(ids).size !== ids.length) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: "Remova clientes duplicados da lista de partes." });
   }
-});
+}
+
+export const processoSchema = processoBaseSchema.superRefine(validarClientesDuplicados);
+
+export const processoDadosPedidoSchema = processoBaseSchema
+  .pick({
+    grupo_acao: true,
+    tipo_acao: true,
+    advogado_id: true,
+    classe_processual: true,
+    assunto: true,
+    grau: true,
+    sistema: true,
+    comarca: true,
+    parte_contraria: true,
+    advogado_parte_contraria: true,
+    etapa: true,
+    numero_protocolo: true,
+    processo_originario: true,
+    pasta_caso: true,
+    data_requerimento: true,
+    valor_causa: true,
+    valor_honorarios: true,
+    percentual_honorarios: true,
+    contingenciamento: true,
+    clientes: true,
+  })
+  .superRefine(validarClientesDuplicados);
 
 export type ProcessoInput = z.infer<typeof processoSchema>;
+export type ProcessoDadosPedidoInput = z.infer<typeof processoDadosPedidoSchema>;

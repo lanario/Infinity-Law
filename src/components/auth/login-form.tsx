@@ -88,10 +88,10 @@ export function LoginForm({
       noValidate
     >
       <motion.div variants={item} className="space-y-1.5">
-        <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-[#F5F5F5]">
+        <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-[#17191A]">
           Entrar
         </h1>
-        <p className="text-sm text-[#A3A3A3]">
+        <p className="text-sm text-[#5C6367]">
           Bem-vindo de volta. Continue de onde parou.
         </p>
       </motion.div>
@@ -104,7 +104,7 @@ export function LoginForm({
               initial={{ opacity: 0, y: -6, height: 0 }}
               animate={{ opacity: 1, y: 0, height: "auto" }}
               exit={{ opacity: 0, y: -6, height: 0 }}
-              className="overflow-hidden rounded-xl border border-[#EF4444]/40 bg-[#EF4444]/10 px-3.5 py-2.5 text-sm text-[#EF4444]"
+              className="overflow-hidden rounded-xl border border-[#FDA29B] bg-[#FEF3F2] px-3.5 py-2.5 text-sm text-[#B42318]"
             >
               {erro}
             </motion.p>
@@ -146,7 +146,7 @@ export function LoginForm({
           />
         </Campo>
 
-        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-[#A3A3A3]">
+        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-[#5C6367]">
           <input
             type="checkbox"
             checked={lembrarAcesso}
@@ -155,12 +155,12 @@ export function LoginForm({
           />
           <span
             aria-hidden
-            className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border border-[#2A2A2A] bg-[#1A1A1A] transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#D4AF37] peer-checked:border-[#D4AF37] peer-checked:bg-[#D4AF37]"
+            className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border border-[#B8B4A8] bg-white transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#A77D16] peer-checked:border-[#A77D16] peer-checked:bg-[#D4AF37]"
           >
-            {lembrarAcesso && <Check className="h-3 w-3 text-[#0A0A0A]" strokeWidth={3} />}
+            {lembrarAcesso && <Check className="h-3 w-3 text-[#17191A]" strokeWidth={3} />}
           </span>
           <span>
-            <strong className="font-medium text-[#F5F5F5]">Lembrar acesso</strong>
+            <strong className="font-medium text-[#17191A]">Lembrar acesso</strong>
             <br />
             Mantenha sua sessão ativa neste dispositivo.
           </span>
@@ -170,7 +170,7 @@ export function LoginForm({
       <motion.div variants={item} className="flex justify-end">
         <Link
           href="/esqueci-senha"
-          className="text-xs text-[#A3A3A3] underline-offset-4 transition-colors hover:text-[#D4AF37] hover:underline"
+          className="text-xs text-[#5C6367] underline-offset-4 transition-colors hover:text-[#805F11] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
         >
           Esqueci minha senha
         </Link>
@@ -182,7 +182,7 @@ export function LoginForm({
         disabled={entrando}
         whileHover={entrando || semMovimento ? undefined : { scale: 1.015 }}
         whileTap={entrando || semMovimento ? undefined : { scale: 0.985 }}
-        className="auth-lustro flex w-full items-center justify-center gap-2 rounded-xl gold-sheen py-3 text-sm font-semibold text-[#0A0A0A] shadow-[0_10px_30px_-14px_rgba(212,175,55,0.7)] transition-opacity hover:opacity-95 disabled:opacity-50"
+        className="auth-lustro flex w-full items-center justify-center gap-2 rounded-xl gold-sheen py-3 text-sm font-semibold text-[#17191A] shadow-[0_10px_30px_-14px_rgba(212,175,55,0.38)] transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-55"
       >
         <span className="relative z-[1] inline-flex items-center gap-2">
           {entrando ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
@@ -190,7 +190,7 @@ export function LoginForm({
         </span>
       </motion.button>
 
-      <motion.p variants={item} className="text-sm text-[#A3A3A3]">
+      <motion.p variants={item} className="text-sm text-[#5C6367]">
         Ainda não tem conta?{" "}
         <Link
           href="/signup"
@@ -199,7 +199,7 @@ export function LoginForm({
             evento.preventDefault();
             aoTrocarParaCadastro();
           }}
-          className="group inline-flex items-center gap-1 font-medium text-[#D4AF37] underline-offset-4 transition-colors hover:underline hover:opacity-90"
+          className="group inline-flex items-center gap-1 font-medium text-[#805F11] underline-offset-4 transition-colors hover:underline hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16]"
         >
           Criar conta
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

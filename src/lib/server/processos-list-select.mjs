@@ -19,6 +19,7 @@ export const PROCESSOS_LIST_SELECT = `
   areas_direito ( nome ),
   usuarios!processos_advogado_tenant_fkey ( nome ),
   processo_clientes ( papel, clientes ( id, nome ) ),
+  processo_movimentacoes!processo_movimentacoes_processo_tenant_fkey ( data_hora, data_movimento, descricao ),
   honorarios!honorarios_processo_tenant_fkey ( valor_fixo, percentual_exito, contingenciamento )
 `;
 

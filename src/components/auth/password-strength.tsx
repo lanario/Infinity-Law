@@ -33,7 +33,7 @@ export function PasswordStrength({ senha, comparar, compacto, id }: PasswordStre
             return (
               <span
                 key={barra}
-                className="h-1 flex-1 overflow-hidden rounded-full bg-[#262626]"
+                className="auth-password-track h-1 flex-1 overflow-hidden rounded-full"
               >
                 <motion.span
                   className="block h-full origin-left rounded-full"
@@ -51,8 +51,8 @@ export function PasswordStrength({ senha, comparar, compacto, id }: PasswordStre
 
         <span
           role="status"
-          className="w-16 shrink-0 text-right text-[11px] font-medium"
-          style={{ color: forca.cor }}
+          data-nivel={forca.nivel}
+          className="auth-password-label w-16 shrink-0 text-right text-[11px] font-medium"
         >
           {forca.rotulo}
         </span>
@@ -66,7 +66,7 @@ export function PasswordStrength({ senha, comparar, compacto, id }: PasswordStre
             exit={semMovimento ? { opacity: 0 } : { opacity: 0, y: -4 }}
             className={cn(
               "mt-2 flex items-center gap-1.5 text-[11px]",
-              conferem ? "text-[#34D399]" : "text-[#EF4444]"
+              conferem ? "auth-password-success" : "auth-password-error"
             )}
           >
             {conferem ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
@@ -83,16 +83,16 @@ export function PasswordStrength({ senha, comparar, compacto, id }: PasswordStre
               className={cn(
                 "flex items-center gap-1.5 text-[11px] transition-colors",
                 requisito.ok
-                  ? "text-[#34D399]"
+                  ? "auth-password-success"
                   : requisito.obrigatorio
-                    ? "text-[#A3A3A3]"
-                    : "text-[#737373]"
+                    ? "auth-password-muted"
+                    : "auth-password-subtle"
               )}
             >
               {requisito.ok ? (
-                <Check className="h-3 w-3 shrink-0 text-[#34D399]" />
+                <Check className="auth-password-success h-3 w-3 shrink-0" />
               ) : (
-                <Circle className="h-3 w-3 shrink-0 text-[#525252]" />
+                <Circle className="auth-password-icon-muted h-3 w-3 shrink-0" />
               )}
               {requisito.label}
             </li>

@@ -7,7 +7,7 @@
  * inclinada a ~9 graus. A troca de lado aciona uma transição fluida orquestrada
  * por GSAP, sincronizando a URL via history.replaceState sem recarregar a página.
  *
- * Cores, sombras e tipografia alinhadas com o Design System Onyx & Gold do Infinity Law.
+ * Cores, sombras e tipografia da identidade clara com dourado do Infinity Law.
  */
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
@@ -319,7 +319,7 @@ export function AuthPortal({ inicial, avisoInicial }: AuthPortalProps) {
 
       <Link
         href="/"
-        className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-[#2A2A2A] bg-[#121212]/80 px-3.5 py-2 text-xs text-[#A3A3A3] backdrop-blur transition-all hover:border-[#D4AF37]/50 hover:text-[#F5F5F5] sm:left-7 sm:top-7"
+        className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-[#E0DBCF] bg-white/90 px-3.5 py-2 text-xs text-[#5C6367] backdrop-blur transition-all hover:border-[#A77D16]/60 hover:text-[#17191A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A77D16] sm:left-7 sm:top-7"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Voltar ao início
@@ -329,7 +329,7 @@ export function AuthPortal({ inicial, avisoInicial }: AuthPortalProps) {
         {/* Faixa de marca do mobile */}
         <div className="auth-marca-topo">
           <Logo size="sm" />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#D4AF37]">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#805F11]">
             {marca.etiqueta}
           </span>
         </div>
@@ -345,16 +345,16 @@ export function AuthPortal({ inicial, avisoInicial }: AuthPortalProps) {
             <div ref={marcaRef} className="auth-marca">
               <div className="flex items-center gap-3">
                 <Logo size="md" />
-                <span className="rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#D4AF37]">
+                <span className="rounded-full border border-[#805F11]/30 bg-[#D4AF37]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#805F11]">
                   {marca.etiqueta}
                 </span>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-[2.1rem] font-semibold leading-[1.12] tracking-tight text-[#F5F5F5]">
+                <h2 className="text-[2.1rem] font-semibold leading-[1.12] tracking-tight text-[#17191A]">
                   {marca.titulo}
                 </h2>
-                <p className="max-w-[32ch] text-sm leading-relaxed text-[#A3A3A3]">
+                <p className="max-w-[32ch] text-sm leading-relaxed text-[#5C6367]">
                   {marca.texto}
                 </p>
               </div>
@@ -363,9 +363,9 @@ export function AuthPortal({ inicial, avisoInicial }: AuthPortalProps) {
                 {VANTAGENS.map((vantagem) => (
                   <li
                     key={vantagem}
-                    className="flex items-center gap-2.5 text-[13px] text-[#E5E5E5]"
+                    className="flex items-center gap-2.5 text-[13px] text-[#3F4548]"
                   >
-                    <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#D4AF37]/20 text-[#D4AF37]">
+                    <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#D4AF37]/20 text-[#805F11]">
                       <Check className="h-2.5 w-2.5" strokeWidth={3} />
                     </span>
                     {vantagem}

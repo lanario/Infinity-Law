@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F5F5F5] antialiased selection:bg-[#D4AF37]/30 selection:text-[#F5F5F5]">
+    <div className="min-h-screen bg-[#F7F6F1] text-[#17191A] antialiased selection:bg-[#D4AF37]/30 selection:text-[#17191A]">
       {children}
     </div>
   );
