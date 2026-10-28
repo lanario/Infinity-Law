@@ -9,10 +9,12 @@ import { ChevronLeft, Calendar, MapPin, Scale, User, BriefcaseBusiness, FolderKa
 import { cn, formatCurrency } from "@/lib/utils";
 import { MarcarMovimentacoesVistas } from "@/components/processos/marcar-movimentacoes-vistas";
 import { movimentoEmDestaque } from "@/lib/processos/movimento-destaque.mjs";
+import { AvisoCriado } from "@/components/processos/aviso-criado";
 import type { Metadata } from "next";
 
 interface PageProps {
   params: { id: string };
+  searchParams?: { criado?: string };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -35,7 +37,7 @@ function listaComplementos(value: unknown): Complemento[] {
 
 const POLO_LABEL: Record<string, string> = { autor: "Ativo (autor)", reu: "Passivo (réu)", terceiro: "Terceiro interessado" };
 
-export default async function ProcessoDetailPage({ params }: PageProps) {
+export default async function ProcessoDetailPage({ params, searchParams }: PageProps) {
   const supabase = createClient();
 
   const profile = await getCurrentProfile().catch((error) => {
@@ -134,6 +136,8 @@ export default async function ProcessoDetailPage({ params }: PageProps) {
     <div>
       <Header title="Detalhes do Processo" />
       <div className="p-6 space-y-6 max-w-4xl">
+
+        {searchParams?.criado === "1" && <AvisoCriado />}
 
         {/* Breadcrumb */}
         <Link

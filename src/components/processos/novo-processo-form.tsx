@@ -397,6 +397,7 @@ export function NovoProcessoForm({
 
     setSalvando(true);
     onSavingChange(true);
+    let navegando = false;
     try {
       const response = await salvarProcesso({
         numero_cnj: valid ? resultado?.numeroCNJ ?? numeroCNJ : null,
@@ -442,12 +443,17 @@ export function NovoProcessoForm({
         setErro(response.error);
         return;
       }
-      router.push(`/processos/${response.processoId}`);
+      // Mantém o estado "salvando" até a navegação concluir (evita novo envio).
+      navegando = true;
+      router.push(`/processos/${response.processoId}?criado=1`);
+      router.refresh();
     } catch {
       setErro("Não foi possível salvar o processo. Tente novamente.");
     } finally {
-      setSalvando(false);
-      onSavingChange(false);
+      if (!navegando) {
+        setSalvando(false);
+        onSavingChange(false);
+      }
     }
   }
 
