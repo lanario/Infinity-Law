@@ -145,6 +145,16 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
   const [selectedMemberIds, setSelectedMemberIds] = useState<Set<string> | null>(null);
   const [memberSearch, setMemberSearch] = useState("");
   const [agendaSidebarCollapsed, setAgendaSidebarCollapsed] = useState(false);
+  // Preferência da barra lateral (desktop) lida após a hidratação; storage pode estar indisponível.
+  useEffect(() => {
+    try { setAgendaSidebarCollapsed(window.localStorage.getItem("agenda:sidebar-collapsed") === "1"); } catch { /* sem storage: mantém padrão */ }
+  }, []);
+  function toggleAgendaSidebar() {
+    setAgendaSidebarCollapsed((current) => {
+      try { window.localStorage.setItem("agenda:sidebar-collapsed", current ? "0" : "1"); } catch { /* preferência não persistida */ }
+      return !current;
+    });
+  }
   const [agendaSidebarOpen, setAgendaSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -384,7 +394,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
 
   return (
     <div className="space-y-4">
-      <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
+      <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
         <AgendaSidebar
           events={filteredByType}
           members={membros}
@@ -396,7 +406,6 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
           memberSearch={memberSearch}
           onMemberSearch={setMemberSearch}
           collapsed={agendaSidebarCollapsed}
-          onToggleCollapsed={() => setAgendaSidebarCollapsed((current) => !current)}
           mobileOpen={agendaSidebarOpen}
           onCloseMobile={closeAgendaSidebar}
         />
@@ -412,6 +421,9 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
             onToday={goToToday}
             onCreate={() => openCreate()}
             onOpenFilters={() => setAgendaSidebarOpen(true)}
+            sidebarCollapsed={agendaSidebarCollapsed}
+            onToggleSidebar={toggleAgendaSidebar}
+            onSelectDate={setSelectedDateKey}
             selectedType={selectedType}
             eventTypeCounts={eventCounts}
             totalEventCount={eventos.length}

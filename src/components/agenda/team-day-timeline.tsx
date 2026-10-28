@@ -5,6 +5,7 @@ import { CalendarClock, CircleUserRound, Clock3, UserRound } from "lucide-react"
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/components/layout/profile-avatar";
+import { SLOT_STEP_MINUTES, SlotPreview, snapMinuteFromOffset } from "@/components/agenda/slot-hover-preview";
 import type { AgendaTimelineItem } from "@/lib/agenda/team-timeline.mjs";
 import {
   formatAgendaTime,
@@ -66,6 +67,7 @@ interface TeamDayTimelineProps {
 
 export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos, onSelectEvent, onSelectTime }: TeamDayTimelineProps) {
   const [clock, setClock] = useState(() => new Date());
+  const [slotHover, setSlotHover] = useState<{ laneId: string; minute: number } | null>(null);
 
   useEffect(() => {
     const interval = window.setInterval(() => setClock(new Date()), 60_000);
@@ -123,8 +125,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
   function selectTimeAt(clientX: number, bounds: DOMRect, fromKeyboard: boolean, responsavelId: string | null) {
     if (!onSelectTime || bounds.width <= 0) return;
     const offset = fromKeyboard ? bounds.width / 2 : Math.max(0, Math.min(bounds.width, clientX - bounds.left));
-    const minute = range.startMinute + (offset / bounds.width) * (range.endMinute - range.startMinute);
-    onSelectTime(Math.min(24 * 60, Math.round(minute / 30) * 30), responsavelId);
+    onSelectTime(snapMinuteFromOffset(offset, bounds.width, range.startMinute, range.endMinute), responsavelId);
   }
 
   return (
@@ -172,7 +173,13 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
                   }}
                   aria-label={`Horários de ${lane.name}`}
                 >
-                  {onSelectTime && <button type="button" aria-label={`Criar evento para ${lane.name}; pelo teclado, o horário inicial será próximo ao meio do expediente`} className="absolute inset-0 z-0 cursor-crosshair rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold" onClick={(event) => selectTimeAt(event.clientX, event.currentTarget.getBoundingClientRect(), event.detail === 0, lane.member?.id ?? null)} />}
+                  {onSelectTime && <button type="button" aria-label={`Criar evento para ${lane.name}; pelo teclado, o horário inicial será próximo ao meio do expediente`} className="absolute inset-0 z-0 cursor-crosshair rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold" onClick={(event) => selectTimeAt(event.clientX, event.currentTarget.getBoundingClientRect(), event.detail === 0, lane.member?.id ?? null)} onPointerMove={(event) => {
+                    if (event.pointerType === "touch") return;
+                    const bounds = event.currentTarget.getBoundingClientRect();
+                    const minute = snapMinuteFromOffset(event.clientX - bounds.left, bounds.width, range.startMinute, range.endMinute);
+                    setSlotHover((current) => current?.laneId === lane.id && current.minute === minute ? current : { laneId: lane.id, minute });
+                  }} onPointerLeave={() => setSlotHover(null)} />}
+                  {onSelectTime && slotHover?.laneId === lane.id && <SlotPreview minute={slotHover.minute} compact className="inset-y-1" style={{ left: `${((slotHover.minute - range.startMinute) / (range.endMinute - range.startMinute)) * 100}%`, width: `${(SLOT_STEP_MINUTES / (range.endMinute - range.startMinute)) * 100}%` }} />}
                   {currentPosition !== null && <span role="img" aria-label={`Horário atual ${formatAgendaTime(clock)}`} className="pointer-events-none absolute -top-1 bottom-0 z-10 w-px bg-rose-500" style={{ left: `${currentPosition}%` }}><span className="absolute -left-[4px] -top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-white" /></span>}
                   {lane.items.map(({ event, startMinute, endMinute, row }) => {
                     const position = positionOnAgendaAxis(startMinute, endMinute, range);
