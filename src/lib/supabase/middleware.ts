@@ -12,7 +12,7 @@ export async function updateSession(request: NextRequest) {
     // Sem Supabase não há sessão: registra o motivo e não deixa rotas protegidas abertas.
     console.error("[middleware]", err instanceof Error ? err.message : err);
     const { pathname } = request.nextUrl;
-    if (pathname === "/login" || pathname === "/signup" || pathname === "/esqueci-senha") return supabaseResponse;
+    if (pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname === "/esqueci-senha") return supabaseResponse;
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -53,7 +53,8 @@ export async function updateSession(request: NextRequest) {
     pathname === "/forgot-password" ||
     isPasswordRecoveryRoute;
 
-  if (!user && !isAuthRoute) {
+  // A landing (/) é pública para visitantes e usuários logados.
+  if (!user && !isAuthRoute && pathname !== "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
