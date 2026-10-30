@@ -31,6 +31,12 @@ const nextConfig = {
       ...config.cache,
       maxMemoryGenerations: 1,
     };
+    // supabase-js lê process.version só após checar typeof process (header X-Client-Info);
+    // é seguro no Edge, mas a análise estática do middleware acusa em build sem cache.
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings ?? []),
+      { module: /@supabase[\\/]supabase-js/, message: /process\.version/ },
+    ];
     return config;
   },
 };
