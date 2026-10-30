@@ -12,11 +12,11 @@ const useEfeitoDeLayout = typeof window === "undefined" ? useEffect : useLayoutE
 function Janela({ titulo, children }: { titulo: string; children: ReactNode }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-[0.45em] border-b border-white/[0.07] px-[1em] py-[0.7em]">
-        <span className="h-[0.55em] w-[0.55em] rounded-full bg-white/15" />
-        <span className="h-[0.55em] w-[0.55em] rounded-full bg-white/15" />
+      <div className="flex items-center gap-[0.45em] border-b border-black/[0.07] px-[1em] py-[0.7em]">
+        <span className="h-[0.55em] w-[0.55em] rounded-full bg-black/15" />
+        <span className="h-[0.55em] w-[0.55em] rounded-full bg-black/15" />
         <span className="h-[0.55em] w-[0.55em] rounded-full bg-[#D4AF37]/70" />
-        <span className="ml-[0.6em] text-[0.8em] font-medium text-neutral-400">{titulo}</span>
+        <span className="ml-[0.6em] text-[0.8em] font-medium text-neutral-600">{titulo}</span>
       </div>
       <div className="flex-1 overflow-hidden p-[1em]">{children}</div>
     </div>
@@ -25,11 +25,11 @@ function Janela({ titulo, children }: { titulo: string; children: ReactNode }) {
 
 function Linha({ a, b, c, destaque }: { a: string; b: string; c: string; destaque?: boolean }) {
   return (
-    <div className="flex items-center gap-[0.7em] rounded-[0.6em] bg-white/[0.035] px-[0.8em] py-[0.6em]">
-      <span className={`h-[0.45em] w-[0.45em] shrink-0 rounded-full ${destaque ? "bg-[#D4AF37] shadow-[0_0_0.6em_rgba(212,175,55,0.9)]" : "bg-neutral-600"}`} />
-      <span className="flex-1 truncate text-[0.85em] text-neutral-200">{a}</span>
-      <span className="truncate text-[0.75em] text-neutral-500">{b}</span>
-      <span className="rounded-full border border-white/10 px-[0.6em] py-[0.15em] text-[0.7em] text-neutral-300">{c}</span>
+    <div className="flex items-center gap-[0.7em] rounded-[0.6em] bg-black/[0.035] px-[0.8em] py-[0.6em]">
+      <span className={`h-[0.45em] w-[0.45em] shrink-0 rounded-full ${destaque ? "bg-[#D4AF37] shadow-[0_0_0.6em_rgba(212,175,55,0.9)]" : "bg-neutral-300"}`} />
+      <span className="flex-1 truncate text-[0.85em] text-neutral-800">{a}</span>
+      <span className="truncate text-[0.75em] text-[#66666b]">{b}</span>
+      <span className="rounded-full border border-black/10 px-[0.6em] py-[0.15em] text-[0.7em] text-neutral-700">{c}</span>
     </div>
   );
 }
@@ -43,18 +43,18 @@ function TelaDashboard() {
           ["Prazos na semana", "9"],
           ["A receber", "R$ 42 mil"],
         ].map(([rotulo, valor]) => (
-          <div key={rotulo} className="rounded-[0.7em] border border-white/[0.06] bg-white/[0.03] p-[0.7em]">
-            <p className="text-[0.7em] text-neutral-500">{rotulo}</p>
-            <p className="mt-[0.2em] text-[1.35em] font-semibold tracking-tight text-white">{valor}</p>
+          <div key={rotulo} className="rounded-[0.7em] border border-black/[0.06] bg-black/[0.03] p-[0.7em]">
+            <p className="text-[0.7em] text-[#66666b]">{rotulo}</p>
+            <p className="mt-[0.2em] text-[1.35em] font-semibold tracking-tight text-[#17191a]">{valor}</p>
           </div>
         ))}
       </div>
-      <div className="mt-[0.8em] flex h-[7.5em] items-end gap-[0.45em] rounded-[0.7em] border border-white/[0.06] bg-white/[0.02] p-[0.8em]">
+      <div className="mt-[0.8em] flex h-[7.5em] items-end gap-[0.45em] rounded-[0.7em] border border-black/[0.06] bg-black/[0.02] p-[0.8em]">
         {[38, 52, 44, 70, 58, 82, 66, 92, 74, 88].map((altura, i) => (
           <span
             key={i}
             style={{ height: `${altura}%` }}
-            className={`flex-1 rounded-t-[0.3em] ${i === 7 ? "bg-gradient-to-t from-[#A77D16] to-[#E9CF7A]" : "bg-white/[0.09]"}`}
+            className={`flex-1 rounded-t-[0.3em] ${i === 7 ? "bg-gradient-to-t from-[#A77D16] to-[#E9CF7A]" : "bg-black/[0.09]"}`}
           />
         ))}
       </div>
@@ -65,7 +65,7 @@ function TelaDashboard() {
 function TelaProcessos() {
   return (
     <Janela titulo="Processos">
-      <div className="mb-[0.7em] flex items-center gap-[0.5em] rounded-[0.6em] border border-white/[0.07] px-[0.8em] py-[0.5em] text-[0.75em] text-neutral-500">
+      <div className="mb-[0.7em] flex items-center gap-[0.5em] rounded-[0.6em] border border-black/[0.07] px-[0.8em] py-[0.5em] text-[0.75em] text-[#66666b]">
         Buscar por número CNJ, cliente ou parte
       </div>
       <div className="space-y-[0.45em]">
@@ -88,13 +88,13 @@ function TelaClientes() {
           ["ML", "Marcos Lima", "PF", "1 processo"],
           ["BS", "Beatriz Souza", "PF", "2 processos"],
         ].map(([sigla, nome, tipo, total]) => (
-          <div key={nome} className="flex items-center gap-[0.7em] rounded-[0.6em] bg-white/[0.035] px-[0.8em] py-[0.55em]">
-            <span className="flex h-[2em] w-[2em] shrink-0 items-center justify-center rounded-full bg-[#D4AF37]/15 text-[0.75em] font-semibold text-[#E9CF7A]">
+          <div key={nome} className="flex items-center gap-[0.7em] rounded-[0.6em] bg-black/[0.035] px-[0.8em] py-[0.55em]">
+            <span className="flex h-[2em] w-[2em] shrink-0 items-center justify-center rounded-full bg-[#D4AF37]/15 text-[0.75em] font-semibold text-[#805F11]">
               {sigla}
             </span>
-            <span className="flex-1 truncate text-[0.85em] text-neutral-200">{nome}</span>
-            <span className="text-[0.7em] text-neutral-500">{total}</span>
-            <span className="rounded-full border border-white/10 px-[0.6em] py-[0.15em] text-[0.7em] text-neutral-300">{tipo}</span>
+            <span className="flex-1 truncate text-[0.85em] text-neutral-800">{nome}</span>
+            <span className="text-[0.7em] text-[#66666b]">{total}</span>
+            <span className="rounded-full border border-black/10 px-[0.6em] py-[0.15em] text-[0.7em] text-neutral-700">{tipo}</span>
           </div>
         ))}
       </div>
@@ -115,15 +115,15 @@ function TelaAgenda() {
     <Janela titulo="Agenda da equipe">
       <div className="grid h-full grid-cols-5 gap-[0.45em]">
         {dias.map((dia, i) => (
-          <div key={dia} className="relative rounded-[0.6em] border border-white/[0.06] bg-white/[0.02]">
-            <p className="py-[0.5em] text-center text-[0.7em] text-neutral-500">{dia}</p>
+          <div key={dia} className="relative rounded-[0.6em] border border-black/[0.06] bg-black/[0.02]">
+            <p className="py-[0.5em] text-center text-[0.7em] text-[#66666b]">{dia}</p>
             {eventos
               .filter(([coluna]) => coluna === i)
               .map(([, topo, altura, rotulo, ouro]) => (
                 <span
                   key={rotulo}
                   style={{ top: `${topo}%`, height: `${altura}%` }}
-                  className={`absolute inset-x-[0.3em] rounded-[0.45em] p-[0.4em] text-[0.65em] font-medium ${ouro ? "bg-[#D4AF37]/20 text-[#E9CF7A]" : "bg-white/[0.07] text-neutral-300"}`}
+                  className={`absolute inset-x-[0.3em] rounded-[0.45em] p-[0.4em] text-[0.65em] font-medium ${ouro ? "bg-[#D4AF37]/20 text-[#805F11]" : "bg-black/[0.07] text-neutral-700"}`}
                 >
                   {rotulo}
                 </span>
@@ -139,13 +139,13 @@ function TelaFinanceiro() {
   return (
     <Janela titulo="Financeiro">
       <div className="grid grid-cols-2 gap-[0.6em]">
-        <div className="rounded-[0.7em] border border-white/[0.06] bg-white/[0.03] p-[0.7em]">
-          <p className="text-[0.7em] text-neutral-500">Recebido no mês</p>
+        <div className="rounded-[0.7em] border border-black/[0.06] bg-black/[0.03] p-[0.7em]">
+          <p className="text-[0.7em] text-[#66666b]">Recebido no mês</p>
           <p className="lp-dourado mt-[0.2em] text-[1.35em] font-semibold tracking-tight">R$ 28.400</p>
         </div>
-        <div className="rounded-[0.7em] border border-white/[0.06] bg-white/[0.03] p-[0.7em]">
-          <p className="text-[0.7em] text-neutral-500">A receber</p>
-          <p className="mt-[0.2em] text-[1.35em] font-semibold tracking-tight text-white">R$ 13.900</p>
+        <div className="rounded-[0.7em] border border-black/[0.06] bg-black/[0.03] p-[0.7em]">
+          <p className="text-[0.7em] text-[#66666b]">A receber</p>
+          <p className="mt-[0.2em] text-[1.35em] font-semibold tracking-tight text-[#17191a]">R$ 13.900</p>
         </div>
       </div>
       <div className="mt-[0.7em] space-y-[0.45em]">
@@ -392,9 +392,9 @@ export function HeroTelas() {
               type="button"
               aria-pressed={i === ativo}
               onClick={() => escolher(i)}
-              className={`relative shrink-0 overflow-hidden rounded-full px-2.5 py-1.5 text-[12.5px] font-medium transition-colors ${i === ativo ? "bg-white/[0.06] text-white" : "text-neutral-500 hover:text-neutral-200"}`}
+              className={`relative shrink-0 overflow-hidden rounded-full px-2.5 py-1.5 text-[12.5px] font-medium transition-colors ${i === ativo ? "bg-black/[0.06] text-[#17191a]" : "text-[#66666b] hover:text-neutral-800"}`}
             >
-              <span className={`mr-1 text-[10.5px] tabular-nums ${i === ativo ? "text-[#E9CF7A]" : "text-neutral-600"}`}>
+              <span className={`mr-1 text-[10.5px] tabular-nums ${i === ativo ? "text-[#805F11]" : "text-[#66666b]"}`}>
                 0{i + 1}
               </span>
               {rotulo}
@@ -412,14 +412,14 @@ export function HeroTelas() {
           type="button"
           onClick={() => setPausado((valor) => !valor)}
           aria-label={pausado ? "Retomar troca automática das telas" : "Pausar troca automática das telas"}
-          className="lp-link mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10"
+          className="lp-link mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10"
         >
           {pausado ? <Play className="h-3.5 w-3.5" aria-hidden="true" /> : <Pause className="h-3.5 w-3.5" aria-hidden="true" />}
         </button>
       </div>
-      <p className="mt-2 min-h-[2.5rem] px-3 text-sm leading-snug text-neutral-400">
-        <span className="font-medium text-neutral-200">{atual.rotulo}.</span> {atual.texto}{" "}
-        <span className="text-neutral-600">Dados ilustrativos.</span>
+      <p className="mt-2 min-h-[2.5rem] px-3 text-sm leading-snug text-neutral-600">
+        <span className="font-medium text-neutral-800">{atual.rotulo}.</span> {atual.texto}{" "}
+        <span className="text-[#66666b]">Dados ilustrativos.</span>
       </p>
     </div>
   );

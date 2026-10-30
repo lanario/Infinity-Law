@@ -36,7 +36,7 @@ export function LandingNav() {
       <nav
         aria-label="Principal"
         data-rolou={rolou || aberto}
-        className="lp-nav mx-auto max-w-5xl rounded-2xl border border-white/[0.08] bg-black/40 backdrop-blur-xl"
+        className="lp-nav mx-auto max-w-5xl rounded-2xl border border-black/[0.08] bg-white/70 backdrop-blur-xl"
       >
         <div className="flex h-14 items-center justify-between gap-3 pr-2">
           <Link href="/" aria-label="Infinity Law, início" className="lp-nav-marca flex h-full shrink-0 items-center whitespace-nowrap rounded-l-2xl px-4">
@@ -57,7 +57,7 @@ export function LandingNav() {
             <Link href="/login" className="lp-link hidden rounded-full px-3 py-2 text-[13px] font-medium sm:inline-flex">
               Entrar
             </Link>
-            <Link href="/signup" className="lp-btn lp-btn-escuro h-9 px-4 text-[13px]">
+            <Link href="/signup" className="lp-btn lp-btn-claro h-9 px-4 text-[13px]">
               Criar conta
             </Link>
             <button
@@ -74,20 +74,20 @@ export function LandingNav() {
         </div>
 
         {aberto && (
-          <ul id="lp-menu" className="border-t border-white/[0.08] p-2 lg:hidden">
+          <ul id="lp-menu" className="border-t border-black/[0.08] p-2 lg:hidden">
             {LINKS.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
                   onClick={() => setAberto(false)}
-                  className="lp-link block rounded-xl px-3 py-3 text-sm font-medium hover:bg-white/[0.04]"
+                  className="lp-link block rounded-xl px-3 py-3 text-sm font-medium hover:bg-black/[0.04]"
                 >
                   {link.label}
                 </a>
               </li>
             ))}
             <li className="sm:hidden">
-              <Link href="/login" className="lp-link block rounded-xl px-3 py-3 text-sm font-medium hover:bg-white/[0.04]">
+              <Link href="/login" className="lp-link block rounded-xl px-3 py-3 text-sm font-medium hover:bg-black/[0.04]">
                 Entrar
               </Link>
             </li>

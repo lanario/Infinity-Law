@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const SEM_MOVIMENTO = "(prefers-reduced-motion: reduce)";
-const FUNDO = "#050505";
+const FUNDO = "#f7f6f1";
 const Z_PERTO = 1.15;
 const PROFUNDIDADE = 9;
 const LARGURA_MUNDO = 3.2;
@@ -61,13 +61,13 @@ export function TerrainCanvas({ className }: { className?: string }) {
       ctx.fillRect(0, 0, w, h);
 
       const traco = ctx.createLinearGradient(0, 0, w, 0);
-      traco.addColorStop(0, "rgba(255,255,255,0.34)");
-      traco.addColorStop(0.3, "rgba(255,255,255,0.22)");
-      traco.addColorStop(0.42, "rgba(233,207,122,0.55)");
-      traco.addColorStop(0.5, "rgba(241,220,148,0.85)");
-      traco.addColorStop(0.58, "rgba(233,207,122,0.55)");
-      traco.addColorStop(0.7, "rgba(255,255,255,0.22)");
-      traco.addColorStop(1, "rgba(255,255,255,0.34)");
+      traco.addColorStop(0, "rgba(23,25,26,0.3)");
+      traco.addColorStop(0.3, "rgba(23,25,26,0.2)");
+      traco.addColorStop(0.42, "rgba(167,125,22,0.55)");
+      traco.addColorStop(0.5, "rgba(128,95,17,0.85)");
+      traco.addColorStop(0.58, "rgba(167,125,22,0.55)");
+      traco.addColorStop(0.7, "rgba(23,25,26,0.2)");
+      traco.addColorStop(1, "rgba(23,25,26,0.3)");
       ctx.lineWidth = 1;
       ctx.lineJoin = "round";
 
@@ -95,7 +95,7 @@ export function TerrainCanvas({ className }: { className?: string }) {
       }
 
       // Grade dourada no piso do vale.
-      ctx.strokeStyle = "rgba(233,207,122,0.22)";
+      ctx.strokeStyle = "rgba(167,125,22,0.22)";
       ctx.beginPath();
       for (let x = -0.5; x <= 0.5001; x += 0.0625) {
         const [x0, y0] = projetar(x, 0, Z_PERTO);
@@ -105,12 +105,12 @@ export function TerrainCanvas({ className }: { className?: string }) {
       }
       ctx.stroke();
 
-      // Brilho do vale somado à cena.
-      ctx.globalCompositeOperation = "lighter";
+      // Brilho do vale tingindo a cena (multiply mantém o fundo claro legível).
+      ctx.globalCompositeOperation = "multiply";
       const brilho = ctx.createRadialGradient(w / 2, h * 0.62, 0, w / 2, h * 0.62, Math.max(w * 0.32, 220));
-      brilho.addColorStop(0, "rgba(212,175,55,0.30)");
-      brilho.addColorStop(0.45, "rgba(167,125,22,0.12)");
-      brilho.addColorStop(1, "rgba(128,95,17,0)");
+      brilho.addColorStop(0, "rgba(212,175,55,0.32)");
+      brilho.addColorStop(0.45, "rgba(212,175,55,0.12)");
+      brilho.addColorStop(1, "rgba(212,175,55,0)");
       ctx.fillStyle = brilho;
       ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = "source-over";

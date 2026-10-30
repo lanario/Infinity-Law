@@ -214,11 +214,11 @@ function Palavras({ texto, className }: { texto: string; className?: string }) {
 function Cabecalho({ rotulo, titulo, destaque, texto }: { rotulo: string; titulo: string; destaque: string; texto?: string }) {
   return (
     <div className="max-w-3xl" data-reveal>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#E9CF7A]">{rotulo}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#805F11]">{rotulo}</p>
       <h2 className="lp-titulo mt-4 text-[clamp(2.1rem,5vw,3.75rem)] leading-[1.02] tracking-[-0.045em]">
-        <span className="text-white">{titulo}</span> <span className="lp-cinza">{destaque}</span>
+        <span className="text-[#17191a]">{titulo}</span> <span className="lp-cinza">{destaque}</span>
       </h2>
-      {texto && <p className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">{texto}</p>}
+      {texto && <p className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600 sm:text-lg">{texto}</p>}
     </div>
   );
 }
@@ -229,7 +229,7 @@ export function LandingPage() {
       <script dangerouslySetInnerHTML={{ __html: SCRIPT_MOVIMENTO }} />
       <a
         href="#conteudo"
-        className="sr-only z-[60] rounded-full bg-white px-4 py-2 text-sm font-semibold text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-[60] rounded-full bg-[#17191a] px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
         Pular para o conteúdo
       </a>
@@ -239,9 +239,9 @@ export function LandingPage() {
         {/* Hero */}
         <section data-hero-secao className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute left-1/2 top-[-20%] h-[70%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.07),transparent)]" />
-            <div className="absolute inset-y-0 left-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
-            <div className="absolute inset-y-0 right-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
+            <div className="absolute left-1/2 top-[-20%] h-[70%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(212,175,55,0.14),transparent)]" />
+            <div className="absolute inset-y-0 left-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-black/[0.06] to-transparent" />
+            <div className="absolute inset-y-0 right-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-black/[0.06] to-transparent" />
           </div>
 
           <div
@@ -257,7 +257,7 @@ export function LandingPage() {
                 data-hero="titulo"
                 className="lp-titulo mt-7 text-[clamp(2.6rem,9vw,4.75rem)] lg:text-[clamp(3.25rem,4.25vw,3.75rem)]"
               >
-                <span className="block text-white">
+                <span className="block text-[#17191a]">
                   <Palavras texto="Seu escritório," />
                 </span>
                 {/* background-clip: text não atravessa filhos transformados; o gradiente vai em cada palavra. */}
@@ -265,7 +265,7 @@ export function LandingPage() {
                   <Palavras texto="sem prazo perdido." className="lp-cinza" />
                 </span>
               </h1>
-              <p data-hero="texto" className="mt-7 max-w-lg text-base leading-relaxed text-neutral-400 sm:text-lg">
+              <p data-hero="texto" className="mt-7 max-w-lg text-base leading-relaxed text-neutral-600 sm:text-lg">
                 Processos sincronizados, intimações monitoradas, agenda da equipe, financeiro e comunicação com clientes
                 em um só sistema, feito para a rotina da advocacia brasileira.
               </p>
@@ -274,11 +274,11 @@ export function LandingPage() {
                   Criar conta do escritório
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <Link href="/login" className="lp-btn lp-btn-escuro h-12 w-full px-6 text-[15px] sm:w-auto">
+                <Link href="/login" className="lp-btn lp-btn-claro h-12 w-full px-6 text-[15px] sm:w-auto">
                   Já tenho conta
                 </Link>
               </div>
-              <p data-hero="nota" className="mt-6 max-w-sm text-xs leading-relaxed text-neutral-500">
+              <p data-hero="nota" className="mt-6 max-w-sm text-xs leading-relaxed text-[#66666b]">
                 Sem instalação. Dados isolados por escritório e acesso controlado por cargo.
               </p>
             </div>
@@ -296,12 +296,12 @@ export function LandingPage() {
         </section>
 
         {/* Prova social e números */}
-        <section aria-labelledby="lp-numeros-titulo" className="relative border-y border-white/[0.06] bg-[#070707]">
+        <section aria-labelledby="lp-numeros-titulo" className="relative border-y border-black/[0.06] bg-white/60">
           <h2 id="lp-numeros-titulo" className="sr-only">
             Para quem é e números do produto
           </h2>
           <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 md:py-20">
-            <p className="text-center text-sm text-neutral-400" data-reveal>
+            <p className="text-center text-sm text-neutral-600" data-reveal>
               Feito para escritórios de todas as áreas do Direito
             </p>
             <div className="lp-faixa-mascara mt-6 overflow-hidden" data-reveal>
@@ -311,7 +311,7 @@ export function LandingPage() {
                     <li
                       key={`${copia}-${area}`}
                       aria-hidden={copia === 1 || undefined}
-                      className="flex shrink-0 items-center gap-6 pr-6 text-lg font-medium tracking-tight text-neutral-500 sm:text-xl"
+                      className="flex shrink-0 items-center gap-6 pr-6 text-lg font-medium tracking-tight text-[#66666b] sm:text-xl"
                     >
                       {area}
                       <span className="h-1 w-1 rounded-full bg-[#A77D16]" aria-hidden="true" />
@@ -321,10 +321,10 @@ export function LandingPage() {
               </ul>
             </div>
 
-            <dl className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.08] lg:grid-cols-4">
+            <dl className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-black/[0.08] bg-black/[0.08] lg:grid-cols-4">
               {NUMEROS.map((numero) => (
-                <div key={numero.rotulo} className="flex flex-col gap-2 bg-[#070707] p-5 sm:p-8" data-reveal>
-                  <dt className="order-2 text-sm leading-snug text-neutral-400">{numero.rotulo}</dt>
+                <div key={numero.rotulo} className="flex flex-col gap-2 bg-[#FCFBF8] p-5 sm:p-8" data-reveal>
+                  <dt className="order-2 text-sm leading-snug text-neutral-600">{numero.rotulo}</dt>
                   <dd className="lp-titulo lp-dourado order-1 text-5xl tabular-nums sm:text-6xl" data-count={numero.valor}>
                     {numero.valor}
                   </dd>
@@ -347,7 +347,7 @@ export function LandingPage() {
             </div>
 
             <ol data-passos className="relative">
-              <span aria-hidden="true" className="absolute bottom-6 left-[1.375rem] top-6 w-px bg-white/[0.08]" />
+              <span aria-hidden="true" className="absolute bottom-6 left-[1.375rem] top-6 w-px bg-black/[0.08]" />
               <span
                 aria-hidden="true"
                 data-passos-linha
@@ -357,13 +357,13 @@ export function LandingPage() {
                 const Icone = passo.icone;
                 return (
                   <li key={passo.titulo} data-passo className="lp-passo relative flex gap-5 pb-12 last:pb-0 sm:gap-7">
-                    <span className="lp-passo-numero relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#141006] text-[#E9CF7A] shadow-[0_0_24px_-4px_rgba(212,175,55,0.55)]">
+                    <span className="lp-passo-numero relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#FBF6E9] text-[#805F11] shadow-[0_0_24px_-4px_rgba(212,175,55,0.55)]">
                       <Icone className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div className="pt-1.5">
-                      <p className="text-xs font-semibold tabular-nums text-neutral-500">Passo {indice + 1}</p>
-                      <h3 className="mt-1 text-xl font-semibold tracking-tight text-white sm:text-2xl">{passo.titulo}</h3>
-                      <p className="mt-2 max-w-md leading-relaxed text-neutral-400">{passo.texto}</p>
+                      <p className="text-xs font-semibold tabular-nums text-[#66666b]">Passo {indice + 1}</p>
+                      <h3 className="mt-1 text-xl font-semibold tracking-tight text-[#17191a] sm:text-2xl">{passo.titulo}</h3>
+                      <p className="mt-2 max-w-md leading-relaxed text-neutral-600">{passo.texto}</p>
                     </div>
                   </li>
                 );
@@ -373,7 +373,7 @@ export function LandingPage() {
         </section>
 
         {/* Módulos */}
-        <section id="modulos" className="scroll-mt-24 border-t border-white/[0.06]">
+        <section id="modulos" className="scroll-mt-24 border-t border-black/[0.06]">
           <div className="mx-auto max-w-6xl px-4 py-[88px] sm:px-6 lg:py-40">
             <Cabecalho
               rotulo="Módulos"
@@ -392,23 +392,23 @@ export function LandingPage() {
                         <Icone className="h-5 w-5" aria-hidden="true" />
                       </span>
                       <div>
-                        <h3 className="text-lg font-semibold tracking-tight text-white">{modulo.titulo}</h3>
-                        <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-400">{modulo.texto}</p>
+                        <h3 className="text-lg font-semibold tracking-tight text-[#17191a]">{modulo.titulo}</h3>
+                        <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{modulo.texto}</p>
                       </div>
                     </div>
 
                     {modulo.titulo === "Processos" && (
-                      <figure className="mt-6 rounded-2xl border border-white/[0.07] bg-black/40 p-4" aria-label="Exemplo ilustrativo de movimentações">
-                        <figcaption className="flex items-center justify-between text-xs text-neutral-500">
+                      <figure className="mt-6 rounded-2xl border border-black/[0.07] bg-white/70 p-4" aria-label="Exemplo ilustrativo de movimentações">
+                        <figcaption className="flex items-center justify-between text-xs text-[#66666b]">
                           <span className="font-mono tracking-normal">0000000-00.0000.8.26.0000</span>
                           <span>Exemplo</span>
                         </figcaption>
                         <ul className="mt-3 space-y-2">
                           {MOVIMENTOS_EXEMPLO.map((mov) => (
-                            <li key={mov.texto} className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-3 py-2.5 text-sm">
-                              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${mov.novo ? "bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.9)]" : "bg-neutral-600"}`} aria-hidden="true" />
-                              <span className="flex-1 text-neutral-200">{mov.texto}</span>
-                              <span className="text-xs text-neutral-500">{mov.quando}</span>
+                            <li key={mov.texto} className="flex items-center gap-3 rounded-xl bg-black/[0.03] px-3 py-2.5 text-sm">
+                              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${mov.novo ? "bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.9)]" : "bg-neutral-300"}`} aria-hidden="true" />
+                              <span className="flex-1 text-neutral-800">{mov.texto}</span>
+                              <span className="text-xs text-[#66666b]">{mov.quando}</span>
                             </li>
                           ))}
                         </ul>
@@ -416,11 +416,11 @@ export function LandingPage() {
                     )}
 
                     {modulo.titulo === "Permissões multiusuário" && (
-                      <figure className="mt-6 overflow-x-auto rounded-2xl border border-white/[0.07] bg-black/40 p-4" aria-label="Exemplo ilustrativo de permissões de um cargo">
+                      <figure className="mt-6 overflow-x-auto rounded-2xl border border-black/[0.07] bg-white/70 p-4" aria-label="Exemplo ilustrativo de permissões de um cargo">
                         <table className="w-full min-w-[280px] text-sm">
-                          <caption className="pb-2 text-left text-xs text-neutral-500">Cargo de exemplo: Assistente</caption>
+                          <caption className="pb-2 text-left text-xs text-[#66666b]">Cargo de exemplo: Assistente</caption>
                           <thead>
-                            <tr className="text-xs text-neutral-500">
+                            <tr className="text-xs text-[#66666b]">
                               <th scope="col" className="pb-2 text-left font-medium">Módulo</th>
                               <th scope="col" className="pb-2 font-medium">Ler</th>
                               <th scope="col" className="pb-2 font-medium">Editar</th>
@@ -429,14 +429,14 @@ export function LandingPage() {
                           </thead>
                           <tbody>
                             {MATRIZ_EXEMPLO.map((linha) => (
-                              <tr key={linha.modulo} className="border-t border-white/[0.06]">
-                                <th scope="row" className="py-2.5 text-left font-normal text-neutral-200">{linha.modulo}</th>
+                              <tr key={linha.modulo} className="border-t border-black/[0.06]">
+                                <th scope="row" className="py-2.5 text-left font-normal text-neutral-800">{linha.modulo}</th>
                                 {linha.acesso.map((permitido, indice) => (
                                   <td key={indice} className="py-2.5 text-center">
                                     {permitido ? (
-                                      <Check className="mx-auto h-4 w-4 text-[#E9CF7A]" aria-label="Permitido" />
+                                      <Check className="mx-auto h-4 w-4 text-[#805F11]" aria-label="Permitido" />
                                     ) : (
-                                      <span className="text-neutral-600" aria-label="Sem acesso">—</span>
+                                      <span className="text-[#66666b]" aria-label="Sem acesso">—</span>
                                     )}
                                   </td>
                                 ))}
@@ -454,7 +454,7 @@ export function LandingPage() {
         </section>
 
         {/* Segurança e LGPD */}
-        <section id="seguranca" className="scroll-mt-24 border-t border-white/[0.06] bg-[#070707]">
+        <section id="seguranca" className="scroll-mt-24 border-t border-black/[0.06] bg-white/60">
           <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 py-[88px] sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-40">
             <div>
               <Cabecalho
@@ -467,7 +467,7 @@ export function LandingPage() {
                 <span className="lp-anel h-56 w-56" />
                 <span className="lp-anel h-40 w-40 [animation-delay:-2s]" />
                 <span className="lp-anel h-24 w-24 [animation-delay:-4s]" />
-                <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D4AF37]/40 bg-[#141006] text-[#E9CF7A] shadow-[0_0_60px_-6px_rgba(212,175,55,0.6)]">
+                <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D4AF37]/40 bg-[#FBF6E9] text-[#805F11] shadow-[0_0_60px_-6px_rgba(212,175,55,0.6)]">
                   <ShieldCheck className="h-7 w-7" />
                 </span>
               </div>
@@ -481,8 +481,8 @@ export function LandingPage() {
                     <span className="lp-icone">
                       <Icone className="h-5 w-5" aria-hidden="true" />
                     </span>
-                    <h3 className="mt-5 text-lg font-semibold tracking-tight text-white">{item.titulo}</h3>
-                    <p className="mt-2 text-[15px] leading-relaxed text-neutral-400">{item.texto}</p>
+                    <h3 className="mt-5 text-lg font-semibold tracking-tight text-[#17191a]">{item.titulo}</h3>
+                    <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{item.texto}</p>
                   </li>
                 );
               })}
@@ -491,7 +491,7 @@ export function LandingPage() {
         </section>
 
         {/* Planos */}
-        <section id="planos" className="scroll-mt-24 border-t border-white/[0.06]">
+        <section id="planos" className="scroll-mt-24 border-t border-black/[0.06]">
           <div className="mx-auto max-w-6xl px-4 py-[88px] sm:px-6 lg:py-40">
             <Cabecalho
               rotulo="Planos"
@@ -509,25 +509,25 @@ export function LandingPage() {
                   className={`lp-card flex flex-col p-7 sm:p-8 ${plano.destaque ? "!border-[#D4AF37]/35 shadow-[0_0_0_1px_rgba(212,175,55,0.12),0_30px_80px_-40px_rgba(212,175,55,0.45)]" : ""}`}
                 >
                   {plano.destaque && (
-                    <span aria-hidden="true" className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#E9CF7A] to-transparent" />
+                    <span aria-hidden="true" className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
                   )}
-                  <h3 className="text-lg font-semibold tracking-tight text-white">{plano.nome}</h3>
-                  <p className="mt-2 min-h-[3rem] text-sm leading-relaxed text-neutral-400">{plano.para}</p>
+                  <h3 className="text-lg font-semibold tracking-tight text-[#17191a]">{plano.nome}</h3>
+                  <p className="mt-2 min-h-[3rem] text-sm leading-relaxed text-neutral-600">{plano.para}</p>
                   <p className="mt-6 flex items-baseline gap-1.5">
-                    <span className="lp-titulo text-5xl text-white">R$ —</span>
-                    <span className="text-sm text-neutral-500">/mês</span>
+                    <span className="lp-titulo text-5xl text-[#17191a]">R$ —</span>
+                    <span className="text-sm text-[#66666b]">/mês</span>
                   </p>
-                  <p className="mt-1 text-xs text-neutral-500">Valor em definição</p>
+                  <p className="mt-1 text-xs text-[#66666b]">Valor em definição</p>
                   <Link
                     href="/signup"
-                    className={`lp-btn mt-7 h-11 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-escuro"}`}
+                    className={`lp-btn mt-7 h-11 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-claro"}`}
                   >
                     Criar conta
                   </Link>
-                  <ul className="mt-7 space-y-3 border-t border-white/[0.06] pt-6 text-sm">
+                  <ul className="mt-7 space-y-3 border-t border-black/[0.06] pt-6 text-sm">
                     {plano.itens.map((item) => (
-                      <li key={item} className="flex gap-3 text-neutral-300">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
+                      <li key={item} className="flex gap-3 text-neutral-700">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#A77D16]" aria-hidden="true" />
                         {item}
                       </li>
                     ))}
@@ -539,19 +539,19 @@ export function LandingPage() {
         </section>
 
         {/* FAQ */}
-        <section id="duvidas" className="scroll-mt-24 border-t border-white/[0.06]">
+        <section id="duvidas" className="scroll-mt-24 border-t border-black/[0.06]">
           <div className="mx-auto grid max-w-6xl gap-12 px-4 py-[88px] sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-20 lg:py-40">
             <Cabecalho rotulo="Dúvidas" titulo="Perguntas" destaque="frequentes." />
-            <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            <div className="divide-y divide-black/[0.08] border-y border-black/[0.08]">
               {PERGUNTAS.map((item) => (
                 <details key={item.pergunta} className="lp-faq group" data-reveal>
-                  <summary className="flex cursor-pointer items-center justify-between gap-6 py-6 text-left text-base font-medium text-white transition-colors hover:text-[#E9CF7A] sm:text-lg">
+                  <summary className="flex cursor-pointer items-center justify-between gap-6 py-6 text-left text-base font-medium text-[#17191a] transition-colors hover:text-[#805F11] sm:text-lg">
                     {item.pergunta}
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-black/[0.03]">
                       <Plus className="lp-faq-icone h-4 w-4" aria-hidden="true" />
                     </span>
                   </summary>
-                  <p className="max-w-2xl pb-6 pr-12 leading-relaxed text-neutral-400">{item.resposta}</p>
+                  <p className="max-w-2xl pb-6 pr-12 leading-relaxed text-neutral-600">{item.resposta}</p>
                 </details>
               ))}
             </div>
@@ -559,21 +559,21 @@ export function LandingPage() {
         </section>
 
         {/* CTA final */}
-        <section className="relative isolate overflow-hidden border-t border-white/[0.06]">
+        <section className="relative isolate overflow-hidden border-t border-black/[0.06]">
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 -z-10 h-[80%] bg-[radial-gradient(50%_70%_at_50%_100%,rgba(212,175,55,0.22),rgba(128,95,17,0.06)_55%,transparent_80%)]"
+            className="absolute inset-x-0 bottom-0 -z-10 h-[80%] bg-[radial-gradient(50%_70%_at_50%_100%,rgba(212,175,55,0.2),rgba(212,175,55,0.05)_55%,transparent_80%)]"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(60%_60%_at_50%_70%,#000,transparent)]"
+            className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(23,25,26,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(23,25,26,0.05)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(60%_60%_at_50%_70%,#000,transparent)]"
           />
           <div className="mx-auto max-w-4xl px-4 py-[88px] text-center sm:px-6 lg:py-40" data-reveal>
             <h2 className="lp-titulo text-[clamp(2.4rem,6.5vw,5.5rem)]">
-              <span className="block text-white">Menos planilha.</span>
+              <span className="block text-[#17191a]">Menos planilha.</span>
               <span className="lp-cinza block">Mais advocacia.</span>
             </h2>
-            <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-neutral-400 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-neutral-600 sm:text-lg">
               Crie a conta do escritório e tenha processos, prazos e clientes no mesmo lugar ainda hoje.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -581,7 +581,7 @@ export function LandingPage() {
                 Criar conta do escritório
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
-              <Link href="/login" className="lp-btn lp-btn-escuro h-12 w-full px-6 text-[15px] sm:w-auto">
+              <Link href="/login" className="lp-btn lp-btn-claro h-12 w-full px-6 text-[15px] sm:w-auto">
                 Entrar
               </Link>
             </div>
@@ -590,17 +590,17 @@ export function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] px-4 pb-8 pt-4 sm:px-6">
+      <footer className="border-t border-black/[0.06] px-4 pb-8 pt-4 sm:px-6">
         <div className="lp-card mx-auto mt-8 max-w-6xl p-6 sm:p-10">
           <div className="grid gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <div>
               <Logo size="sm" />
-              <p className="mt-5 max-w-sm text-xl font-semibold leading-snug tracking-tight text-white">
-                Gestão jurídica para escritórios de advocacia. <span className="text-neutral-500">Processos, prazos e clientes em um só lugar.</span>
+              <p className="mt-5 max-w-sm text-xl font-semibold leading-snug tracking-tight text-[#17191a]">
+                Gestão jurídica para escritórios de advocacia. <span className="text-[#66666b]">Processos, prazos e clientes em um só lugar.</span>
               </p>
             </div>
             <nav aria-label="Seções da página">
-              <h2 className="text-sm font-semibold text-white">Produto</h2>
+              <h2 className="text-sm font-semibold text-[#17191a]">Produto</h2>
               <ul className="mt-4 space-y-3 text-sm">
                 <li><a href="#como-funciona" className="lp-link">Como funciona</a></li>
                 <li><a href="#modulos" className="lp-link">Módulos</a></li>
@@ -610,7 +610,7 @@ export function LandingPage() {
               </ul>
             </nav>
             <nav aria-label="Acesso">
-              <h2 className="text-sm font-semibold text-white">Acesso</h2>
+              <h2 className="text-sm font-semibold text-[#17191a]">Acesso</h2>
               <ul className="mt-4 space-y-3 text-sm">
                 <li><Link href="/login" className="lp-link">Entrar</Link></li>
                 <li><Link href="/signup" className="lp-link">Criar conta</Link></li>
@@ -618,7 +618,7 @@ export function LandingPage() {
               </ul>
             </nav>
           </div>
-          <div className="mt-10 flex flex-col gap-2 border-t border-white/[0.06] pt-6 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-10 flex flex-col gap-2 border-t border-black/[0.06] pt-6 text-xs text-[#66666b] sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} Infinity Law. Todos os direitos reservados.</p>
             <p>Dados processuais de fontes públicas do CNJ (DataJud e DJEN).</p>
           </div>
