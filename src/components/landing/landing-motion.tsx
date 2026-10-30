@@ -42,7 +42,8 @@ export function LandingMotion({ children }: { children: ReactNode }) {
           gsap.to(q(".lp-hero-copy"), { y: -60, ease: "none", scrollTrigger: rolagem });
           gsap.to(q("[data-scene-parallax]"), { y: 45, ease: "none", scrollTrigger: rolagem });
         }
-        gsap.to(q("[data-fundo-parallax]"), { yPercent: desktop ? 18 : 8, ease: "none", scrollTrigger: rolagem });
+        // Fundo preso ao scroll sem suavização: com scrub em segundos ele "corria atrás" da rolagem.
+        gsap.to(q("[data-fundo-parallax]"), { yPercent: desktop ? 18 : 8, ease: "none", scrollTrigger: { ...rolagem, scrub: true } });
       }
 
       // Tweens criados no contexto são revertidos ao sair ou reduzir movimento.
@@ -124,13 +125,21 @@ export function LandingMotion({ children }: { children: ReactNode }) {
       };
     });
 
-    const atualizar = () => ScrollTrigger.refresh();
+    let quadroAtualizacao = 0;
+    const atualizar = () => {
+      if (quadroAtualizacao) return;
+      quadroAtualizacao = requestAnimationFrame(() => {
+        quadroAtualizacao = 0;
+        ScrollTrigger.refresh();
+      });
+    };
     const perguntas = raiz.querySelectorAll("details");
     perguntas.forEach((el) => el.addEventListener("toggle", atualizar));
     let desmontado = false;
     document.fonts.ready.then(() => { if (!desmontado) atualizar(); });
     return () => {
       desmontado = true;
+      if (quadroAtualizacao) cancelAnimationFrame(quadroAtualizacao);
       perguntas.forEach((el) => el.removeEventListener("toggle", atualizar));
       mm.revert();
       document.documentElement.classList.remove("lp-anim");
@@ -140,15 +149,28 @@ export function LandingMotion({ children }: { children: ReactNode }) {
   useEffect(() => {
     const raiz = raizRef.current;
     if (!raiz || !window.matchMedia("(hover: hover)").matches) return;
+    let quadro = 0;
+    let ultimoEvento: PointerEvent | null = null;
     const mover = (evento: PointerEvent) => {
-      const card = (evento.target as Element).closest<HTMLElement>("[data-spotlight]");
-      if (!card) return;
-      const caixa = card.getBoundingClientRect();
-      card.style.setProperty("--x", `${evento.clientX - caixa.left}px`);
-      card.style.setProperty("--y", `${evento.clientY - caixa.top}px`);
+      ultimoEvento = evento;
+      if (quadro) return;
+      quadro = requestAnimationFrame(() => {
+        quadro = 0;
+        const eventoAtual = ultimoEvento;
+        ultimoEvento = null;
+        if (!eventoAtual || !(eventoAtual.target instanceof Element)) return;
+        const card = eventoAtual.target.closest<HTMLElement>("[data-spotlight]");
+        if (!card) return;
+        const caixa = card.getBoundingClientRect();
+        card.style.setProperty("--x", `${eventoAtual.clientX - caixa.left}px`);
+        card.style.setProperty("--y", `${eventoAtual.clientY - caixa.top}px`);
+      });
     };
     raiz.addEventListener("pointermove", mover, { passive: true });
-    return () => raiz.removeEventListener("pointermove", mover);
+    return () => {
+      if (quadro) cancelAnimationFrame(quadro);
+      raiz.removeEventListener("pointermove", mover);
+    };
   }, []);
 
   return (

@@ -219,21 +219,24 @@ const SEGURANCA = [
 
 const PLANOS = [
   {
-    nome: "Starter",
+    nome: "Basic",
     para: "Para quem advoga sozinho ou começa a estruturar o escritório.",
+    preco: ["89", "90"],
     itens: ["Processos, clientes e agenda", "Consulta DataJud por número CNJ", "Relatórios em PDF e Excel"],
     destaque: false,
   },
   {
-    nome: "Profissional",
+    nome: "Pro",
     para: "Para escritórios com equipe e volume de processos crescente.",
-    itens: ["Tudo do Starter", "Intimações do DJEN por OAB", "Financeiro e comunicação por WhatsApp", "Cargos e permissões"],
+    preco: ["149", "90"],
+    itens: ["Tudo do Basic", "Intimações do DJEN por OAB", "Financeiro e comunicação por WhatsApp", "Cargos e permissões"],
     destaque: true,
   },
   {
-    nome: "Enterprise",
-    para: "Para operações maiores, com várias equipes e necessidades próprias.",
-    itens: ["Tudo do Profissional", "Implantação acompanhada", "Condições sob medida"],
+    nome: "Plus",
+    para: "Para operações maiores, com várias equipes trabalhando juntas.",
+    preco: ["229", "90"],
+    itens: ["Tudo do Pro", "Implantação acompanhada", "Pensado para várias equipes"],
     destaque: false,
   },
 ];
@@ -265,7 +268,7 @@ const PERGUNTAS = [
   {
     pergunta: "Quanto custa?",
     resposta:
-      "Os valores dos planos ainda estão sendo definidos. Crie a conta do escritório e você será avisado antes de qualquer cobrança.",
+      "O Basic custa R$ 89,90, o Pro R$ 149,90 e o Plus R$ 229,90 por mês, por escritório. Veja o que cada um inclui na seção Planos.",
   },
 ];
 
@@ -528,34 +531,43 @@ export function LandingPage() {
               rotulo="Planos"
               titulo="Um plano para cada fase"
               destaque="do escritório."
-              texto="Os valores ainda estão em definição. Você pode criar a conta agora e será avisado antes de qualquer cobrança."
+              texto="Preço mensal por escritório. Todos os planos incluem processos, clientes, agenda e consulta ao DataJud."
             />
 
-            <ul className="mt-14 grid gap-4 lg:grid-cols-3">
+            <ul className="mt-14 grid gap-5 lg:grid-cols-3 lg:items-stretch">
               {PLANOS.map((plano) => (
                 <li
                   key={plano.nome}
                   data-spotlight
                   data-reveal
-                  className={`lp-card lp-plano flex flex-col p-7 sm:p-8 ${plano.destaque ? "lp-plano-destaque !border-[#D4AF37]/35 shadow-[0_0_0_1px_rgba(212,175,55,0.12),0_30px_80px_-40px_rgba(212,175,55,0.45)]" : ""}`}
+                  className={`lp-card lp-plano flex flex-col p-7 sm:p-8 ${plano.destaque ? "lp-plano-destaque" : ""}`}
                 >
-                  {plano.destaque && (
-                    <span aria-hidden="true" className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
-                  )}
-                  <h3 className="text-lg font-semibold tracking-tight text-[#17191a]">{plano.nome}</h3>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-xl font-semibold tracking-tight text-[#17191a]">{plano.nome}</h3>
+                    {plano.destaque && <span className="lp-plano-selo">Recomendado</span>}
+                  </div>
                   <p className="lp-plano-descricao mt-2 text-sm leading-relaxed text-neutral-600">{plano.para}</p>
-                  <p className="mt-6 text-2xl font-semibold tracking-tight text-[#17191a]">Valores em definição</p>
-                  <p className="mt-2 text-xs leading-relaxed text-[#66666b]">Você será avisado antes de qualquer cobrança.</p>
+                  <p className="lp-plano-preco mt-6">
+                    <span className="lp-plano-moeda">R$</span>
+                    <span className="lp-plano-inteiro">{plano.preco[0]}</span>
+                    <span className="lp-plano-centavos">,{plano.preco[1]}</span>
+                    <span className="lp-plano-periodo">/mês</span>
+                  </p>
+                  <p className="mt-1 text-xs text-[#66666b]">por escritório</p>
                   <Link
                     href="/signup"
-                    className={`lp-btn mt-7 h-11 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-claro"}`}
+                    className={`lp-btn mt-7 h-12 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-claro"}`}
                   >
-                    Criar conta
+                    Assinar o {plano.nome}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
-                  <ul className="mt-7 space-y-3 border-t border-black/[0.06] pt-6 text-sm">
+                  <p className="lp-plano-inclui mt-7">Inclui</p>
+                  <ul className="mt-4 space-y-3 text-sm">
                     {plano.itens.map((item) => (
-                      <li key={item} className="flex gap-3 text-neutral-700">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#A77D16]" aria-hidden="true" />
+                      <li key={item} className="flex items-start gap-3 text-neutral-700">
+                        <span className="lp-plano-check" aria-hidden="true">
+                          <Check className="h-3 w-3" />
+                        </span>
                         {item}
                       </li>
                     ))}

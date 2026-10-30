@@ -20,7 +20,8 @@ function SedaCanvas() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    const parado = window.matchMedia(SEM_MOVIMENTO).matches;
+    const preferenciaMovimento = window.matchMedia(SEM_MOVIMENTO);
+    let parado = preferenciaMovimento.matches;
     let largura = 0;
     let altura = 0;
     let passos = 0;
@@ -28,6 +29,15 @@ function SedaCanvas() {
     let ultimo = 0;
     let quadro = 0;
     let visivel = false;
+    // Esmaecimento das bordas pré-desenhado uma vez por tamanho; antes era máscara CSS recalculada a cada quadro.
+    const mascara = document.createElement("canvas");
+    let amostrasFaixas: {
+      x: number;
+      senoOnda: number;
+      cossenoOnda: number;
+      senoTorcao: number;
+      cossenoTorcao: number;
+    }[][] = [];
 
     const desenhar = () => {
       const w = largura;
@@ -35,22 +45,33 @@ function SedaCanvas() {
       if (!w || !h) return;
       ctx.clearRect(0, 0, w, h);
       ctx.lineWidth = 1;
-      for (const faixa of FAIXAS) {
+      for (let faixaIndice = 0; faixaIndice < FAIXAS.length; faixaIndice++) {
+        const faixa = FAIXAS[faixaIndice]!;
+        const amostras = amostrasFaixas[faixaIndice]!;
+        const faseOnda = tempo * faixa.vel + faixa.fase;
+        const senoTempoOnda = Math.sin(faseOnda);
+        const cossenoTempoOnda = Math.cos(faseOnda);
+        const faseTorcao = tempo * 0.35 + faixa.fase;
+        const senoTempoTorcao = Math.sin(faseTorcao);
+        const cossenoTempoTorcao = Math.cos(faseTorcao);
         for (let k = 0; k < faixa.fios; k++) {
           const u = k / (faixa.fios - 1) - 0.5;
           ctx.beginPath();
           for (let i = 0; i <= passos; i++) {
-            const x = i / passos;
-            const onda = Math.sin(x * faixa.freq * Math.PI + tempo * faixa.vel + faixa.fase);
-            const torcao = Math.sin(x * Math.PI * 1.4 + tempo * 0.35 + faixa.fase);
-            const y = faixa.base - x * faixa.subida + faixa.amp * onda + u * faixa.abertura * torcao;
-            if (i === 0) ctx.moveTo(x * w, y * h);
-            else ctx.lineTo(x * w, y * h);
+            const amostra = amostras[i]!;
+            const onda = amostra.senoOnda * cossenoTempoOnda + amostra.cossenoOnda * senoTempoOnda;
+            const torcao = amostra.senoTorcao * cossenoTempoTorcao + amostra.cossenoTorcao * senoTempoTorcao;
+            const y = faixa.base - amostra.x * faixa.subida + faixa.amp * onda + u * faixa.abertura * torcao;
+            if (i === 0) ctx.moveTo(amostra.x * w, y * h);
+            else ctx.lineTo(amostra.x * w, y * h);
           }
           ctx.strokeStyle = `rgba(${faixa.cor},${0.05 + 0.3 * (1 - Math.abs(u) * 2)})`;
           ctx.stroke();
         }
       }
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.drawImage(mascara, 0, 0, w, h);
+      ctx.globalCompositeOperation = "source-over";
     };
 
     const laco = (agora: number) => {
@@ -80,10 +101,47 @@ function SedaCanvas() {
       canvas.height = Math.round(altura * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       passos = largura < 768 ? 48 : 96;
+      mascara.width = Math.max(1, Math.round(largura / 4));
+      mascara.height = Math.max(1, Math.round(altura / 4));
+      const m = mascara.getContext("2d");
+      if (m) {
+        const vertical = m.createLinearGradient(0, 0, 0, mascara.height);
+        vertical.addColorStop(0.25, "rgba(0,0,0,0)");
+        vertical.addColorStop(0.6, "#000");
+        m.fillStyle = vertical;
+        m.fillRect(0, 0, mascara.width, mascara.height);
+        m.globalCompositeOperation = "destination-in";
+        const horizontal = m.createLinearGradient(0, 0, mascara.width, 0);
+        horizontal.addColorStop(0, "rgba(0,0,0,0)");
+        horizontal.addColorStop(0.12, "#000");
+        horizontal.addColorStop(0.88, "#000");
+        horizontal.addColorStop(1, "rgba(0,0,0,0)");
+        m.fillStyle = horizontal;
+        m.fillRect(0, 0, mascara.width, mascara.height);
+      }
+      amostrasFaixas = FAIXAS.map((faixa) =>
+        Array.from({ length: passos + 1 }, (_, indice) => {
+          const x = indice / passos;
+          const faseOnda = x * faixa.freq * Math.PI + faixa.fase;
+          const faseTorcao = x * Math.PI * 1.4 + faixa.fase;
+          return {
+            x,
+            senoOnda: Math.sin(faseOnda),
+            cossenoOnda: Math.cos(faseOnda),
+            senoTorcao: Math.sin(faseTorcao),
+            cossenoTorcao: Math.cos(faseTorcao),
+          };
+        }),
+      );
       desenhar();
     };
 
     const aoMudarAba = () => (document.hidden ? parar() : iniciar());
+    const aoMudarPreferencia = () => {
+      parado = preferenciaMovimento.matches;
+      if (parado) parar();
+      else iniciar();
+    };
     const observadorTamanho = new ResizeObserver(redimensionar);
     observadorTamanho.observe(canvas);
     const observadorVisao = new IntersectionObserver((entradas) => {
@@ -93,12 +151,14 @@ function SedaCanvas() {
     });
     observadorVisao.observe(canvas);
     document.addEventListener("visibilitychange", aoMudarAba);
+    preferenciaMovimento.addEventListener("change", aoMudarPreferencia);
 
     return () => {
       parar();
       observadorTamanho.disconnect();
       observadorVisao.disconnect();
       document.removeEventListener("visibilitychange", aoMudarAba);
+      preferenciaMovimento.removeEventListener("change", aoMudarPreferencia);
     };
   }, []);
 
@@ -134,8 +194,20 @@ function Portico() {
 
 /** Fundo do hero: luzes douradas à deriva, pórtico de tribunal e fios de seda. */
 export function HeroFundo() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const raiz = ref.current;
+    if (!raiz || !("IntersectionObserver" in window)) return;
+    const observador = new IntersectionObserver((entradas) => {
+      raiz.dataset.visivel = String(entradas[0]?.isIntersecting ?? false);
+    }, { rootMargin: "120px" });
+    observador.observe(raiz);
+    return () => observador.disconnect();
+  }, []);
+
   return (
-    <div className="lp-fundo absolute inset-0">
+    <div ref={ref} data-visivel="true" className="lp-fundo absolute inset-0">
       <span className="lp-luz lp-luz-1" />
       <span className="lp-luz lp-luz-2" />
       <span className="lp-luz lp-luz-3" />

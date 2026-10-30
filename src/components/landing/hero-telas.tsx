@@ -210,7 +210,7 @@ export function HeroTelas() {
   const [ativo, setAtivo] = useState(0);
   const [pausado, setPausado] = useState(false);
   const [emFoco, setEmFoco] = useState(false);
-  const [visivel, setVisivel] = useState(true);
+  const [visivel, setVisivel] = useState(false);
   const [movimentoReduzido, setMovimentoReduzido] = useState(false);
   const raizRef = useRef<HTMLDivElement>(null);
   const palcoRef = useRef<HTMLDivElement>(null);
@@ -322,18 +322,32 @@ export function HeroTelas() {
     if (window.matchMedia(SEM_MOVIMENTO).matches || !window.matchMedia("(hover: hover)").matches) return;
     const giroY = gsap.quickTo(palco, "rotationY", { duration: 1.2, ease: "power3.out" });
     const giroX = gsap.quickTo(palco, "rotationX", { duration: 1.2, ease: "power3.out" });
+    let quadro = 0;
+    let ultimoEvento: PointerEvent | null = null;
     const mover = (evento: PointerEvent) => {
-      const caixa = raiz.getBoundingClientRect();
-      giroY(-18 + ((evento.clientX - caixa.left) / caixa.width - 0.5) * 10);
-      giroX(16 - ((evento.clientY - caixa.top) / caixa.height - 0.5) * 8);
+      ultimoEvento = evento;
+      if (quadro) return;
+      quadro = requestAnimationFrame(() => {
+        quadro = 0;
+        const eventoAtual = ultimoEvento;
+        ultimoEvento = null;
+        if (!eventoAtual) return;
+        const caixa = raiz.getBoundingClientRect();
+        giroY(-18 + ((eventoAtual.clientX - caixa.left) / caixa.width - 0.5) * 10);
+        giroX(16 - ((eventoAtual.clientY - caixa.top) / caixa.height - 0.5) * 8);
+      });
     };
     const sair = () => {
+      ultimoEvento = null;
+      if (quadro) cancelAnimationFrame(quadro);
+      quadro = 0;
       giroY(-18);
       giroX(16);
     };
     raiz.addEventListener("pointermove", mover, { passive: true });
     raiz.addEventListener("pointerleave", sair);
     return () => {
+      if (quadro) cancelAnimationFrame(quadro);
       raiz.removeEventListener("pointermove", mover);
       raiz.removeEventListener("pointerleave", sair);
       gsap.killTweensOf(palco);

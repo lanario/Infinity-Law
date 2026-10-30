@@ -1203,16 +1203,18 @@ body:has(.lp-root) {
 .lp-hero-copy { padding-bottom: 1rem; }
 .lp-hero-palco { min-width: 0; }
 /* Fundo do hero: luzes à deriva, pórtico de tribunal e fios de seda (hero-fundo.tsx). */
-.lp-fundo { overflow: hidden; }
+/* Desempenho: sem blur, sem máscara no canvas e sem non-scaling-stroke; o fundo vira uma camada própria. */
+.lp-fundo { overflow: hidden; contain: strict; }
+[data-fundo-parallax] { will-change: transform; }
 .lp-luz {
   position: absolute;
   border-radius: 999px;
-  filter: blur(60px);
   will-change: transform;
 }
-.lp-luz-1 { left: -8%; top: 8%; width: 46vw; height: 38vw; background: radial-gradient(closest-side, rgba(212, 175, 55, 0.26), transparent); animation: lp-deriva-1 22s ease-in-out infinite alternate; }
-.lp-luz-2 { right: -10%; top: 22%; width: 42vw; height: 42vw; background: radial-gradient(closest-side, rgba(233, 207, 122, 0.3), transparent); animation: lp-deriva-2 26s ease-in-out infinite alternate; }
-.lp-luz-3 { left: 30%; bottom: -18%; width: 50vw; height: 30vw; background: radial-gradient(closest-side, rgba(167, 125, 22, 0.16), transparent); animation: lp-deriva-3 30s ease-in-out infinite alternate; }
+.lp-fundo:not([data-visivel="true"]) .lp-luz { animation-play-state: paused; }
+.lp-luz-1 { left: -8%; top: 8%; width: 46vw; height: 38vw; background: radial-gradient(closest-side, rgba(212, 175, 55, 0.24), rgba(212, 175, 55, 0.08) 55%, transparent); animation: lp-deriva-1 22s ease-in-out infinite alternate; }
+.lp-luz-2 { right: -10%; top: 22%; width: 42vw; height: 42vw; background: radial-gradient(closest-side, rgba(233, 207, 122, 0.28), rgba(233, 207, 122, 0.1) 55%, transparent); animation: lp-deriva-2 26s ease-in-out infinite alternate; }
+.lp-luz-3 { left: 30%; bottom: -18%; width: 50vw; height: 30vw; background: radial-gradient(closest-side, rgba(167, 125, 22, 0.14), rgba(167, 125, 22, 0.05) 55%, transparent); animation: lp-deriva-3 30s ease-in-out infinite alternate; }
 @keyframes lp-deriva-1 { to { transform: translate(14vw, 6vh) scale(1.15); } }
 @keyframes lp-deriva-2 { to { transform: translate(-12vw, 10vh) scale(0.9); } }
 @keyframes lp-deriva-3 { to { transform: translate(-10vw, -8vh) scale(1.2); } }
@@ -1224,23 +1226,16 @@ body:has(.lp-root) {
   transform: translateX(-50%);
   stroke: #a77d16;
   stroke-opacity: 0.22;
-  stroke-width: 1;
+  stroke-width: 0.6;
   -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent 92%);
   mask-image: linear-gradient(to bottom, #000 35%, transparent 92%);
 }
 .lp-portico * {
-  vector-effect: non-scaling-stroke;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: lp-tracar 2.8s var(--lp-curva) 0.3s forwards;
 }
 @keyframes lp-tracar { to { stroke-dashoffset: 0; } }
-.lp-seda {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 60%), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to bottom, transparent 25%, #000 60%), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
-  mask-composite: intersect;
-}
 @media (prefers-reduced-motion: reduce) {
   .lp-luz { animation: none; }
   .lp-portico * { animation: none; stroke-dashoffset: 0; }
@@ -1270,7 +1265,53 @@ body:has(.lp-root) {
 }
 .lp-seguranca { background: #fffefa; }
 .lp-planos { background: linear-gradient(180deg, #f7f6f1, #fdfcf9); }
-.lp-plano-destaque { background: linear-gradient(155deg, #fffdf5, #f9f1d9 160%); }
+.lp-plano { transition: border-color 400ms var(--lp-curva), box-shadow 400ms var(--lp-curva); }
+.lp-plano:hover { box-shadow: inset 0 1px 0 #fff, 0 30px 60px -36px rgba(23, 25, 26, 0.35); }
+.lp-plano-destaque {
+  border-color: rgba(212, 175, 55, 0.45);
+  background: linear-gradient(160deg, #fffdf5 0%, #fbf3dc 100%);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.14), 0 36px 80px -40px rgba(167, 125, 22, 0.55);
+}
+/* Contorno dourado girando só no plano recomendado (mesmo efeito do bento de segurança). */
+.lp-plano-destaque::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--lp-seg-giro, 0deg), transparent 0 65%, #d4af37 82%, #f1dc94 88%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  animation: lp-seg-girar 5s linear infinite;
+}
+.lp-plano-selo {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1405;
+  background: linear-gradient(180deg, #f1dc94, #d4af37);
+  box-shadow: 0 0 0 1px rgba(128, 95, 17, 0.35), 0 8px 18px -10px rgba(167, 125, 22, 0.8);
+}
+.lp-plano-preco { display: flex; align-items: flex-start; gap: 0.15rem; color: #17191a; line-height: 1; }
+.lp-plano-moeda { margin-top: 0.45rem; margin-right: 0.2rem; font-size: 1rem; font-weight: 600; color: #52525b; }
+.lp-plano-inteiro { font-size: clamp(3rem, 5vw, 3.75rem); font-weight: 600; letter-spacing: -0.05em; }
+.lp-plano-centavos { margin-top: 0.35rem; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+.lp-plano-periodo { align-self: flex-end; margin-bottom: 0.45rem; margin-left: 0.3rem; font-size: 0.875rem; color: #66666b; }
+.lp-plano-destaque .lp-plano-inteiro,
+.lp-plano-destaque .lp-plano-centavos { color: #805f11; }
+.lp-plano-inclui { display: flex; align-items: center; gap: 0.75rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #805f11; }
+.lp-plano-inclui::after { content: ""; flex: 1; height: 1px; background: rgba(23, 25, 26, 0.08); }
+.lp-plano-check { display: grid; place-items: center; flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin-top: 0.05rem; border-radius: 999px; color: #805f11; background: rgba(212, 175, 55, 0.18); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.4); }
+.lp-plano-destaque .lp-plano-check { color: #fff; background: #a77d16; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-plano-destaque::after { animation: none; }
+}
 .lp-duvidas { background: #fdfcf9; }
 .lp-cta { background: linear-gradient(180deg, #fdfcf9, #f4efdf); }
 .lp-cta .lp-cinza { background-image: linear-gradient(110deg, #805f11, #ad8732); }
