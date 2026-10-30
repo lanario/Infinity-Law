@@ -211,6 +211,7 @@ export function HeroTelas() {
   const [pausado, setPausado] = useState(false);
   const [emFoco, setEmFoco] = useState(false);
   const [visivel, setVisivel] = useState(true);
+  const [movimentoReduzido, setMovimentoReduzido] = useState(false);
   const raizRef = useRef<HTMLDivElement>(null);
   const palcoRef = useRef<HTMLDivElement>(null);
   const paineisRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -219,55 +220,57 @@ export function HeroTelas() {
   const anteriorRef = useRef<number | null>(null);
   const timerRef = useRef<gsap.core.Tween | null>(null);
 
+  useEffect(() => {
+    const preferencia = window.matchMedia(SEM_MOVIMENTO);
+    const atualizar = () => setMovimentoReduzido(preferencia.matches);
+    atualizar();
+    preferencia.addEventListener("change", atualizar);
+    return () => preferencia.removeEventListener("change", atualizar);
+  }, []);
+
   useEfeitoDeLayout(() => {
     const palco = palcoRef.current;
     if (palco) gsap.set(palco, { rotationX: 16, rotationY: -18, rotationZ: 3 });
   }, []);
 
-  // Posiciona a pilha: a tela ativa na frente, as demais recuando como folhas.
+  // Preserva a posição atual entre trocas; reverter o contexto aqui fazia a pilha saltar.
   useEfeitoDeLayout(() => {
     const parado = window.matchMedia(SEM_MOVIMENTO).matches;
-    const total = TELAS.length;
     const anterior = anteriorRef.current;
     anteriorRef.current = ativo;
+    const transicao = gsap.timeline();
 
     paineisRef.current.forEach((painel, i) => {
       if (!painel) return;
-      const d = (i - ativo + total) % total;
-      const alvo = { x: d * 14, y: d * -20, z: d * -70, rotationX: 0, opacity: d > 3 ? 0 : 1 - d * 0.22 };
-      gsap.killTweensOf(painel);
-      if (parado || anterior === null) {
-        gsap.set(painel, alvo);
+      const distancia = (i - ativo + TELAS.length) % TELAS.length;
+      const alvo = { x: distancia * 14, y: distancia * -20, z: distancia * -70, rotationX: 0, opacity: distancia > 3 ? 0 : 1 - distancia * 0.22 };
+      if (parado || anterior === null || anterior === ativo) {
+        transicao.set(painel, alvo, 0);
       } else if (i === anterior) {
-        // A tela que sai se solta para cima e volta pelo fundo da pilha.
-        gsap
-          .timeline()
-          .to(painel, { y: -70, z: 140, rotationX: -10, duration: 0.55, ease: "power3.in" })
-          .to(painel, { opacity: 0, duration: 0.22, ease: "power2.in" }, 0)
-          .set(painel, { ...alvo, y: alvo.y - 30, opacity: 0 })
-          .to(painel, { y: alvo.y, opacity: alvo.opacity, duration: 0.7, ease: "expo.out" });
+        transicao
+          .to(painel, { y: -55, z: 100, rotationX: -6, duration: 0.45, ease: "power2.inOut" }, 0)
+          .to(painel, { opacity: 0, duration: 0.25 }, 0)
+          .set(painel, { ...alvo, opacity: 0 }, 0.45)
+          .to(painel, { opacity: alvo.opacity, duration: 0.55, ease: "power2.out" }, 0.45);
       } else {
-        gsap.to(painel, { ...alvo, duration: 0.9, delay: 0.2, ease: "expo.out" });
+        transicao.to(painel, { ...alvo, duration: 0.85, ease: "power3.inOut" }, 0.1);
       }
     });
 
     chipsRef.current.forEach((grupo, i) => {
       if (!grupo) return;
-      const chips = grupo.children;
-      gsap.killTweensOf(chips);
       if (i !== ativo) {
-        gsap.to(chips, { opacity: 0, z: 0, duration: parado ? 0 : 0.3 });
+        transicao.to(grupo.children, { opacity: 0, z: 0, duration: parado ? 0 : 0.2 }, 0);
       } else if (parado) {
-        gsap.set(chips, { opacity: 1, z: 90, y: 0 });
+        transicao.set(grupo.children, { opacity: 1, z: 90, y: 0 }, 0);
       } else {
-        gsap.fromTo(
-          chips,
-          { opacity: 0, z: 0, y: 12 },
-          { opacity: 1, z: 90, y: 0, duration: 1, stagger: 0.14, delay: 0.45, ease: "expo.out" },
-        );
+        transicao.fromTo(grupo.children, { opacity: 0, z: 0, y: 10 }, {
+          opacity: 1, z: 90, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
+        }, 0.45);
       }
     });
-  }, [ativo]);
+    return () => { transicao.kill(); };
+  }, [ativo, movimentoReduzido]);
 
   // Barra de progresso da aba ativa funciona como relógio da troca automática.
   useEffect(() => {
@@ -285,21 +288,25 @@ export function HeroTelas() {
       timerRef.current?.kill();
       timerRef.current = null;
     };
-  }, [ativo]);
+  }, [ativo, movimentoReduzido]);
 
   useEffect(() => {
     const timer = timerRef.current;
     if (!timer) return;
     if (pausado || emFoco || !visivel) timer.pause();
     else timer.resume();
-  }, [ativo, pausado, emFoco, visivel]);
+  }, [ativo, pausado, emFoco, visivel, movimentoReduzido]);
 
   useEffect(() => {
     const raiz = raizRef.current;
     if (!raiz) return;
-    const observador = new IntersectionObserver((entradas) => setVisivel(entradas[0]?.isIntersecting ?? false));
+    let intersectando = false;
+    const aoMudarAba = () => setVisivel(intersectando && !document.hidden);
+    const observador = new IntersectionObserver((entradas) => {
+      intersectando = entradas[0]?.isIntersecting ?? false;
+      aoMudarAba();
+    });
     observador.observe(raiz);
-    const aoMudarAba = () => setVisivel(!document.hidden);
     document.addEventListener("visibilitychange", aoMudarAba);
     return () => {
       observador.disconnect();
@@ -330,8 +337,9 @@ export function HeroTelas() {
       raiz.removeEventListener("pointermove", mover);
       raiz.removeEventListener("pointerleave", sair);
       gsap.killTweensOf(palco);
+      gsap.set(palco, { rotationX: 16, rotationY: -18, rotationZ: 3 });
     };
-  }, []);
+  }, [movimentoReduzido]);
 
   const escolher = (indice: number) => {
     setPausado(true);
@@ -352,7 +360,7 @@ export function HeroTelas() {
         <div className="pointer-events-none absolute inset-x-[10%] bottom-[2%] h-[40%] rounded-full bg-[radial-gradient(closest-side,rgba(212,175,55,0.28),transparent)] blur-2xl" />
         <div
           ref={palcoRef}
-          className="relative aspect-[16/11] [container-type:inline-size] [transform-style:preserve-3d] [transform:rotateX(16deg)_rotateY(-18deg)_rotateZ(3deg)]"
+          className="relative aspect-[16/10] [container-type:inline-size] [transform-style:preserve-3d] [transform:rotateX(16deg)_rotateY(-18deg)_rotateZ(3deg)]"
         >
           {TELAS.map(({ rotulo, Tela }, i) => (
             <div
@@ -360,7 +368,7 @@ export function HeroTelas() {
               ref={(el) => {
                 paineisRef.current[i] = el;
               }}
-              className="lp-tela absolute inset-0 text-[2.3cqw]"
+              className="lp-tela absolute inset-0 text-[2.65cqw]"
             >
               <Tela />
             </div>
@@ -371,7 +379,7 @@ export function HeroTelas() {
               ref={(el) => {
                 chipsRef.current[i] = el;
               }}
-              className="pointer-events-none absolute inset-0 text-[2.3cqw] [transform-style:preserve-3d]"
+              className="pointer-events-none absolute inset-0 text-[2.65cqw] [transform-style:preserve-3d]"
             >
               {chips.map((chip) => (
                 <span key={chip.texto} className={`lp-chip absolute opacity-0 ${chip.classe}`}>
@@ -384,17 +392,17 @@ export function HeroTelas() {
         </div>
       </div>
 
-      <div className="mt-2 flex items-start gap-3">
-        <div role="group" aria-label="Telas do sistema" className="lp-sem-barra -mx-1 flex flex-1 gap-0.5 overflow-x-auto px-1">
+      <div className="lp-telas-controles">
+        <div role="group" aria-label="Telas do sistema" className="lp-telas-abas">
           {TELAS.map(({ rotulo }, i) => (
             <button
               key={rotulo}
               type="button"
               aria-pressed={i === ativo}
               onClick={() => escolher(i)}
-              className={`relative shrink-0 overflow-hidden rounded-full px-2.5 py-1.5 text-[12.5px] font-medium transition-colors ${i === ativo ? "bg-black/[0.06] text-[#17191a]" : "text-[#66666b] hover:text-neutral-800"}`}
+              className={`relative shrink-0 overflow-hidden rounded-full px-2.5 py-1.5 text-[12.5px] font-medium transition-colors ${i === ativo ? "bg-[#D4AF37]/15 text-[#17191a] ring-1 ring-inset ring-[#D4AF37]/60" : "text-[#66666b] hover:bg-[#D4AF37]/[0.08] hover:text-neutral-800"}`}
             >
-              <span className={`mr-1 text-[10.5px] tabular-nums ${i === ativo ? "text-[#805F11]" : "text-[#66666b]"}`}>
+              <span className="mr-1 text-[10.5px] font-semibold tabular-nums text-[#805F11]">
                 0{i + 1}
               </span>
               {rotulo}
@@ -403,7 +411,7 @@ export function HeroTelas() {
                   barrasRef.current[i] = el;
                 }}
                 aria-hidden="true"
-                className="absolute inset-x-2.5 bottom-0.5 h-px origin-left scale-x-0 bg-[#D4AF37]"
+                className="absolute inset-x-3 bottom-[3px] h-[2px] origin-left scale-x-0 rounded-full bg-[#D4AF37]"
               />
             </button>
           ))}
@@ -411,13 +419,14 @@ export function HeroTelas() {
         <button
           type="button"
           onClick={() => setPausado((valor) => !valor)}
+          disabled={movimentoReduzido}
           aria-label={pausado ? "Retomar troca automática das telas" : "Pausar troca automática das telas"}
-          className="lp-link mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10"
+          className="lp-telas-pausa lp-link rounded-full border border-[#D4AF37]/60 bg-[#D4AF37]/10 text-[#805F11] hover:bg-[#D4AF37]/20 disabled:hidden"
         >
           {pausado ? <Play className="h-3.5 w-3.5" aria-hidden="true" /> : <Pause className="h-3.5 w-3.5" aria-hidden="true" />}
         </button>
       </div>
-      <p className="mt-2 min-h-[2.5rem] px-3 text-sm leading-snug text-neutral-600">
+      <p className="lp-telas-legenda mt-2 px-2 text-sm leading-relaxed text-neutral-600">
         <span className="font-medium text-neutral-800">{atual.rotulo}.</span> {atual.texto}{" "}
         <span className="text-[#66666b]">Dados ilustrativos.</span>
       </p>

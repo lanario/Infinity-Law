@@ -35,7 +35,8 @@ export function TerrainCanvas({ className }: { className?: string }) {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    const parado = window.matchMedia(SEM_MOVIMENTO).matches;
+    const preferencia = window.matchMedia(SEM_MOVIMENTO);
+    let parado = preferencia.matches;
     let largura = 0;
     let alturaTela = 0;
     let linhas = 0;
@@ -49,6 +50,9 @@ export function TerrainCanvas({ className }: { className?: string }) {
       const w = largura;
       const h = alturaTela;
       if (!w || !h) return;
+      // Cada frame começa opaco e claro, sem acumular modos de composição.
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
       const horizonte = h * 0.08;
       const focoX = Math.min(Math.max(w * 0.34, 240), 560);
       const focoY = h * 0.98;
@@ -61,13 +65,13 @@ export function TerrainCanvas({ className }: { className?: string }) {
       ctx.fillRect(0, 0, w, h);
 
       const traco = ctx.createLinearGradient(0, 0, w, 0);
-      traco.addColorStop(0, "rgba(23,25,26,0.3)");
-      traco.addColorStop(0.3, "rgba(23,25,26,0.2)");
+      traco.addColorStop(0, "rgba(167,150,106,0.24)");
+      traco.addColorStop(0.3, "rgba(167,150,106,0.28)");
       traco.addColorStop(0.42, "rgba(167,125,22,0.55)");
-      traco.addColorStop(0.5, "rgba(128,95,17,0.85)");
+      traco.addColorStop(0.5, "rgba(167,125,22,0.55)");
       traco.addColorStop(0.58, "rgba(167,125,22,0.55)");
-      traco.addColorStop(0.7, "rgba(23,25,26,0.2)");
-      traco.addColorStop(1, "rgba(23,25,26,0.3)");
+      traco.addColorStop(0.7, "rgba(167,150,106,0.28)");
+      traco.addColorStop(1, "rgba(167,150,106,0.24)");
       ctx.lineWidth = 1;
       ctx.lineJoin = "round";
 
@@ -105,11 +109,10 @@ export function TerrainCanvas({ className }: { className?: string }) {
       }
       ctx.stroke();
 
-      // Brilho do vale tingindo a cena (multiply mantém o fundo claro legível).
-      ctx.globalCompositeOperation = "multiply";
+      // Luz dourada translúcida sobre o marfim, sem escurecer a superfície.
       const brilho = ctx.createRadialGradient(w / 2, h * 0.62, 0, w / 2, h * 0.62, Math.max(w * 0.32, 220));
-      brilho.addColorStop(0, "rgba(212,175,55,0.32)");
-      brilho.addColorStop(0.45, "rgba(212,175,55,0.12)");
+      brilho.addColorStop(0, "rgba(233,207,122,0.18)");
+      brilho.addColorStop(0.45, "rgba(233,207,122,0.06)");
       brilho.addColorStop(1, "rgba(212,175,55,0)");
       ctx.fillStyle = brilho;
       ctx.fillRect(0, 0, w, h);
@@ -149,6 +152,11 @@ export function TerrainCanvas({ className }: { className?: string }) {
     };
 
     const aoMudarAba = () => (document.hidden ? parar() : iniciar());
+    const aoMudarPreferencia = () => {
+      parado = preferencia.matches;
+      if (parado) { parar(); desenhar(); }
+      else iniciar();
+    };
 
     const observadorTamanho = new ResizeObserver(redimensionar);
     observadorTamanho.observe(canvas);
@@ -159,12 +167,14 @@ export function TerrainCanvas({ className }: { className?: string }) {
     });
     observadorVisao.observe(canvas);
     document.addEventListener("visibilitychange", aoMudarAba);
+    preferencia.addEventListener("change", aoMudarPreferencia);
 
     return () => {
       parar();
       observadorTamanho.disconnect();
       observadorVisao.disconnect();
       document.removeEventListener("visibilitychange", aoMudarAba);
+      preferencia.removeEventListener("change", aoMudarPreferencia);
     };
   }, []);
 

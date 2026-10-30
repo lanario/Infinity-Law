@@ -17,7 +17,9 @@ export function LandingMotion({ children }: { children: ReactNode }) {
     gsap.registerPlugin(ScrollTrigger);
     const mm = gsap.matchMedia(raiz);
 
-    mm.add(COM_MOVIMENTO, () => {
+    mm.add({ movimento: COM_MOVIMENTO, desktop: "(min-width: 1024px)" }, (contexto) => {
+      const { movimento, desktop } = contexto.conditions ?? {};
+      if (!movimento) return;
       const q = gsap.utils.selector(raiz);
 
       gsap
@@ -35,37 +37,67 @@ export function LandingMotion({ children }: { children: ReactNode }) {
 
       const hero = q("[data-hero-secao]")[0];
       if (hero) {
-        const rolagem = { trigger: hero, start: "top top", end: "bottom top", scrub: true };
-        gsap.to(q("[data-hero-parallax]"), { yPercent: -18, opacity: 0, ease: "none", scrollTrigger: rolagem });
-        gsap.to(q("[data-terreno-parallax]"), { yPercent: 14, ease: "none", scrollTrigger: rolagem });
+        const rolagem = { trigger: hero, start: "top top", end: "bottom top", scrub: 0.8 };
+        if (desktop) {
+          gsap.to(q(".lp-hero-copy"), { y: -60, ease: "none", scrollTrigger: rolagem });
+          gsap.to(q("[data-scene-parallax]"), { y: 45, ease: "none", scrollTrigger: rolagem });
+        }
+        gsap.to(q("[data-terreno-parallax]"), { yPercent: desktop ? -16 : -6, ease: "none", scrollTrigger: rolagem });
       }
 
-      const revelar = q("[data-reveal]");
-      gsap.set(revelar, { opacity: 0, y: 28 });
-      ScrollTrigger.batch(revelar, {
-        start: "top 88%",
-        once: true,
-        onEnter: (lote) =>
-          gsap.to(lote, { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.08, overwrite: true }),
+      // Tweens criados no contexto são revertidos ao sair ou reduzir movimento.
+      // Revelação presa ao scroll (scrub), no mesmo estilo do parallax do hero: volta ao rolar para cima.
+      q("[data-reveal]").forEach((el) => {
+        gsap.fromTo(el, { opacity: 0, y: desktop ? 70 : 36 }, {
+          opacity: 1, y: 0, ease: "none",
+          scrollTrigger: { trigger: el, start: "top 98%", end: "top 68%", scrub: 0.8 },
+        });
+      });
+
+      // Cada seção abaixo do hero sobe mais devagar que a página ao sair, como o texto do hero.
+      q("main > section:not([data-hero-secao])").forEach((secao) => {
+        const conteudo = Array.from(secao.children).filter((filho) => filho.getAttribute("aria-hidden") !== "true");
+        gsap.fromTo(conteudo, { y: desktop ? 50 : 20 }, {
+          y: desktop ? -50 : -20, ease: "none",
+          scrollTrigger: { trigger: secao, start: "top bottom", end: "bottom top", scrub: 0.8 },
+        });
+      });
+
+      q(".lp-section").forEach((secao) => {
+        gsap.fromTo(secao, { "--lp-section-progress": 0 }, {
+          "--lp-section-progress": 1, ease: "none",
+          scrollTrigger: { trigger: secao, start: "top 92%", end: "top 30%", scrub: 0.7 },
+        });
+      });
+
+      q("[data-parallax]").forEach((el) => {
+        const deslocamento = Number(el.getAttribute("data-parallax")) * (desktop ? 1 : 0.25);
+        gsap.fromTo(el, { y: -deslocamento }, {
+          y: deslocamento, ease: "none",
+          scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: 1 },
+        });
+      });
+
+      gsap.fromTo(q("[data-footer-marca]"), { yPercent: 65, opacity: 0.35 }, {
+        yPercent: 0, opacity: 1, ease: "none",
+        scrollTrigger: { trigger: q(".lp-footer-assinatura")[0], start: "top bottom", end: "bottom bottom", scrub: 0.6 },
+      });
+      gsap.to(q(".lp-footer-traco"), {
+        strokeDashoffset: -1500, ease: "none",
+        scrollTrigger: { trigger: q(".lp-footer")[0], start: "top bottom", end: "bottom bottom", scrub: 1 },
       });
 
       q("[data-count]").forEach((el) => {
         const alvo = Number(el.getAttribute("data-count"));
         const estado = { valor: 0 };
-        el.textContent = "0";
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 90%",
-          once: true,
-          onEnter: () =>
-            gsap.to(estado, {
-              valor: alvo,
-              duration: 1.6,
-              ease: "power3.out",
-              onUpdate: () => {
-                el.textContent = String(Math.round(estado.valor));
-              },
-            }),
+        gsap.to(estado, {
+          scrollTrigger: { trigger: el, start: "top 90%", once: true },
+          valor: alvo,
+          duration: 1.6,
+          ease: "power3.out",
+          onUpdate: () => {
+            el.textContent = String(Math.round(estado.valor));
+          },
         });
       });
 
@@ -82,10 +114,20 @@ export function LandingMotion({ children }: { children: ReactNode }) {
         );
       }
 
-      return () => passos?.classList.remove("lp-passos-vivos");
+      return () => {
+        passos?.classList.remove("lp-passos-vivos");
+        q("[data-count]").forEach((el) => { el.textContent = el.getAttribute("data-count"); });
+      };
     });
 
+    const atualizar = () => ScrollTrigger.refresh();
+    const perguntas = raiz.querySelectorAll("details");
+    perguntas.forEach((el) => el.addEventListener("toggle", atualizar));
+    let desmontado = false;
+    document.fonts.ready.then(() => { if (!desmontado) atualizar(); });
     return () => {
+      desmontado = true;
+      perguntas.forEach((el) => el.removeEventListener("toggle", atualizar));
       mm.revert();
       document.documentElement.classList.remove("lp-anim");
     };

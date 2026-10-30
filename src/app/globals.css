@@ -848,6 +848,7 @@ body:has(.lp-root) {
 }
 
 .lp-root {
+  color-scheme: light;
   --lp-bg: #f7f6f1;
   --lp-ouro: #d4af37;
   --lp-ouro-claro: #e9cf7a;
@@ -873,8 +874,10 @@ body:has(.lp-root) {
 .lp-titulo {
   font-weight: 600;
   letter-spacing: -0.055em;
-  line-height: 0.95;
+  line-height: 1.04;
 }
+
+.lp-section-heading h2 { line-height: 1.08; text-wrap: balance; }
 
 .lp-cinza {
   background: linear-gradient(180deg, #7c7c82 0%, #5f5f65 100%);
@@ -1019,43 +1022,39 @@ body:has(.lp-root) {
 }
 
 .lp-nav {
-  transition:
-    background-color 400ms var(--lp-curva),
-    border-color 400ms var(--lp-curva),
-    box-shadow 400ms var(--lp-curva);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background-color 500ms var(--lp-curva), border-color 500ms var(--lp-curva), box-shadow 500ms var(--lp-curva), backdrop-filter 500ms var(--lp-curva);
 }
 
 .lp-nav[data-rolou="true"] {
-  background-color: rgba(255, 255, 255, 0.88);
-  border-color: rgba(23, 25, 26, 0.1);
-  box-shadow: 0 20px 50px -28px rgba(23, 25, 26, 0.35);
+  background-color: rgba(255, 255, 255, 0.78);
+  border-color: rgba(167, 125, 22, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px -20px rgba(93, 74, 30, 0.22);
 }
 
-/* Aba do logo: filete dourado no topo e brilho que vaza para baixo. */
-.lp-nav-marca {
-  position: relative;
-}
+.lp-nav-marca { position: relative; }
 
-.lp-nav-marca::before {
+/* Dois filetes se desenham em sequência, do ouro claro ao ouro da marca. */
+.lp-nav-link { position: relative; align-items: center; min-height: 40px; }
+.lp-nav-link::before,
+.lp-nav-link::after {
   content: "";
   position: absolute;
-  left: 14%;
-  right: 14%;
-  top: -1px;
+  left: 0.75rem;
+  right: 0.75rem;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--lp-ouro), transparent);
+  background: var(--lp-ouro-medio);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 450ms var(--lp-curva);
 }
-
-.lp-nav-marca::after {
-  content: "";
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 0;
-  height: 80%;
-  background: radial-gradient(60% 100% at 50% 0%, rgba(212, 175, 55, 0.2), transparent 70%);
-  pointer-events: none;
-}
+.lp-nav-link::before { bottom: 4px; background: var(--lp-ouro-claro); }
+.lp-nav-link::after { bottom: 1px; transition-delay: 80ms; }
+.lp-nav-link:is(:hover, :focus-visible)::before,
+.lp-nav-link:is(:hover, :focus-visible)::after { transform: scaleX(1); transform-origin: left; }
 
 .lp-link {
   color: #52525b;
@@ -1077,7 +1076,7 @@ body:has(.lp-root) {
     inset 0 1px 0 #fff,
     0 1px 2px rgba(23, 25, 26, 0.04),
     0 18px 40px -28px rgba(23, 25, 26, 0.28);
-  transition: border-color 400ms var(--lp-curva);
+  transition: border-color 400ms var(--lp-curva), box-shadow 400ms var(--lp-curva);
 }
 
 /* Holofote que segue o cursor (variáveis definidas em landing-motion). */
@@ -1142,9 +1141,7 @@ body:has(.lp-root) {
     background-color 500ms var(--lp-curva);
 }
 
-.lp-passos-vivos .lp-passo:not(.is-active) {
-  opacity: 0.4;
-}
+.lp-passos-vivos .lp-passo:not(.is-active) { opacity: 1; }
 
 .lp-passos-vivos .lp-passo:not(.is-active) .lp-passo-numero {
   color: #a1a1aa;
@@ -1190,7 +1187,112 @@ body:has(.lp-root) {
   }
 }
 
-/* Telas do hero: painéis de vidro escuro empilhados em 3D. */
+.lp-header .lp-nav-marca { min-height: 56px; }
+
+.lp-hero { background: linear-gradient(180deg, #fcfbf8 0%, #f7f6f1 90%); }
+.lp-hero [data-hero-parallax] { padding-top: clamp(8rem, 15vh, 12rem); }
+.lp-hero-copy { padding-bottom: 1rem; }
+.lp-hero-palco { min-width: 0; }
+.lp-terreno { pointer-events: none; margin-top: 1rem; }
+.lp-section { position: relative; isolation: isolate; }
+.lp-section::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37 45%, #ead9a6, transparent);
+  transform: scaleX(var(--lp-section-progress, 1));
+  transform-origin: left;
+}
+.lp-section-heading > p:first-child { text-transform: none; letter-spacing: 0.02em; font-size: 0.8rem; }
+.lp-modulos { background: linear-gradient(180deg, #fcfbf8, #f3f0e7); }
+.lp-section-luz {
+  position: absolute;
+  inset: 4% 0 auto auto;
+  z-index: -1;
+  width: min(60vw, 800px);
+  height: 70%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at right, #e9cf7a26, transparent 65%);
+}
+.lp-seguranca { background: #fffefa; }
+.lp-planos { background: linear-gradient(180deg, #f7f6f1, #fdfcf9); }
+.lp-plano-destaque { background: linear-gradient(155deg, #fffdf5, #f9f1d9 160%); }
+.lp-duvidas { background: #fdfcf9; }
+.lp-cta { background: linear-gradient(180deg, #fdfcf9, #f4efdf); }
+.lp-cta .lp-cinza { background-image: linear-gradient(110deg, #805f11, #ad8732); }
+.lp-card:focus-within { border-color: #a77d1666; }
+.lp-card[data-spotlight]:hover { box-shadow: 0 20px 48px -28px #80622140, inset 0 1px 0 #fff; }
+.lp-btn svg { transition: transform 350ms var(--lp-curva); }
+.lp-btn:hover svg { transform: translateX(3px); }
+.lp-faq { transition: background-color 300ms var(--lp-curva); }
+.lp-faq[open] { background: #f5f0e34d; }
+.lp-faq[open] > p { animation: lp-faq-entrada 400ms var(--lp-curva); }
+@keyframes lp-faq-entrada { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.lp-menu { max-height: calc(100svh - 100px); overflow-y: auto; overscroll-behavior: contain; animation: lp-faq-entrada 350ms var(--lp-curva); }
+.lp-menu .lp-nav-link { display: flex; }
+.lp-marquee:hover { animation-play-state: paused; }
+
+/* Rodapé: assinatura ampla e um infinito desenhado sobre papel claro. */
+.lp-footer { position: relative; isolation: isolate; overflow: hidden; background: #f3f0e6; border-top: 1px solid #a77d1626; }
+.lp-footer-topo { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-bottom: 2.5rem; border-bottom: 1px solid #a77d1626; }
+.lp-footer-voltar { display: inline-flex; flex-shrink: 0; align-items: center; gap: 1rem; font-size: 0.75rem; color: #625b4c; }
+.lp-footer-voltar > span { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #a77d1640; border-radius: 50%; transition: background 350ms, transform 350ms var(--lp-curva); }
+.lp-footer-voltar:hover > span { background: #e9cf7a40; transform: translateY(-4px); }
+.lp-footer-link { display: inline-block; position: relative; color: #625e54; padding-block: 2px; transition: color 300ms; }
+.lp-footer-link::after { content: ""; position: absolute; bottom: 0; inset-inline: 0; height: 1px; background: #a77d16; transform: scaleX(0); transform-origin: right; transition: transform 350ms var(--lp-curva); }
+.lp-footer-link:is(:hover, :focus-visible) { color: #805f11; }
+.lp-footer-link:is(:hover, :focus-visible)::after { transform: scaleX(1); transform-origin: left; }
+.lp-footer-orbita { position: absolute; right: -15%; top: 8%; width: 65%; z-index: -1; pointer-events: none; opacity: 0.28; }
+.lp-footer-orbita svg { width: 100%; stroke: #a77d16; stroke-width: 0.6; }
+.lp-footer-traco { stroke-width: 1.5; stroke-dasharray: 120 1900; }
+.lp-footer-assinatura { overflow: hidden; padding-block: 1rem 2.25rem; font-size: clamp(4rem, 14.1vw, 11.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.075em; white-space: nowrap; color: #bfa66b; }
+.lp-footer-assinatura > span { display: block; }
+
+.lp-telas-controles { display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem; }
+.lp-telas-abas { display: flex; flex: 1; min-width: 0; flex-wrap: wrap; gap: 0.25rem; padding: 4px; }
+.lp-telas-abas button { min-height: 40px; }
+.lp-telas-pausa { display: inline-flex; width: 40px; height: 40px; flex-shrink: 0; align-items: center; justify-content: center; margin-top: 4px; }
+.lp-telas-pausa:disabled { display: none; }
+.lp-telas-legenda { min-height: 4rem; }
+.lp-permissoes { table-layout: fixed; }
+.lp-permissoes th:first-child { width: 42%; }
+.lp-permissoes th, .lp-permissoes td { padding-inline: 2px; }
+
+@media (min-width: 1024px) {
+  .lp-plano-descricao { min-height: 4.5em; }
+  .lp-hero [data-hero-parallax] { min-height: 650px; min-height: min(78svh, 850px); }
+  .lp-terreno { margin-top: -1rem; min-height: 180px; }
+  .lp-modulos .lp-card:first-child { border-radius: 2rem 1.5rem 1.5rem 1.5rem; }
+}
+@media (max-width: 639px) {
+  .lp-cantos { margin-inline: 8px; }
+  .lp-telas-controles { position: relative; display: block; }
+  .lp-telas-abas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-telas-abas button { text-align: left; }
+  .lp-telas-pausa { position: absolute; right: 4px; bottom: 4px; margin-top: 0; }
+  .lp-permissoes { font-size: 0.75rem; }
+  .lp-telas-legenda { min-height: 5.25rem; }
+  .lp-hero [data-hero-parallax] { padding-top: 7.5rem; gap: 2rem; }
+  .lp-hero .lp-titulo { font-size: clamp(2.5rem, 10.6vw, 4rem); }
+  .lp-terreno { min-height: 135px; }
+  .lp-footer-topo { align-items: flex-start; flex-direction: column; }
+  .lp-footer-orbita { top: 30%; right: -65%; width: 140%; }
+  .lp-footer-assinatura { font-size: 15vw; }
+}
+@media (max-width: 379px) {
+  .lp-header { padding-inline: 10px; }
+  .lp-nav > div { gap: 4px; }
+  .lp-nav-marca { padding-inline: 8px; }
+  .lp-nav-marca > div { gap: 6px; }
+  .lp-nav-marca .font-serif { font-size: 14px; }
+  .lp-nav .lp-btn { padding-inline: 12px; font-size: 12px; }
+}
+
+/* Telas do hero: superfícies claras empilhadas em 3D. */
+.lp-tela:not(:first-child) { opacity: 0; }
 .lp-tela {
   overflow: hidden;
   border: 1px solid rgba(23, 25, 26, 0.1);
@@ -1198,7 +1300,7 @@ body:has(.lp-root) {
   background: linear-gradient(180deg, #fff 0%, #faf9f5 100%);
   box-shadow:
     inset 0 1px 0 #fff,
-    0 40px 80px -36px rgba(23, 25, 26, 0.4),
+    0 32px 64px -34px rgba(113, 90, 38, 0.26),
     0 0 0 1px rgba(23, 25, 26, 0.04);
   backface-visibility: hidden;
 }
@@ -1235,18 +1337,25 @@ body:has(.lp-root) {
   inset: 2% 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) top left / 14px 1px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) top left / 1px 14px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) top right / 14px 1px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) top right / 1px 14px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) bottom left / 14px 1px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) bottom left / 1px 14px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) bottom right / 14px 1px,
-    linear-gradient(rgba(23, 25, 26, 0.22), rgba(23, 25, 26, 0.22)) bottom right / 1px 14px;
+    linear-gradient(#d4af37, #d4af37) top left / 18px 2px,
+    linear-gradient(#d4af37, #d4af37) top left / 2px 18px,
+    linear-gradient(#d4af37, #d4af37) top right / 18px 2px,
+    linear-gradient(#d4af37, #d4af37) top right / 2px 18px,
+    linear-gradient(#d4af37, #d4af37) bottom left / 18px 2px,
+    linear-gradient(#d4af37, #d4af37) bottom left / 2px 18px,
+    linear-gradient(#d4af37, #d4af37) bottom right / 18px 2px,
+    linear-gradient(#d4af37, #d4af37) bottom right / 2px 18px;
   background-repeat: no-repeat;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .lp-root *, .lp-root *::before, .lp-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .lp-anim [data-hero], .lp-anim [data-hero-word] { opacity: 1; transform: none; }
+  .lp-marquee { flex-wrap: wrap; justify-content: center; width: auto; gap: 0.75rem; }
+  .lp-marquee [aria-hidden="true"] { display: none; }
   .lp-marquee,
   .lp-anel {
     animation: none;

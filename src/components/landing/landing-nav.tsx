@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
@@ -16,6 +16,7 @@ const LINKS = [
 export function LandingNav() {
   const [rolou, setRolou] = useState(false);
   const [aberto, setAberto] = useState(false);
+  const botaoRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const aoRolar = () => setRolou(window.scrollY > 24);
@@ -25,28 +26,40 @@ export function LandingNav() {
   }, []);
 
   useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const fecharNoDesktop = () => { if (desktop.matches) setAberto(false); };
+    desktop.addEventListener("change", fecharNoDesktop);
+    return () => desktop.removeEventListener("change", fecharNoDesktop);
+  }, []);
+
+  useEffect(() => {
     if (!aberto) return;
-    const aoTeclar = (evento: KeyboardEvent) => evento.key === "Escape" && setAberto(false);
+    const aoTeclar = (evento: KeyboardEvent) => {
+      if (evento.key === "Escape") {
+        setAberto(false);
+        botaoRef.current?.focus();
+      }
+    };
     window.addEventListener("keydown", aoTeclar);
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [aberto]);
 
   return (
-    <header className="fixed inset-x-0 top-3 z-50 px-4 sm:top-4">
+    <header className="lp-header fixed inset-x-0 top-3 z-50 px-4 sm:top-4">
       <nav
         aria-label="Principal"
         data-rolou={rolou || aberto}
-        className="lp-nav mx-auto max-w-5xl rounded-2xl border border-black/[0.08] bg-white/70 backdrop-blur-xl"
+        className="lp-nav mx-auto max-w-6xl rounded-2xl"
       >
         <div className="flex h-14 items-center justify-between gap-3 pr-2">
-          <Link href="/" aria-label="Infinity Law, início" className="lp-nav-marca flex h-full shrink-0 items-center whitespace-nowrap rounded-l-2xl px-4">
+          <a href="#inicio" onClick={() => setAberto(false)} aria-label="Infinity Law, início" className="lp-nav-marca flex h-full shrink-0 items-center whitespace-nowrap rounded-l-2xl px-4">
             <Logo size="sm" />
-          </Link>
+          </a>
 
           <ul className="hidden items-center gap-1 lg:flex">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="lp-link rounded-full px-3 py-2 text-[13px] font-medium">
+                <a href={link.href} className="lp-link lp-nav-link inline-flex px-3 py-2 text-[13px] font-medium">
                   {link.label}
                 </a>
               </li>
@@ -54,13 +67,14 @@ export function LandingNav() {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <Link href="/login" className="lp-link hidden rounded-full px-3 py-2 text-[13px] font-medium sm:inline-flex">
+            <Link href="/login" className="lp-link lp-nav-link hidden px-3 py-2 text-[13px] font-medium sm:inline-flex">
               Entrar
             </Link>
-            <Link href="/signup" className="lp-btn lp-btn-claro h-9 px-4 text-[13px]">
+            <Link href="/signup" className="lp-btn lp-btn-ouro h-10 px-5 text-[13px]">
               Criar conta
             </Link>
             <button
+              ref={botaoRef}
               type="button"
               className="lp-link inline-flex h-9 w-9 items-center justify-center rounded-full lg:hidden"
               aria-expanded={aberto}
@@ -74,13 +88,13 @@ export function LandingNav() {
         </div>
 
         {aberto && (
-          <ul id="lp-menu" className="border-t border-black/[0.08] p-2 lg:hidden">
+          <ul id="lp-menu" className="lp-menu border-t border-black/[0.08] p-2 lg:hidden">
             {LINKS.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
                   onClick={() => setAberto(false)}
-                  className="lp-link block rounded-xl px-3 py-3 text-sm font-medium hover:bg-black/[0.04]"
+                  className="lp-link lp-nav-link block px-3 py-3 text-sm font-medium"
                 >
                   {link.label}
                 </a>
