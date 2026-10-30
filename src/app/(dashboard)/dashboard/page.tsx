@@ -78,6 +78,38 @@ function bucketIndex(value: string, start: Date) {
   return Math.min(5, Math.max(0, Math.floor(daysFromStart / 5)));
 }
 
+function generateSparklinePoints(variacaoPercentual: number): number[] {
+  if (variacaoPercentual > 0) {
+    const intensity = Math.min(Math.max(Math.abs(variacaoPercentual), 5), 45);
+    const step = intensity / 7;
+    return [
+      28,
+      Math.round(28 + step * 1.4 - 2),
+      Math.round(28 + step * 1.1),
+      Math.round(28 + step * 3.2 - 2),
+      Math.round(28 + step * 2.9),
+      Math.round(28 + step * 5.1 - 2),
+      Math.round(28 + step * 4.8),
+      Math.round(28 + intensity + 18),
+    ];
+  }
+  if (variacaoPercentual < 0) {
+    const intensity = Math.min(Math.max(Math.abs(variacaoPercentual), 5), 45);
+    const step = intensity / 7;
+    return [
+      Math.round(28 + intensity + 18),
+      Math.round(28 + intensity + 18 - step * 1.4 + 2),
+      Math.round(28 + intensity + 18 - step * 1.1),
+      Math.round(28 + intensity + 18 - step * 3.2 + 2),
+      Math.round(28 + intensity + 18 - step * 2.9),
+      Math.round(28 + intensity + 18 - step * 5.1 + 2),
+      Math.round(28 + intensity + 18 - step * 4.8),
+      28,
+    ];
+  }
+  return [38, 38, 38, 38, 38, 38, 38, 38];
+}
+
 type DashboardProfile = NonNullable<Awaited<ReturnType<typeof getCurrentProfile>>>;
 
 // Módulo sem leitura: resultado vazio com a mesma forma das consultas (cartões recebem zeros/listas vazias).
@@ -106,6 +138,17 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
     chartStart.setUTCHours(0, 0, 0, 0);
     const chartStartDate = dateOnly(chartStart);
 
+    const prevMonthDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const prevMonthStartDate = dateOnly(prevMonthDate);
+    const currentMonthStartDate = dateOnly(currentMonthStart);
+    const rawMonthName = new Intl.DateTimeFormat("pt-BR", { month: "short" }).format(
+      new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    );
+    const nomeMesAnterior = rawMonthName.replace(".", "").replace(/^\w/, (c) => c.toUpperCase());
+    const receiptsStartDate =
+      prevMonthStartDate < chartStartDate ? prevMonthStartDate : chartStartDate;
+
     const [
       clientsRes,
       processesRes,
@@ -125,7 +168,7 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
         ? supabase.from("processos").select("id", { count: "exact", head: true }).eq("status", "ativo")
         : NO_ACCESS,
       canFinanceiro
-        ? supabase.from("parcelas").select("valor").in("status", ["pendente", "vencido"])
+        ? supabase.from("parcelas").select("valor, status").in("status", ["pendente", "vencido"])
         : NO_ACCESS,
       canFinanceiro
         ? supabase
@@ -133,7 +176,7 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
             .select("valor, data_pagamento")
             .eq("status", "pago")
             .not("data_pagamento", "is", null)
-            .gte("data_pagamento", chartStartDate)
+            .gte("data_pagamento", receiptsStartDate)
             .lte("data_pagamento", today)
         : NO_ACCESS,
       // Uma única consulta da janela [início de hoje, hoje+7d]; as 6 contagens de prazos/audiências saem daqui (no JS).
@@ -228,11 +271,73 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
       ).length;
     const tomorrowMs = tomorrowStart.getTime();
 
+    const trends = makeTrendBuckets(chartStart, now);
+    for (const receipt of paidReceiptsRes.data ?? []) {
+      if (!receipt.data_pagamento || receipt.data_pagamento < chartStartDate) continue;
+      const bucket = trends[bucketIndex(receipt.data_pagamento, chartStart)];
+      if (bucket) bucket.honorarios += receipt.valor ?? 0;
+    }
+    for (const movement of trendMovementsRes.data ?? []) {
+      const bucket = trends[bucketIndex(movement.data_movimento, chartStart)];
+      if (bucket) bucket.movimentacoes += 1;
+    }
+
+    let totalMesAtual = 0;
+    let totalMesAnterior = 0;
+
+    for (const receipt of paidReceiptsRes.data ?? []) {
+      if (!receipt.data_pagamento) continue;
+      if (receipt.data_pagamento >= currentMonthStartDate && receipt.data_pagamento <= today) {
+        totalMesAtual += receipt.valor ?? 0;
+      } else if (
+        receipt.data_pagamento >= prevMonthStartDate &&
+        receipt.data_pagamento < currentMonthStartDate
+      ) {
+        totalMesAnterior += receipt.valor ?? 0;
+      }
+    }
+
+    let variacaoPercentual = 0;
+    if (totalMesAnterior > 0) {
+      variacaoPercentual = Number(
+        (((totalMesAtual - totalMesAnterior) / totalMesAnterior) * 100).toFixed(1)
+      );
+    } else if (totalMesAtual > 0) {
+      variacaoPercentual = 100.0;
+    } else {
+      const primeiraMetade = trends.slice(0, 3).reduce((sum, b) => sum + b.honorarios, 0);
+      const segundaMetade = trends.slice(3, 6).reduce((sum, b) => sum + b.honorarios, 0);
+      if (primeiraMetade > 0) {
+        variacaoPercentual = Number(
+          (((segundaMetade - primeiraMetade) / primeiraMetade) * 100).toFixed(1)
+        );
+      } else if (segundaMetade > 0) {
+        variacaoPercentual = 100.0;
+      } else {
+        variacaoPercentual = 0.0;
+      }
+    }
+
+    const sparklinePoints = generateSparklinePoints(variacaoPercentual);
+
+    const parcelas = (receivableRes.data ?? []) as Array<{ valor: number | null; status: string | null }>;
+    const honorariosPendentes = parcelas
+      .filter((p) => p.status === "pendente")
+      .reduce((sum, p) => sum + (p.valor ?? 0), 0);
+    const honorariosVencidos = parcelas
+      .filter((p) => p.status === "vencido")
+      .reduce((sum, p) => sum + (p.valor ?? 0), 0);
+
     const kpiData: KPIBannerRapportData = {
       honorariosAReceber: (receivableRes.data ?? []).reduce(
         (sum, parcela) => sum + (parcela.valor ?? 0),
         0
       ),
+      honorariosPendentes,
+      honorariosVencidos,
+      variacaoPercentual,
+      comparativoMesLabel: `vs ${nomeMesAnterior}`,
+      sparklinePoints,
       processosAtivos: processesRes.count ?? 0,
       prazosCriticos: countEvents("prazo", nowMs, in48Hours.getTime(), true),
       prazosHoje: countEvents("prazo", todayStart.getTime(), tomorrowMs, false),
@@ -305,17 +410,6 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
       .filter((area) => area.processos > 0)
       .sort((a, b) => b.processos - a.processos);
 
-    const trends = makeTrendBuckets(chartStart, now);
-    for (const receipt of paidReceiptsRes.data ?? []) {
-      if (!receipt.data_pagamento) continue;
-      const bucket = trends[bucketIndex(receipt.data_pagamento, chartStart)];
-      if (bucket) bucket.honorarios += receipt.valor ?? 0;
-    }
-    for (const movement of trendMovementsRes.data ?? []) {
-      const bucket = trends[bucketIndex(movement.data_movimento, chartStart)];
-      if (bucket) bucket.movimentacoes += 1;
-    }
-
     return {
       status: "ok",
       data: {
@@ -326,7 +420,9 @@ async function getDashboardData(profile: DashboardProfile): Promise<DashboardRes
         areasDistribution,
         trends,
         hasTrendRecords:
-          (paidReceiptsRes.data?.length ?? 0) > 0 ||
+          (paidReceiptsRes.data?.some(
+            (receipt) => (receipt.data_pagamento ?? "") >= chartStartDate
+          ) ?? false) ||
           (trendMovementsRes.data?.length ?? 0) > 0,
       },
     };

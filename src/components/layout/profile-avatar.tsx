@@ -25,21 +25,14 @@ function getSignedUrl(path: string, force: boolean): Promise<string | null> {
   return promise;
 }
 
-export function ProfileAvatar({
-  path,
-  url,
-  initials,
-  name,
-  className,
-  imageClassName,
-}: {
-  path?: string | null;
-  url?: string | null;
-  initials: string;
-  name: string;
-  className?: string;
-  imageClassName?: string;
-}) {
+export function useProfileAvatarUrl(
+  path?: string | null,
+  url?: string | null,
+): {
+  imageUrl: string | null;
+  imageFailed: boolean;
+  markFailed: () => void;
+} {
   const [signedUrl, setSignedUrl] = useState<string | null>(() => (path ? signedUrlCache.get(path)?.url ?? null : null));
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -62,7 +55,31 @@ export function ProfileAvatar({
     };
   }, [path]);
 
-  const imageUrl = path ? signedUrl : url;
+  const imageUrl = (path ? signedUrl : url) ?? null;
+
+  return {
+    imageUrl,
+    imageFailed,
+    markFailed: () => setImageFailed(true),
+  };
+}
+
+export function ProfileAvatar({
+  path,
+  url,
+  initials,
+  name,
+  className,
+  imageClassName,
+}: {
+  path?: string | null;
+  url?: string | null;
+  initials: string;
+  name: string;
+  className?: string;
+  imageClassName?: string;
+}) {
+  const { imageUrl, imageFailed, markFailed } = useProfileAvatarUrl(path, url);
   const showImage = Boolean(imageUrl && !imageFailed);
 
   return (
@@ -80,7 +97,7 @@ export function ProfileAvatar({
         <img
           src={imageUrl!}
           alt=""
-          onError={() => setImageFailed(true)}
+          onError={markFailed}
           className={cn("h-full w-full object-cover", imageClassName)}
         />
       ) : initials ? (

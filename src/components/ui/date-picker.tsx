@@ -299,6 +299,7 @@ export function DatePicker({
       {open && <motion.div
         ref={popoverRef}
         id={`${id}-calendar`}
+        data-slot="date-picker-content"
         role="dialog"
         aria-label="Escolher data"
         initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 7, scale: 0.985 }}
@@ -306,33 +307,33 @@ export function DatePicker({
         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 5, scale: 0.99 }}
         transition={{ duration: reduceMotion ? 0.12 : 0.18, ease: "easeOut" }}
         style={{ top: position.top, left: position.left, width: position.width }}
-        className="fixed z-[100] max-h-[calc(100vh-24px)] overflow-y-auto rounded-2xl border border-stone-200 bg-white shadow-[0_20px_55px_-22px_rgba(23,25,26,0.42)]"
+        className="fixed z-[100] max-h-[calc(100vh-24px)] overflow-y-auto rounded-2xl border border-stone-200 bg-white shadow-[0_20px_55px_-22px_rgba(23,25,26,0.42)] dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-[0_20px_55px_-22px_rgba(0,0,0,0.75)]"
       >
-        <div className="flex items-center justify-between border-b border-stone-100 bg-[#fbf6e9]/80 px-3 py-2.5">
+        <div className="flex items-center justify-between border-b border-stone-100 bg-[#fbf6e9]/80 px-3 py-2.5 dark:border-zinc-800 dark:bg-zinc-800/80">
           <button
             type="button"
             onClick={() => setVisibleMonth((month) => new Date(month.getFullYear(), month.getMonth() - 1, 1))}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition hover:bg-white hover:text-[#17191a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition hover:bg-white hover:text-[#17191a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-100"
             aria-label="Mês anterior"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </button>
-          <p aria-live="polite" className="text-sm font-extrabold capitalize text-[#17191a]">
+          <p aria-live="polite" className="text-sm font-extrabold capitalize text-[#17191a] dark:text-zinc-100">
             {monthFormatter.format(visibleMonth)} {visibleMonth.getFullYear()}
           </p>
           <button
             type="button"
             onClick={() => setVisibleMonth((month) => new Date(month.getFullYear(), month.getMonth() + 1, 1))}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition hover:bg-white hover:text-[#17191a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition hover:bg-white hover:text-[#17191a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-100"
             aria-label="Próximo mês"
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 border-b border-stone-100 px-2 py-2 text-center">
+        <div className="grid grid-cols-7 border-b border-stone-100 px-2 py-2 text-center dark:border-zinc-800">
           {weekDays.map((day) => (
-            <span key={day} className="py-1 text-[10px] font-extrabold tracking-wide text-stone-400">{day}</span>
+            <span key={day} className="py-1 text-[10px] font-extrabold tracking-wide text-stone-400 dark:text-zinc-500">{day}</span>
           ))}
         </div>
 
@@ -363,19 +364,19 @@ export function DatePicker({
                   "relative mx-auto flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
                   isSelected
                     ? "bg-gold text-[#17191a] shadow-[0_4px_12px_-6px_rgba(138,107,18,0.7)]"
-                    : "text-stone-700 hover:bg-[#fbf6e9] hover:text-gold-dark",
-                  isToday && !isSelected && "ring-1 ring-inset ring-gold/80 text-gold-dark",
-                  outsideRange && "cursor-not-allowed text-stone-300 hover:bg-transparent hover:text-stone-300",
+                    : "text-stone-700 hover:bg-[#fbf6e9] hover:text-gold-dark dark:text-zinc-200 dark:hover:bg-[#D4AF37]/15 dark:hover:text-[#E5C158]",
+                  isToday && !isSelected && "ring-1 ring-inset ring-gold/80 text-gold-dark dark:text-[#E5C158]",
+                  outsideRange && "cursor-not-allowed text-stone-300 hover:bg-transparent hover:text-stone-300 dark:text-zinc-600 dark:hover:bg-transparent dark:hover:text-zinc-600",
                 )}
               >
                 {date.getDate()}
-                {isToday && <span className={cn("absolute bottom-1 h-1 w-1 rounded-full", isSelected ? "bg-[#17191a]" : "bg-gold-dark")} aria-hidden="true" />}
+                {isToday && <span className={cn("absolute bottom-1 h-1 w-1 rounded-full", isSelected ? "bg-[#17191a]" : "bg-gold-dark dark:bg-[#E5C158]")} aria-hidden="true" />}
               </button>
             );
           })}
         </div>
 
-        <div className="flex items-center justify-between border-t border-stone-100 px-4 py-2.5">
+        <div className="flex items-center justify-between border-t border-stone-100 px-4 py-2.5 dark:border-zinc-800">
           {!required ? (
             <button
               type="button"
@@ -387,7 +388,7 @@ export function DatePicker({
                 triggerRef.current?.focus();
               }}
               disabled={!value}
-              className="rounded-lg px-2 py-1 text-xs font-bold text-stone-500 transition hover:bg-stone-50 hover:text-[#17191a] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg px-2 py-1 text-xs font-bold text-stone-500 transition hover:bg-stone-50 hover:text-[#17191a] disabled:cursor-not-allowed disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             >
               Limpar
             </button>
@@ -396,7 +397,7 @@ export function DatePicker({
             type="button"
             onClick={() => selectDate(getToday())}
             disabled={!canChooseToday}
-            className="rounded-lg px-2 py-1 text-xs font-extrabold text-gold-dark transition hover:bg-[#fbf6e9] disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg px-2 py-1 text-xs font-extrabold text-gold-dark transition hover:bg-[#fbf6e9] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[#E5C158] dark:hover:bg-[#D4AF37]/15"
           >
             Hoje
           </button>
@@ -409,8 +410,8 @@ export function DatePicker({
   return (
     <div className={cn("w-full min-w-0", className)}>
       {label && (
-        <label htmlFor={`${id}-input`} className={cn("mb-1.5 block text-xs font-semibold text-stone-600", labelClassName)}>
-          {label}{required && <span className="ml-1 text-gold-dark" aria-hidden="true">*</span>}
+        <label htmlFor={`${id}-input`} className={cn("mb-1.5 block text-xs font-semibold text-stone-600 dark:text-zinc-400", labelClassName)}>
+          {label}{required && <span className="ml-1 text-gold-dark dark:text-[#E5C158]" aria-hidden="true">*</span>}
         </label>
       )}
       <div className="flex min-w-0 gap-2">
@@ -435,7 +436,7 @@ export function DatePicker({
             }}
             aria-describedby={`${id}-date-hint`}
             className={cn(
-              "h-11 w-full rounded-xl border border-stone-200 bg-white pl-10 pr-11 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 hover:border-stone-300 focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:opacity-60",
+              "h-11 w-full rounded-xl border border-stone-200 bg-white pl-10 pr-11 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 hover:border-stone-300 focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:hover:border-zinc-600 dark:disabled:bg-zinc-800/40",
               inputClassName,
             )}
           />
@@ -448,7 +449,7 @@ export function DatePicker({
             aria-haspopup="dialog"
             aria-expanded={open}
             aria-controls={open ? `${id}-calendar` : undefined}
-            className="absolute left-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-gold-dark transition hover:bg-[#fbf6e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-not-allowed disabled:opacity-50"
+            className="absolute left-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-gold-dark transition hover:bg-[#fbf6e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-not-allowed disabled:opacity-50 dark:text-[#E5C158] dark:hover:bg-[#D4AF37]/15"
           >
             <CalendarDays className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -457,7 +458,7 @@ export function DatePicker({
 
         {includeTime && (
           <label className="relative flex h-11 w-[7.5rem] shrink-0 items-center">
-            <Clock3 className="pointer-events-none absolute left-3 h-4 w-4 text-gold-dark" aria-hidden="true" />
+            <Clock3 className="pointer-events-none absolute left-3 h-4 w-4 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />
             <input
               type="time"
               required={required}
@@ -466,7 +467,7 @@ export function DatePicker({
               min={minDateValue === dateValue ? min?.slice(11, 16) : undefined}
               onChange={(event) => updateTime(event.target.value)}
               aria-label={label ? `Horário de ${label.toLocaleLowerCase("pt-BR")}` : "Horário"}
-              className="h-full w-full rounded-xl border border-stone-200 bg-white pl-9 pr-2 text-sm text-stone-800 outline-none transition focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:opacity-60"
+              className="h-full w-full rounded-xl border border-stone-200 bg-white pl-9 pr-2 text-sm text-stone-800 outline-none transition focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:disabled:bg-zinc-800/40"
             />
           </label>
         )}

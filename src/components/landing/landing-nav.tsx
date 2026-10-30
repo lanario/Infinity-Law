@@ -62,13 +62,13 @@ export function LandingNav() {
             <Link href="/login" className="lp-link lp-nav-link hidden px-3 py-2 text-[13px] font-medium sm:inline-flex">
               Entrar
             </Link>
-            <Link href="/signup" className="lp-btn lp-btn-ouro h-10 px-5 text-[13px]">
+            <Link href="/signup" className="lp-btn lp-btn-ouro h-11 px-5 text-[13px]">
               Criar conta
             </Link>
             <button
               ref={botaoRef}
               type="button"
-              className="lp-link inline-flex h-9 w-9 items-center justify-center rounded-full lg:hidden"
+              className="lp-link inline-flex h-11 w-11 items-center justify-center rounded-full lg:hidden"
               aria-expanded={aberto}
               aria-controls="lp-menu"
               aria-label={aberto ? "Fechar menu" : "Abrir menu"}

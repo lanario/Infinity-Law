@@ -6,7 +6,7 @@ import { formatAgendaDateLabel, getAgendaDateKey, shiftAgendaDateKey } from "@/l
 import { getAgendaWeekDateKeys } from "@/lib/agenda/calendar-layout.mjs";
 
 const WEEKDAY_SHORT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-const navButton = "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold";
+const navButton = "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-gold/40 dark:hover:bg-gold/15 dark:hover:text-gold";
 
 // Faixa dos 7 dias da semana do dia selecionado (mesma semana seg–dom usada na visão Semana).
 export function AgendaWeekStrip({ dateKey, onSelectDate }: { dateKey: string; onSelectDate: (dateKey: string) => void }) {
@@ -19,8 +19,8 @@ export function AgendaWeekStrip({ dateKey, onSelectDate }: { dateKey: string; on
           const isSelected = day === dateKey;
           return (
             <li key={day} className="min-w-0 flex-1">
-              <button type="button" onClick={() => onSelectDate(day)} aria-pressed={isSelected} aria-label={formatAgendaDateLabel(day)} className={cn("flex w-full min-w-0 flex-col items-center rounded-xl px-1 py-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", isSelected ? "bg-[#17191a] text-white" : "text-stone-600 hover:bg-gold-soft", !isSelected && day === today && "ring-1 ring-gold")}>
-                <span className={cn("text-[9px] font-bold uppercase leading-3 tracking-wide", isSelected ? "text-gold" : "text-stone-400")}>{WEEKDAY_SHORT[index]}</span>
+              <button type="button" onClick={() => onSelectDate(day)} aria-pressed={isSelected} aria-label={formatAgendaDateLabel(day)} className={cn("flex w-full min-w-0 flex-col items-center rounded-xl px-1 py-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", isSelected ? "bg-[#17191a] text-white dark:bg-gold dark:text-neutral-950" : "text-stone-600 hover:bg-gold-soft dark:text-zinc-300 dark:hover:bg-gold/15", !isSelected && day === today && "ring-1 ring-gold")}>
+                <span className={cn("text-[9px] font-bold uppercase leading-3 tracking-wide", isSelected ? "text-gold dark:text-neutral-900" : "text-stone-400 dark:text-zinc-400")}>{WEEKDAY_SHORT[index]}</span>
                 <span className="text-sm font-extrabold leading-5 tabular-nums">{Number(day.slice(8, 10))}</span>
               </button>
             </li>

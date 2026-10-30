@@ -31,6 +31,14 @@ const EXECUTIVE_PALETTE = [
   "#D1D5DB", // Prata / Cinza Claro
 ] as const;
 
+const DARK_COLOR_MAP: Record<string, string> = {
+  "#17191a": "#F4F4F5",
+  "#1f2937": "#F4F4F5",
+  "#8b6914": "#E2BE4D",
+  "#6b7280": "#A1A1AA",
+  "#d1d5db": "#52525B",
+};
+
 interface TooltipPayloadEntry {
   value: number;
   name: string;
@@ -102,9 +110,16 @@ export function AreasDistributionCard({
 }: AreasDistributionCardProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    const root = document.documentElement;
+    const syncTheme = () => setIsDark(root.classList.contains("dark"));
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   const totalCalculado = useMemo(() => {
@@ -118,15 +133,15 @@ export function AreasDistributionCard({
     return data.map((item, idx) => {
       const pct = total > 0 ? (item.processos / total) * 100 : 0;
       const normalizedColor = legacyRainbowColors.has(item.cor.toLowerCase())
-        ? EXECUTIVE_PALETTE[idx % EXECUTIVE_PALETTE.length]
+        ? (EXECUTIVE_PALETTE[idx % EXECUTIVE_PALETTE.length] ?? EXECUTIVE_PALETTE[0] ?? "#17191A")
         : item.cor;
       return {
         ...item,
-        cor: normalizedColor,
+        cor: isDark ? (DARK_COLOR_MAP[normalizedColor.toLowerCase()] ?? normalizedColor) : normalizedColor,
         porcentagemCalculada: item.porcentagem ?? pct,
       };
     });
-  }, [data, total]);
+  }, [data, total, isDark]);
 
   const activeItem =
     activeIndex !== null && activeIndex >= 0 && activeIndex < enrichedData.length

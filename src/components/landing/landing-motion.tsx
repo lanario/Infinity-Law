@@ -17,6 +17,8 @@ export function LandingMotion({ children }: { children: ReactNode }) {
     gsap.registerPlugin(ScrollTrigger);
     const mm = gsap.matchMedia(raiz);
 
+    const breakpointDesktop = window.matchMedia("(min-width: 1024px)");
+
     mm.add({ movimento: COM_MOVIMENTO, desktop: "(min-width: 1024px)" }, (contexto) => {
       const { movimento, desktop } = contexto.conditions ?? {};
       if (!movimento) return;
@@ -26,14 +28,42 @@ export function LandingMotion({ children }: { children: ReactNode }) {
         .timeline({ defaults: { ease: "expo.out", duration: 1.2 } })
         .set(q("[data-hero]"), { animation: "none" })
         .set(q("[data-hero-word]"), { animation: "none" })
-        .fromTo(q("[data-hero='pilula']"), { opacity: 0, y: 14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)" }, 0.1)
+        .fromTo(q("[data-hero='pilula']"), { opacity: 0, y: desktop ? 14 : 8 }, { opacity: 1, y: 0 }, 0.1)
         .set(q("[data-hero='titulo']"), { opacity: 1 }, 0.2)
-        .fromTo(q("[data-hero-word]"), { yPercent: 110 }, { yPercent: 0, duration: 1.3, stagger: 0.07 }, 0.2)
-        .fromTo(q("[data-hero='texto']"), { opacity: 0, y: 18 }, { opacity: 1, y: 0 }, 0.65)
-        .fromTo(q("[data-hero='acoes']"), { opacity: 0, y: 18 }, { opacity: 1, y: 0 }, 0.78)
+        .fromTo(q("[data-hero-word]"), { yPercent: desktop ? 110 : 70 }, { yPercent: 0, duration: 1.3, stagger: 0.07 }, 0.2)
+        .fromTo(q("[data-hero='texto']"), { opacity: 0, y: desktop ? 18 : 10 }, { opacity: 1, y: 0 }, 0.65)
+        .fromTo(q("[data-hero='acoes']"), { opacity: 0, y: desktop ? 18 : 10 }, { opacity: 1, y: 0 }, 0.78)
         .fromTo(q("[data-hero='nota']"), { opacity: 0 }, { opacity: 1, duration: 1 }, 0.95)
-        .fromTo(q("[data-hero='palco']"), { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 1.6 }, 0.45)
+        .fromTo(q("[data-hero='palco']"), { opacity: 0, y: desktop ? 40 : 14, scale: desktop ? 0.96 : 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 1.6 }, 0.45)
         .fromTo(q("[data-hero='fundo']"), { opacity: 0 }, { opacity: 1, duration: 2, ease: "power2.out" }, 0);
+
+      if (!desktop) {
+        document.documentElement.classList.add("lp-anim-leve");
+        const elementos = Array.from(raiz.querySelectorAll<HTMLElement>("[data-reveal]"));
+        elementos.forEach((el) => {
+          if (el.getBoundingClientRect().bottom < 0) el.classList.add("lp-revelado");
+        });
+
+        if ("IntersectionObserver" in window) {
+          const observador = new IntersectionObserver((entradas, atual) => {
+            entradas.forEach((entrada) => {
+              if (!entrada.isIntersecting) return;
+              entrada.target.classList.add("lp-revelado");
+              atual.unobserve(entrada.target);
+            });
+          }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+          elementos.forEach((el) => {
+            if (!el.classList.contains("lp-revelado")) observador.observe(el);
+          });
+          return () => {
+            observador.disconnect();
+            document.documentElement.classList.remove("lp-anim-leve");
+          };
+        }
+
+        elementos.forEach((el) => el.classList.add("lp-revelado"));
+        return () => document.documentElement.classList.remove("lp-anim-leve");
+      }
 
       const hero = q("[data-hero-secao]")[0];
       if (hero) {
@@ -43,13 +73,13 @@ export function LandingMotion({ children }: { children: ReactNode }) {
           gsap.to(q("[data-scene-parallax]"), { y: 45, ease: "none", scrollTrigger: rolagem });
         }
         // Fundo preso ao scroll sem suavização: com scrub em segundos ele "corria atrás" da rolagem.
-        gsap.to(q("[data-fundo-parallax]"), { yPercent: desktop ? 18 : 8, ease: "none", scrollTrigger: { ...rolagem, scrub: true } });
+        gsap.to(q("[data-fundo-parallax]"), { yPercent: 18, ease: "none", scrollTrigger: { ...rolagem, scrub: true } });
       }
 
       // Tweens criados no contexto são revertidos ao sair ou reduzir movimento.
       // Revelação presa ao scroll (scrub), no mesmo estilo do parallax do hero: volta ao rolar para cima.
       q("[data-reveal]").forEach((el) => {
-        gsap.fromTo(el, { opacity: 0, y: desktop ? 70 : 36 }, {
+        gsap.fromTo(el, { opacity: 0, y: 70 }, {
           opacity: 1, y: 0, ease: "none",
           scrollTrigger: { trigger: el, start: "top 98%", end: "top 68%", scrub: 0.8 },
         });
@@ -58,21 +88,14 @@ export function LandingMotion({ children }: { children: ReactNode }) {
       // Cada seção abaixo do hero sobe mais devagar que a página ao sair, como o texto do hero.
       q("main > section:not([data-hero-secao])").forEach((secao) => {
         const conteudo = Array.from(secao.children).filter((filho) => filho.getAttribute("aria-hidden") !== "true");
-        gsap.fromTo(conteudo, { y: desktop ? 50 : 20 }, {
-          y: desktop ? -50 : -20, ease: "none",
+        gsap.fromTo(conteudo, { y: 50 }, {
+          y: -50, ease: "none",
           scrollTrigger: { trigger: secao, start: "top bottom", end: "bottom top", scrub: 0.8 },
         });
       });
 
-      q(".lp-section").forEach((secao) => {
-        gsap.fromTo(secao, { "--lp-section-progress": 0 }, {
-          "--lp-section-progress": 1, ease: "none",
-          scrollTrigger: { trigger: secao, start: "top 92%", end: "top 30%", scrub: 0.7 },
-        });
-      });
-
       q("[data-parallax]").forEach((el) => {
-        const deslocamento = Number(el.getAttribute("data-parallax")) * (desktop ? 1 : 0.25);
+        const deslocamento = Number(el.getAttribute("data-parallax"));
         gsap.fromTo(el, { y: -deslocamento }, {
           y: deslocamento, ease: "none",
           scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: 1 },
@@ -86,11 +109,19 @@ export function LandingMotion({ children }: { children: ReactNode }) {
       const footer = q(".lp-footer")[0];
       const feixeFooter = q("[data-footer-beam]")[0];
       if (footer && feixeFooter) {
-        gsap.fromTo(feixeFooter, { "--lp-footer-feixe-x": "-18%" }, {
-          "--lp-footer-feixe-x": "18%", ease: "none",
+        gsap.fromTo(feixeFooter, { xPercent: -18 }, {
+          xPercent: 18, ease: "none",
           scrollTrigger: { trigger: footer, start: "top bottom", end: "bottom bottom", scrub: 1 },
         });
       }
+
+      const decoracoes = Array.from(raiz.querySelectorAll(".lp-seg-log, .lp-modulos-linhas"));
+      const observadorDecorativo = "IntersectionObserver" in window
+        ? new IntersectionObserver((entradas) => {
+          entradas.forEach((entrada) => entrada.target.setAttribute("data-visivel", String(entrada.isIntersecting)));
+        }, { rootMargin: "100px" })
+        : null;
+      decoracoes.forEach((el) => observadorDecorativo?.observe(el));
 
       q("[data-count]").forEach((el) => {
         const alvo = Number(el.getAttribute("data-count"));
@@ -121,13 +152,14 @@ export function LandingMotion({ children }: { children: ReactNode }) {
 
       return () => {
         passos?.classList.remove("lp-passos-vivos");
+        observadorDecorativo?.disconnect();
         q("[data-count]").forEach((el) => { el.textContent = el.getAttribute("data-count"); });
       };
     });
 
     let quadroAtualizacao = 0;
     const atualizar = () => {
-      if (quadroAtualizacao) return;
+      if (!breakpointDesktop.matches || quadroAtualizacao) return;
       quadroAtualizacao = requestAnimationFrame(() => {
         quadroAtualizacao = 0;
         ScrollTrigger.refresh();
@@ -142,13 +174,13 @@ export function LandingMotion({ children }: { children: ReactNode }) {
       if (quadroAtualizacao) cancelAnimationFrame(quadroAtualizacao);
       perguntas.forEach((el) => el.removeEventListener("toggle", atualizar));
       mm.revert();
-      document.documentElement.classList.remove("lp-anim");
+      document.documentElement.classList.remove("lp-anim", "lp-anim-leve");
     };
   }, []);
 
   useEffect(() => {
     const raiz = raizRef.current;
-    if (!raiz || !window.matchMedia("(hover: hover)").matches) return;
+    if (!raiz || !window.matchMedia("(min-width: 1024px) and (hover: hover)").matches) return;
     let quadro = 0;
     let ultimoEvento: PointerEvent | null = null;
     const mover = (evento: PointerEvent) => {

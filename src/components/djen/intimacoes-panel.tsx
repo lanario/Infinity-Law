@@ -28,6 +28,7 @@ export function DjenIntimacoesPanel({
   associacoes,
   processos,
   podeEditar,
+  podeExcluir,
   podePesquisarCliente,
   podeLerProcessos,
   podeAssociarProcesso,
@@ -46,6 +47,7 @@ export function DjenIntimacoesPanel({
   const [saving, setSaving] = useState(false);
   const [syncingMonitorId, setSyncingMonitorId] = useState<string | null>(null);
   const [updatingMonitorId, setUpdatingMonitorId] = useState<string | null>(null);
+  const [deletingMonitorId, setDeletingMonitorId] = useState<string | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
 
   async function addMonitor(event: FormEvent<HTMLFormElement>) {
@@ -184,6 +186,42 @@ export function DjenIntimacoesPanel({
     }
   }
 
+  async function deleteMonitor(monitoramento: Monitoramento): Promise<string | null> {
+    if (!podeExcluir || syncingMonitorId || updatingMonitorId || deletingMonitorId) {
+      return "Aguarde a operação em andamento antes de excluir esta OAB.";
+    }
+
+    setDeletingMonitorId(monitoramento.id);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/djen/oabs/${monitoramento.id}`, {
+        method: "DELETE",
+      });
+      const payload = await readResponse(response);
+
+      if (!response.ok) {
+        const error = typeof payload.error === "string"
+          ? payload.error
+          : "Não foi possível excluir o monitoramento.";
+        setMessage({ kind: "error", text: error });
+        return error;
+      }
+
+      setMessage({
+        kind: "success",
+        text: `Monitoramento da OAB ${monitoramento.numero_oab}/${monitoramento.uf_oab} excluído. As intimações salvas foram preservadas.`,
+      });
+      startTransition(() => router.refresh());
+      return null;
+    } catch {
+      const error = "Não foi possível excluir o monitoramento. Tente novamente.";
+      setMessage({ kind: "error", text: error });
+      return error;
+    } finally {
+      setDeletingMonitorId(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -203,15 +241,15 @@ export function DjenIntimacoesPanel({
       </motion.div>
 
       <section aria-labelledby="consultas-djen-heading">
-        <div className="mb-4 flex items-center gap-3 border-b border-gray-200 pb-3">
-          <div className="rounded-xl bg-gold-soft p-2 text-gold-dark">
+        <div className="mb-4 flex items-center gap-3 border-b border-gray-200 pb-3 dark:border-zinc-800">
+          <div className="rounded-xl bg-gold-soft p-2 text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
             <Gavel className="h-4 w-4" aria-hidden="true" />
           </div>
           <div>
-            <h2 id="consultas-djen-heading" className="text-sm font-semibold text-gray-900">
+            <h2 id="consultas-djen-heading" className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
               Monitoramento e consultas
             </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
               Atualize as publicações por OAB ou localize candidatos pelo cadastro do cliente.
             </p>
           </div>
@@ -225,6 +263,7 @@ export function DjenIntimacoesPanel({
           <DjenMonitoringSection
             monitoramentos={monitoramentos}
             podeEditar={podeEditar}
+            podeExcluir={podeExcluir}
             today={today}
             dataInicio={dataInicio}
             dataFim={dataFim}
@@ -237,11 +276,13 @@ export function DjenIntimacoesPanel({
             saving={saving}
             syncingMonitorId={syncingMonitorId}
             updatingMonitorId={updatingMonitorId}
+            deletingMonitorId={deletingMonitorId}
             message={message}
             loadError={monitoringError}
             onAddMonitor={addMonitor}
             onSynchronize={synchronize}
             onSetMonitorActive={setMonitorActive}
+            onDeleteMonitor={deleteMonitor}
           />
           <DjenClientSearchSection
             today={today}

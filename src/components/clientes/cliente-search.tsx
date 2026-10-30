@@ -33,7 +33,7 @@ export function ClienteSearch({ initialValue = "" }: ClienteSearchProps) {
   return (
     <div className="relative">
       <Search
-        className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+        className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 dark:text-zinc-500"
         aria-hidden="true"
       />
       <input
@@ -41,13 +41,13 @@ export function ClienteSearch({ initialValue = "" }: ClienteSearchProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Buscar clientes..."
-        className="w-full rounded-xl border border-stone-200 bg-white py-3 pl-10 pr-10 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-gold/70 focus:ring-4 focus:ring-gold/10"
+        className="w-full rounded-xl border border-stone-200 bg-white py-3 pl-10 pr-10 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-gold/70 focus:ring-4 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900"
         aria-label="Buscar clientes por nome"
       />
       {value && (
         <button
           onClick={() => setValue("")}
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-stone-300 transition hover:bg-stone-100 hover:text-stone-600"
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-stone-300 transition hover:bg-stone-100 hover:text-stone-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
           aria-label="Limpar busca"
         >
           <X className="h-3.5 w-3.5" aria-hidden="true" />

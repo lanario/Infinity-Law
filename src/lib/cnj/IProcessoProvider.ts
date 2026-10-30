@@ -27,6 +27,6 @@ export interface ProcessoDataJud {
 }
 
 export interface IProcessoProvider {
-  consultarPorNumero(numeroCNJ: string): Promise<ProcessoDataJud | null>;
+  consultarPorNumero(numeroCNJ: string, processoConfirmado?: boolean): Promise<ProcessoDataJud | null>;
   listarMovimentacoes(numeroCNJ: string, desde?: Date): Promise<Movimentacao[]>;
 }

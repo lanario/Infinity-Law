@@ -53,7 +53,7 @@ export function QuickDock({ className, position = "bottom" }: QuickDockProps) {
           type="button"
           onClick={() => setIsCreateOpen((open) => !open)}
           className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full border border-[#17191a]/10 bg-[#D4AF37] text-[#17191a] shadow-[0_12px_30px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.45)_inset] transition-[transform,background-color] duration-150 hover:-translate-y-0.5 hover:scale-105 hover:bg-[#C9A227] active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/25",
+            "flex h-14 w-14 items-center justify-center rounded-full border border-[#17191a]/10 bg-[#D4AF37] text-neutral-950 dark:text-neutral-950 shadow-[0_12px_30px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.45)_inset] transition-[transform,background-color] duration-150 hover:-translate-y-0.5 hover:scale-105 hover:bg-[#C9A227] active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/25",
             isCreateOpen && "rotate-45"
           )}
           aria-label={isCreateOpen ? "Fechar menu de novo registro" : "Novo registro"}

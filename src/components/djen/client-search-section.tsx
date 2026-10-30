@@ -306,20 +306,20 @@ export function DjenClientSearchSection({
   }
 
   return (
-    <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
       <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-gold-soft p-2.5 text-gold-dark">
+        <div className="rounded-xl bg-gold-soft p-2.5 text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
           <FileSearch className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Busca de publicações por cliente</h2>
-          <p className="mt-1 max-w-3xl text-sm text-gray-500">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100">Busca de publicações por cliente</h2>
+          <p className="mt-1 max-w-3xl text-sm text-gray-500 dark:text-zinc-400">
             Selecione um cliente cadastrado. A consulta externa usa somente o nome da parte e o período; CPF/CNPJ é exibido mascarado apenas para distinguir o cadastro interno.
           </p>
         </div>
       </div>
 
-      <div className="mt-4 flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="note">
+      <div className="mt-4 flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200" role="note">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
         <p>
           Resultados por nome são candidatos e não comprovam a identidade do cliente. Revise o nome da parte, o número do processo e o teor. Nada será vinculado até uma associação manual a um processo já cadastrado.
@@ -327,10 +327,10 @@ export function DjenClientSearchSection({
       </div>
 
       {!podePesquisar ? (
-        <p className="mt-4 text-sm text-gray-500">Seu perfil não tem permissão para consultar o DJEN por cliente.</p>
+        <p className="mt-4 text-sm text-gray-500 dark:text-zinc-400">Seu perfil não tem permissão para consultar o DJEN por cliente.</p>
       ) : (
-        <form onSubmit={searchByClient} className="mt-5 grid gap-3 border-t border-gray-100 pt-5 lg:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] lg:items-end">
-          <div className="text-xs font-medium text-gray-600">
+        <form onSubmit={searchByClient} className="mt-5 grid gap-3 border-t border-gray-100 pt-5 dark:border-zinc-800 lg:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] lg:items-end">
+          <div className="text-xs font-medium text-gray-600 dark:text-zinc-300">
             <label htmlFor="djen-cliente" className="block">Cliente cadastrado</label>
             <select
               id="djen-cliente"
@@ -338,7 +338,7 @@ export function DjenClientSearchSection({
               onChange={(event) => setClienteId(event.target.value)}
               disabled={clientesLoading || processosLoadingMore || searching}
               required
-              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60"
+              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100"
             >
               <option value="">{clientesLoading ? "Carregando clientes…" : "Selecione um cliente"}</option>
               {clientes.map((cliente) => (
@@ -352,23 +352,23 @@ export function DjenClientSearchSection({
               type="button"
               onClick={loadMoreClients}
               disabled={clientesLoadingMore || searching}
-              className="mt-1 text-left text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50"
+              className="mt-1 text-left text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
             >
               {clientesLoadingMore ? "Carregando…" : `Carregar mais clientes (${clientes.length} carregados)`}
             </button>
           )}
           </div>
-          <DatePicker label="De" value={dataInicio} max={today} onChange={setDataInicio} inputClassName="h-10 rounded-lg" />
-          <DatePicker label="Até" value={dataFim} max={today} onChange={setDataFim} inputClassName="h-10 rounded-lg" />
+          <DatePicker label="De" value={dataInicio} max={today} onChange={setDataInicio} inputClassName="h-10 rounded-lg dark:bg-zinc-800/60 dark:text-zinc-100" />
+          <DatePicker label="Até" value={dataFim} max={today} onChange={setDataFim} inputClassName="h-10 rounded-lg dark:bg-zinc-800/60 dark:text-zinc-100" />
           <button
             type="submit"
             disabled={searching || clientesLoading || clientesLoadingMore || !clienteId}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
           >
             {searching ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
             {searching ? "Consultando…" : "Buscar no DJEN"}
           </button>
-          <p className="text-xs text-gray-400 lg:col-span-4">
+          <p className="text-xs text-gray-400 dark:text-zinc-500 lg:col-span-4">
             Período máximo de 30 dias. A consulta usa o nome do cadastro selecionado; o documento completo nunca é enviado ao CNJ.
           </p>
         </form>
@@ -376,7 +376,7 @@ export function DjenClientSearchSection({
 
       {message && (
         <div
-          className={`mt-4 rounded-lg border px-4 py-3 text-sm ${message.kind === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-700"}`}
+          className={`mt-4 rounded-lg border px-4 py-3 text-sm ${message.kind === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300" : "border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"}`}
           role="status"
           aria-live="polite"
         >
@@ -385,7 +385,7 @@ export function DjenClientSearchSection({
       )}
 
       {selectedClient && podeLerProcessos && (
-        <div className="mt-3 text-xs text-gray-400" aria-live="polite">
+        <div className="mt-3 text-xs text-gray-400 dark:text-zinc-400" aria-live="polite">
           {processosLoading
             ? "Carregando processos já vinculados a este cliente…"
             : processosError
@@ -399,25 +399,25 @@ export function DjenClientSearchSection({
           type="button"
           onClick={loadMoreProcesses}
           disabled={processosLoadingMore || processosLoading}
-          className="mt-2 text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50"
+          className="mt-2 text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
         >
           {processosLoadingMore ? "Carregando…" : `Carregar mais processos (${processos.length} carregados)`}
         </button>
       )}
 
       {resultsMeta && candidates.length > 0 && (
-        <div className="mt-5 border-t border-gray-100 pt-4">
+        <div className="mt-5 border-t border-gray-100 pt-4 dark:border-zinc-800">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
                 Candidatos encontrados para {selectedClient?.nome ?? "o cliente selecionado"}
               </h3>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
                 {resultsMeta.uniqueCount} publicação(ões) única(s) retornada(s); {resultsMeta.candidateCount} exibida(s){resultsMeta.totalCount !== resultsMeta.uniqueCount ? ` (${resultsMeta.totalCount} item(ns) bruto(s) informado(s) pelo CNJ antes de remover hashes repetidos)` : ""}{selectedClient ? ` na consulta de ${selectedClient.nome}` : ""}. Lista temporária, removida ao sair da tela.
               </p>
             </div>
             {resultsMeta.truncated && (
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
+              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
                 Exibindo os primeiros {candidates.length}
               </span>
             )}
@@ -431,20 +431,20 @@ export function DjenClientSearchSection({
               const isAssociated = Boolean(candidate.associadaAoProcesso);
 
               return (
-                <article key={item.hash} className="rounded-xl border border-gray-200 p-4">
+                <article key={item.hash} className="rounded-xl border border-gray-200 p-4 dark:border-zinc-800 dark:bg-zinc-900">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-dark">
+                        <span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
                           Candidato por nome
                         </span>
-                        <span className="text-xs text-gray-500">Disponibilizada em {formatDate(item.data_disponibilizacao)}</span>
+                        <span className="text-xs text-gray-500 dark:text-zinc-400">Disponibilizada em {formatDate(item.data_disponibilizacao)}</span>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-gray-900">
+                      <p className="mt-2 text-sm font-semibold text-gray-900 dark:text-zinc-100">
                         Nome da parte: {item.nomeParte ?? "Não informado pelo DJEN"}
                       </p>
-                      <p className="mt-1 break-all font-mono text-xs text-gray-600">{caseNumber}</p>
-                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
+                      <p className="mt-1 break-all font-mono text-xs text-gray-600 dark:text-zinc-300">{caseNumber}</p>
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-zinc-400">
                         {item.siglaTribunal && <span>{item.siglaTribunal}</span>}
                         {item.nomeOrgao && <span>{item.nomeOrgao}</span>}
                         {item.nomeClasse && <span>{item.nomeClasse}</span>}
@@ -455,7 +455,7 @@ export function DjenClientSearchSection({
                         href={item.link}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold"
+                        className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold dark:text-[#E5C158]"
                       >
                         Abrir no tribunal
                         <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -464,30 +464,30 @@ export function DjenClientSearchSection({
                   </div>
 
                   {item.destinatarios && item.destinatarios.length > 0 && (
-                    <p className="mt-2 text-xs text-gray-500">
+                    <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">
                       Destinatários: {item.destinatarios.map((destinatario) => destinatario.nome).filter(Boolean).join(", ") || "não informados"}
                     </p>
                   )}
 
                   {item.texto && (
-                    <details className="mt-3 rounded-lg bg-gray-50 px-3 py-2.5">
-                      <summary className="cursor-pointer text-xs font-medium text-gray-600 outline-none focus-visible:ring-2 focus-visible:ring-gold">
+                    <details className="mt-3 rounded-lg bg-gray-50 px-3 py-2.5 dark:bg-zinc-800/60">
+                      <summary className="cursor-pointer text-xs font-medium text-gray-600 outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-300">
                         Revisar teor da publicação
                       </summary>
-                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-gray-700">{item.texto}</p>
+                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-gray-700 dark:text-zinc-200">{item.texto}</p>
                     </details>
                   )}
 
                   {isAssociated ? (
-                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800" role="status">
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300" role="status">
                       <BadgeCheck className="h-4 w-4" aria-hidden="true" />
                       Associação manual registrada no processo {candidate.associadaAoProcesso}.
                     </div>
                   ) : (
-                    <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50/70 p-3">
+                    <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50/70 p-3 dark:border-amber-500/25 dark:bg-amber-500/10">
                       {podeAssociarProcesso && podeLerProcessos ? (
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                          <label className="min-w-0 flex-1 text-xs font-medium text-gray-700">
+                          <label className="min-w-0 flex-1 text-xs font-medium text-gray-700 dark:text-zinc-200">
                             Processo existente do cliente
                             <select
                               value={selectedProcessByHash[item.hash] ?? ""}
@@ -496,7 +496,7 @@ export function DjenClientSearchSection({
                                 [item.hash]: event.target.value,
                               }))}
                               disabled={processosLoading || associatingHash === item.hash}
-                              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60"
+                              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
                             >
                               <option value="">Selecione manualmente um processo</option>
                               {matchingProcesses.map((processo) => (
@@ -508,30 +508,30 @@ export function DjenClientSearchSection({
                             type="button"
                             onClick={() => associateCandidate(candidate)}
                             disabled={!candidate.associacaoDisponivel || !selectedProcessByHash[item.hash] || Boolean(associatingHash) || processosLoading}
-                            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#17191a] px-3 text-xs font-semibold text-white transition hover:bg-[#303334] disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#17191a] px-3 text-xs font-semibold text-white transition hover:bg-[#303334] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                           >
                             {associatingHash === item.hash ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />}
                             {associatingHash === item.hash ? "Associando…" : "Associar manualmente"}
                           </button>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-gray-600 dark:text-zinc-300">
                           {podeLerProcessos
                             ? "Seu perfil não pode associar publicações a processos."
                             : "A associação exige acesso de leitura e escrita em processos."}
                         </p>
                       )}
                       {matchingProcesses.length === 0 && (
-                        <p className="mt-2 text-xs text-gray-600">
+                        <p className="mt-2 text-xs text-gray-600 dark:text-zinc-300">
                           Não há processo deste cliente com o mesmo número CNJ. Cadastre ou vincule o processo manualmente antes de associar; esta busca não cria processos.
                         </p>
                       )}
                       {!candidate.associacaoDisponivel && (
-                        <p className="mt-2 text-xs text-gray-600">
+                        <p className="mt-2 text-xs text-gray-600 dark:text-zinc-300">
                           Este resultado é muito extenso para uma associação segura nesta sessão. Revise-o no tribunal; nenhuma associação será feita por este botão.
                         </p>
                       )}
-                      <p className="mt-2 text-[11px] leading-5 text-gray-500">
+                      <p className="mt-2 text-[11px] leading-5 text-gray-500 dark:text-zinc-400">
                         A confirmação grava a publicação no processo que você selecionar. O nome é apenas uma pista de busca; não cria cliente, processo ou prazo.
                       </p>
                     </div>

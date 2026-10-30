@@ -66,7 +66,7 @@ type ProcessoOption = { id: string; numero_cnj: string | null; tipo_acao: string
 
 const EVENT_TYPES: Array<{ value: EventoTipo; label: string; color: string; icon: LucideIcon }> = [
   { value: "audiencia", label: "Audiência", color: "#D4AF37", icon: CalendarDays },
-  { value: "reuniao", label: "Reunião", color: "#17191A", icon: UserRound },
+  { value: "reuniao", label: "Reunião", color: "#3F3F46", icon: UserRound },
   { value: "prazo", label: "Prazo", color: "#DC5660", icon: Clock3 },
   { value: "compromisso", label: "Compromisso", color: "#8A8D91", icon: CalendarDays },
 ];
@@ -333,7 +333,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
     }
   }
 
-  const inputClass = "mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10";
+  const inputClass = "mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 text-sm text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900";
 
   function navigatePeriod(direction: -1 | 1) {
     if (agendaMode === "team" || agendaMode === "day") {
@@ -431,7 +431,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
             onTypeChange={setSelectedType}
           />
 
-          <section className="min-w-0 space-y-3 rounded-2xl border border-stone-200/80 bg-white p-2.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] sm:p-4">
+          <section className="min-w-0 space-y-3 rounded-2xl border border-stone-200/80 bg-white p-2.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-4">
             {agendaMode === "agenda" ? (
               <div className="overflow-x-auto">
                 <div className="calendar-container min-w-[620px]" style={{ height: 670 }}>
@@ -475,10 +475,10 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
 
       <AnimatePresence>
         {modalOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-end justify-center bg-[#17191a]/45 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
-          <motion.section ref={modalRef} tabIndex={-1} initial={{ opacity: 0, y: 14, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.2 }} role="dialog" aria-modal="true" aria-labelledby="evento-modal-title" className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-stone-200 bg-[#fcfcfb] p-5 shadow-2xl sm:rounded-3xl sm:p-6">
+          <motion.section ref={modalRef} tabIndex={-1} initial={{ opacity: 0, y: 14, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.2 }} role="dialog" aria-modal="true" aria-labelledby="evento-modal-title" className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-stone-200 bg-[#fcfcfb] p-5 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-6">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span><div><h2 id="evento-modal-title" className="text-base font-black text-[#17191a]">{editingId ? "Detalhes do evento" : "Novo evento"}</h2><p className="mt-0.5 text-xs text-stone-400">Adicione as informações para a equipe</p></div></div>
-              <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700" aria-label="Fechar formulário"><X className="h-4 w-4" aria-hidden="true" /></button>
+              <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold dark:bg-zinc-800"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span><div><h2 id="evento-modal-title" className="text-base font-black text-[#17191a] dark:text-zinc-100">{editingId ? "Detalhes do evento" : "Novo evento"}</h2><p className="mt-0.5 text-xs text-stone-400 dark:text-zinc-400">Adicione as informações para a equipe</p></div></div>
+              <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200" aria-label="Fechar formulário"><X className="h-4 w-4" aria-hidden="true" /></button>
             </div>
 
             <form onSubmit={submit}>
@@ -486,7 +486,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
               <label className="block text-xs font-semibold text-stone-600">Título <span className="text-gold-dark">*</span><input autoFocus required value={form.titulo} onChange={(event) => update("titulo", event.target.value)} placeholder="Ex.: Audiência de instrução" className={inputClass} /></label>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="text-xs font-semibold text-stone-600">Tipo de evento<select value={form.tipo} onChange={(event) => update("tipo", event.target.value as EventoTipo)} className={inputClass}>{EVENT_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label>
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-stone-600"><input type="checkbox" checked={form.dia_inteiro} onChange={(event) => update("dia_inteiro", event.target.checked)} className="h-4 w-4 accent-[#D4AF37]" />Evento de dia inteiro</label>
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-stone-600 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-300"><input type="checkbox" checked={form.dia_inteiro} onChange={(event) => update("dia_inteiro", event.target.checked)} className="h-4 w-4 accent-[#D4AF37]" />Evento de dia inteiro</label>
                 <DatePicker label="Início" required includeTime value={form.inicio} onChange={(value) => update("inicio", value)} inputClassName="bg-stone-50/60" />
                 <DatePicker label="Término" includeTime min={form.inicio || undefined} value={form.fim} onChange={(value) => update("fim", value)} inputClassName="bg-stone-50/60" />
                 <label className="text-xs font-semibold text-stone-600">Cliente<select value={form.cliente_id} onChange={(event) => update("cliente_id", event.target.value)} className={inputClass}><option value="">Sem cliente vinculado</option>{clientes.map((cliente) => <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>)}</select></label>
@@ -498,11 +498,11 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
               </div>
               </fieldset>
 
-              {message && <p role="status" className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700">{message}</p>}
+              {message && <p role="status" className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{message}</p>}
               <div className="flex flex-col-reverse gap-2 border-t border-stone-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                {editingId && canDelete ? <button type="button" onClick={removeEvent} disabled={deleting || saving} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 px-4 text-xs font-bold text-rose-600 transition hover:bg-rose-50 disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" />{deleting ? "Excluindo..." : "Excluir evento"}</button> : <span />}
+                {editingId && canDelete ? <button type="button" onClick={removeEvent} disabled={deleting || saving} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 px-4 text-xs font-bold text-rose-600 transition hover:bg-rose-50 disabled:opacity-50 dark:border-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-500/10"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" />{deleting ? "Excluindo..." : "Excluir evento"}</button> : <span />}
                 <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                  <button type="button" onClick={() => setModalOpen(false)} className="inline-flex h-10 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-xs font-bold text-stone-600 transition hover:bg-stone-50">Cancelar</button>
+                  <button type="button" onClick={() => setModalOpen(false)} className="inline-flex h-10 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-xs font-bold text-stone-600 transition hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">Cancelar</button>
                   {canWrite && <button type="submit" disabled={saving || deleting} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-gold px-4 text-xs font-bold text-white transition hover:bg-gold-hover disabled:opacity-50">{saving ? <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <Save className="h-3.5 w-3.5" aria-hidden="true" />}{saving ? "Salvando..." : editingId ? "Salvar alterações" : "Salvar evento"}</button>}
                 </div>
               </div>
@@ -529,6 +529,18 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
         .rbc-time-slot { color: #a8a29e; font-size: 9px; }
         .rbc-current-time-indicator { background-color: #d4af37; }
         .rbc-agenda-date-cell, .rbc-agenda-time-cell { color: #78716c; font-size: 11px; }
+        html.dark .rbc-calendar { color: #e4e4e7; }
+        html.dark .rbc-toolbar-label { color: #f4f4f5; }
+        html.dark .rbc-toolbar button { border-color: #3f3f46; color: #d4d4d8; background: #18181b; }
+        html.dark .rbc-toolbar button:hover, html.dark .rbc-toolbar button.rbc-active, html.dark .rbc-toolbar button:focus { background: rgba(212, 175, 55, 0.15); border-color: #d4af37; color: #f3d06a; }
+        html.dark .rbc-header { border-bottom-color: #27272a; color: #a1a1aa; }
+        html.dark .rbc-month-view, html.dark .rbc-time-view, html.dark .rbc-agenda-view, html.dark .rbc-agenda-view table.rbc-agenda-table { border-color: #27272a; }
+        html.dark .rbc-day-bg + .rbc-day-bg, html.dark .rbc-month-row + .rbc-month-row, html.dark .rbc-time-header-content, html.dark .rbc-time-content > * + * > *, html.dark .rbc-agenda-view table.rbc-agenda-table tbody > tr > td + td, html.dark .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr { border-color: #27272a; }
+        html.dark .rbc-off-range-bg { background: #141618; }
+        html.dark .rbc-today { background: rgba(212, 175, 55, 0.08); }
+        html.dark .rbc-date-cell { color: #a1a1aa; }
+        html.dark .rbc-date-cell.rbc-now, html.dark .rbc-show-more { color: #f3d06a; }
+        html.dark .rbc-time-slot, html.dark .rbc-agenda-date-cell, html.dark .rbc-agenda-time-cell { color: #a1a1aa; }
         @media (max-width: 640px) { .rbc-toolbar { align-items: stretch; flex-wrap: wrap; } .rbc-toolbar-label { order: -1; width: 100%; } .rbc-btn-group { display: flex; } .rbc-toolbar button { padding: 6px 7px; } }
       `}</style>
     </div>

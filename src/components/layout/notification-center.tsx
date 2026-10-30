@@ -240,15 +240,20 @@ export function NotificationCenter() {
         ref={triggerRef}
         type="button"
         onClick={toggleOpen}
-        className={cn("group relative flex h-10 w-10 items-center justify-center rounded-2xl border bg-white/75 shadow-[0_8px_20px_-18px_rgba(23,25,26,0.7)] transition-[transform,background-color,border-color,color] duration-150 hover:-translate-y-0.5 hover:bg-gold-soft focus:outline-none focus:ring-2 focus:ring-gold/25", open ? "border-gold/50 text-gold-dark" : "border-stone-200 text-stone-500 hover:border-gold/50 hover:text-gold-dark")}
+        className={cn(
+          "group relative flex h-10 w-10 items-center justify-center rounded-2xl border bg-white/75 shadow-[0_8px_20px_-18px_rgba(23,25,26,0.7)] transition-[transform,background-color,border-color,color] duration-150 hover:-translate-y-0.5 hover:bg-gold-soft focus:outline-none focus:ring-2 focus:ring-gold/25 dark:bg-zinc-900/80 dark:hover:bg-gold/15",
+          open
+            ? "border-gold/50 text-gold-dark dark:text-[#E5C158]"
+            : "border-stone-200 text-stone-500 hover:border-gold/50 hover:text-gold-dark dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-gold/50 dark:hover:text-[#E5C158]",
+        )}
         aria-label={unreadCount ? `Notificações, ${unreadCount} não lida${unreadCount === 1 ? "" : "s"}` : "Notificações"}
         aria-expanded={open}
         aria-controls="infinity-notifications-panel"
         aria-haspopup="dialog"
       >
         <Bell className={cn("h-[18px] w-[18px] transition-transform duration-150 group-hover:rotate-[-8deg]", open && "rotate-[-8deg]")} aria-hidden="true" />
-        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-[#fcfcfb] bg-gold px-1 text-[9px] font-black leading-none text-[#17191a]">{unreadCount > 99 ? "99+" : unreadCount}</span>}
-        {!loading && notifications.length === 0 && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full border border-white bg-emerald-500" aria-hidden="true" />}
+        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-[#fcfcfb] bg-gold px-1 text-[9px] font-black leading-none text-[#17191a] dark:border-zinc-900">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+        {!loading && notifications.length === 0 && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full border border-white bg-emerald-500 dark:border-zinc-900" aria-hidden="true" />}
       </button>
 
       {typeof document !== "undefined" && createPortal(
@@ -270,16 +275,16 @@ export function NotificationCenter() {
                 maxHeight: panelPosition ? `${panelPosition.maxHeight}px` : undefined,
                 visibility: panelPosition ? "visible" : "hidden",
               }}
-              className="fixed z-[60] w-[min(410px,calc(100vw-1.5rem))] origin-top-right overflow-hidden rounded-2xl border border-stone-200/90 bg-[#fcfcfb] shadow-[0_24px_70px_-25px_rgba(23,25,26,0.35)]"
+              className="dashboard-root fixed z-[60] w-[min(410px,calc(100vw-1.5rem))] origin-top-right overflow-hidden rounded-2xl border border-stone-200/90 bg-[#fcfcfb] shadow-[0_24px_70px_-25px_rgba(23,25,26,0.35)] dark:border-zinc-800 dark:bg-zinc-900"
             >
-              <div ref={panelHeaderRef} className="flex items-center justify-between gap-3 border-b border-stone-100 bg-white/90 px-4 py-3.5">
+              <div ref={panelHeaderRef} className="flex items-center justify-between gap-3 border-b border-stone-100 bg-white/90 px-4 py-3.5 dark:border-zinc-800 dark:bg-zinc-900/90">
               <div className="flex min-w-0 items-center gap-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold-dark"><BellRing className="h-4 w-4" aria-hidden="true" /></span>
-                <div><h2 className="text-sm font-black text-[#17191a]">Notificações</h2><p className="mt-0.5 text-[10px] text-stone-400">Agenda, processos e publicações recentes</p></div>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold-dark dark:bg-gold/15 dark:text-[#E5C158]"><BellRing className="h-4 w-4" aria-hidden="true" /></span>
+                <div><h2 className="text-sm font-black text-[#17191a] dark:text-zinc-100">Notificações</h2><p className="mt-0.5 text-[10px] text-stone-400 dark:text-zinc-400">Agenda, processos e publicações recentes</p></div>
               </div>
               <div className="flex shrink-0 items-center gap-1">
-                {unreadCount > 0 && <button type="button" onClick={markAllRead} className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold-soft" title="Marcar todas como lidas"><CheckCheck className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">Marcar lidas</span></button>}
-                <button type="button" onClick={() => void loadNotifications(true)} disabled={loading} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 disabled:opacity-50" aria-label="Atualizar notificações" title="Atualizar notificações"><RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} aria-hidden="true" /></button>
+                {unreadCount > 0 && <button type="button" onClick={markAllRead} className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold-soft dark:text-[#E5C158] dark:hover:bg-gold/15" title="Marcar todas como lidas"><CheckCheck className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">Marcar lidas</span></button>}
+                <button type="button" onClick={() => void loadNotifications(true)} disabled={loading} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100" aria-label="Atualizar notificações" title="Atualizar notificações"><RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} aria-hidden="true" /></button>
               </div>
             </div>
 
@@ -288,29 +293,29 @@ export function NotificationCenter() {
                 className="overflow-y-auto overscroll-contain"
               >
               {loading && notifications.length === 0 ? (
-                <div className="flex flex-col items-center px-6 py-12 text-center"><LoaderCircle className="h-6 w-6 animate-spin text-gold-dark" aria-hidden="true" /><p className="mt-3 text-xs font-semibold text-stone-600">Buscando atualizações…</p></div>
+                <div className="flex flex-col items-center px-6 py-12 text-center"><LoaderCircle className="h-6 w-6 animate-spin text-gold-dark dark:text-[#E5C158]" aria-hidden="true" /><p className="mt-3 text-xs font-semibold text-stone-600 dark:text-zinc-400">Buscando atualizações…</p></div>
               ) : error && notifications.length === 0 ? (
-                <div className="px-5 py-10 text-center"><p role="alert" className="text-xs leading-relaxed text-red-700">{error}</p><button type="button" onClick={() => void loadNotifications(true)} className="mt-3 rounded-lg bg-gold-soft px-3 py-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold/20">Tentar novamente</button></div>
+                <div className="px-5 py-10 text-center"><p role="alert" className="text-xs leading-relaxed text-red-700 dark:text-red-400">{error}</p><button type="button" onClick={() => void loadNotifications(true)} className="mt-3 rounded-lg bg-gold-soft px-3 py-2 text-[10px] font-bold text-gold-dark transition hover:bg-gold/20 dark:bg-gold/15 dark:text-[#E5C158]">Tentar novamente</button></div>
               ) : notifications.length === 0 ? (
-                <div className="px-5 py-11 text-center"><span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><CheckCheck className="h-5 w-5" aria-hidden="true" /></span><p className="mt-3 text-xs font-bold text-stone-700">Tudo em dia</p><p className="mt-1 text-[10px] text-stone-400">Sem prazos, movimentações ou publicações recentes.</p></div>
+                <div className="px-5 py-11 text-center"><span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"><CheckCheck className="h-5 w-5" aria-hidden="true" /></span><p className="mt-3 text-xs font-bold text-stone-700 dark:text-zinc-200">Tudo em dia</p><p className="mt-1 text-[10px] text-stone-400 dark:text-zinc-400">Sem prazos, movimentações ou publicações recentes.</p></div>
               ) : (
-                <ul className="divide-y divide-stone-100">
+                <ul className="divide-y divide-stone-100 dark:divide-zinc-800">
                   {notifications.map((item) => {
                     const isRead = readIds.has(item.id);
                     const Icon = item.kind === "agenda" ? CalendarClock : item.kind === "processo" ? BriefcaseBusiness : FileText;
                     const iconStyle = item.kind === "agenda"
-                      ? "bg-gold-soft text-gold-dark"
+                      ? "bg-gold-soft text-gold-dark dark:bg-gold/15 dark:text-[#E5C158]"
                       : item.kind === "processo"
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-sky-50 text-sky-700";
+                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                        : "bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-400";
                     return (
                       <li key={item.id}>
-                        <Link href={item.href} onClick={() => { markRead(item.id); setOpen(false); }} className={cn("group flex gap-3 px-4 py-3.5 transition hover:bg-gold-soft/25", !isRead && "bg-gold-soft/10")}>
-                          <span className={cn("relative mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", iconStyle)}><Icon className="h-4 w-4" aria-hidden="true" />{!isRead && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border border-white bg-gold" aria-label="Não lida" />}</span>
+                        <Link href={item.href} onClick={() => { markRead(item.id); setOpen(false); }} className={cn("group flex gap-3 px-4 py-3.5 transition hover:bg-gold-soft/25 dark:hover:bg-zinc-800/70", !isRead && "bg-gold-soft/10 dark:bg-gold/[0.06]")}>
+                          <span className={cn("relative mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", iconStyle)}><Icon className="h-4 w-4" aria-hidden="true" />{!isRead && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border border-white bg-gold dark:border-zinc-900" aria-label="Não lida" />}</span>
                           <span className="min-w-0 flex-1">
-                            <span className="flex items-start justify-between gap-2"><span className="line-clamp-2 text-xs font-bold leading-relaxed text-stone-800">{item.title}</span><ExternalLink className="mt-0.5 h-3 w-3 shrink-0 text-stone-300 transition group-hover:text-gold-dark" aria-hidden="true" /></span>
-                            <span className="mt-1 block line-clamp-2 text-[10px] leading-relaxed text-stone-500">{item.description}</span>
-                            <span className="mt-1.5 flex items-center gap-1 text-[9px] font-semibold text-stone-400"><Clock3 className="h-3 w-3" aria-hidden="true" />{dateLabel(item.date)}</span>
+                            <span className="flex items-start justify-between gap-2"><span className="line-clamp-2 text-xs font-bold leading-relaxed text-stone-800 dark:text-zinc-100">{item.title}</span><ExternalLink className="mt-0.5 h-3 w-3 shrink-0 text-stone-300 transition group-hover:text-gold-dark dark:text-zinc-600 dark:group-hover:text-[#E5C158]" aria-hidden="true" /></span>
+                            <span className="mt-1 block line-clamp-2 text-[10px] leading-relaxed text-stone-500 dark:text-zinc-400">{item.description}</span>
+                            <span className="mt-1.5 flex items-center gap-1 text-[9px] font-semibold text-stone-400 dark:text-zinc-500"><Clock3 className="h-3 w-3" aria-hidden="true" />{dateLabel(item.date)}</span>
                           </span>
                         </Link>
                       </li>
@@ -320,7 +325,7 @@ export function NotificationCenter() {
               )}
               </div>
 
-              {notifications.length > 0 && <div ref={panelFooterRef} className="flex items-center justify-between border-t border-stone-100 bg-white/80 px-4 py-2.5"><span className="text-[9px] text-stone-400">{notifications.length} {notifications.length === 1 ? "atualização" : "atualizações"}</span><Link href={footerHref} onClick={() => setOpen(false)} className="text-[10px] font-bold text-gold-dark transition hover:text-gold">{footerLabel}</Link></div>}
+              {notifications.length > 0 && <div ref={panelFooterRef} className="flex items-center justify-between border-t border-stone-100 bg-white/80 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/80"><span className="text-[9px] text-stone-400 dark:text-zinc-500">{notifications.length} {notifications.length === 1 ? "atualização" : "atualizações"}</span><Link href={footerHref} onClick={() => setOpen(false)} className="text-[10px] font-bold text-gold-dark transition hover:text-gold dark:text-[#E5C158]">{footerLabel}</Link></div>}
             </motion.section>
           )}
         </AnimatePresence>,

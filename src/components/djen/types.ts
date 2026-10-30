@@ -39,6 +39,7 @@ export interface DjenIntimacoesPanelProps {
   associacoes: Associacao[];
   processos: Processo[];
   podeEditar: boolean;
+  podeExcluir: boolean;
   podePesquisarCliente: boolean;
   podeLerProcessos: boolean;
   podeAssociarProcesso: boolean;

@@ -35,6 +35,7 @@ export default async function IntimacoesPage() {
 
   const canRead = profile.can("comunicacao", "read");
   const canWrite = profile.can("comunicacao", "write");
+  const canDelete = profile.can("comunicacao", "delete");
   const canReadClients = profile.can("clientes", "read");
   const canReadProcesses = profile.can("processos", "read");
   const canWriteProcesses = profile.can("processos", "write");
@@ -73,13 +74,14 @@ export default async function IntimacoesPage() {
   return (
     <div>
       <Header title="Intimações" />
-      <div className="p-6">
+      <main className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8">
         <DjenIntimacoesPanel
           monitoramentos={monitoramentos}
           publicacoes={publicacoes}
           associacoes={associationsResult.data ?? []}
           processos={processesResult.data ?? []}
           podeEditar={Boolean(canWrite)}
+          podeExcluir={Boolean(canDelete)}
           podePesquisarCliente={Boolean(canRead && canReadClients)}
           podeLerProcessos={Boolean(canReadProcesses)}
           podeAssociarProcesso={Boolean(canWrite && canReadClients && canReadProcesses && canWriteProcesses)}
@@ -89,7 +91,7 @@ export default async function IntimacoesPage() {
           monitoringError={monitoringError}
           relatedDataError={relatedDataError}
         />
-      </div>
+      </main>
     </div>
   );
 }

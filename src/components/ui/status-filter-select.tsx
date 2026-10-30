@@ -57,14 +57,14 @@ export function StatusFilterSelect({
       <Select.Trigger
         aria-label={ariaLabel}
         className={cn(
-          "group inline-flex h-10 min-w-[130px] items-center justify-between gap-2.5 rounded-xl border border-stone-200 bg-stone-50/70 px-3 text-xs font-bold text-[#17191a] shadow-xs outline-none transition duration-150 hover:border-stone-300 hover:bg-white focus-visible:border-gold/70 focus-visible:ring-4 focus-visible:ring-gold/10 data-[popup-open]:border-gold/70 data-[popup-open]:bg-white disabled:cursor-not-allowed disabled:opacity-60",
+          "group inline-flex h-10 min-w-[130px] items-center justify-between gap-2.5 rounded-xl border border-stone-200 bg-stone-50/70 px-3 text-xs font-bold text-[#17191a] shadow-xs outline-none transition duration-150 hover:border-stone-300 hover:bg-white focus-visible:border-gold/70 focus-visible:ring-4 focus-visible:ring-gold/10 data-[popup-open]:border-gold/70 data-[popup-open]:bg-white disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800 dark:data-[popup-open]:bg-zinc-800",
           triggerClassName,
           className
         )}
       >
         <div className="flex min-w-0 items-center gap-2">
           {labelPrefix && (
-            <span className="shrink-0 text-[11px] font-semibold text-stone-400">
+            <span className="shrink-0 text-[11px] font-semibold text-stone-400 dark:text-zinc-400">
               {labelPrefix}
             </span>
           )}
@@ -74,17 +74,17 @@ export function StatusFilterSelect({
               aria-hidden="true"
             />
           ) : selectedOption?.icon ? (
-            <selectedOption.icon className="h-3.5 w-3.5 shrink-0 text-stone-400" />
+            <selectedOption.icon className="h-3.5 w-3.5 shrink-0 text-stone-400 dark:text-zinc-400" />
           ) : null}
           <span className="truncate">{selectedOption?.label ?? value}</span>
           {selectedOption?.count !== undefined && (
-            <span className="rounded-md bg-stone-200/70 px-1.5 py-0.5 text-[10px] font-semibold text-stone-600 tabular-nums">
+            <span className="rounded-md bg-stone-200/70 px-1.5 py-0.5 text-[10px] font-semibold text-stone-600 tabular-nums dark:bg-zinc-700 dark:text-zinc-300">
               {selectedOption.count}
             </span>
           )}
         </div>
         <ChevronDown
-          className="h-4 w-4 shrink-0 text-stone-400 transition-transform duration-200 group-data-[popup-open]:rotate-180"
+          className="h-4 w-4 shrink-0 text-stone-400 transition-transform duration-200 group-data-[popup-open]:rotate-180 dark:text-zinc-400"
           aria-hidden="true"
         />
       </Select.Trigger>
@@ -98,8 +98,9 @@ export function StatusFilterSelect({
           className="z-50"
         >
           <Select.Popup
+            data-slot="select-content"
             className={cn(
-              "z-50 min-w-[180px] max-w-[280px] overflow-hidden rounded-xl border border-stone-200 bg-white p-1 shadow-xl shadow-stone-900/10 outline-none animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
+              "z-50 min-w-[180px] max-w-[280px] overflow-hidden rounded-xl border border-stone-200 bg-white p-1 shadow-xl shadow-stone-900/10 outline-none animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/40",
               popupClassName
             )}
           >
@@ -109,9 +110,9 @@ export function StatusFilterSelect({
                   key={option.value}
                   value={option.value}
                   className={cn(
-                    "flex w-full cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-700 outline-none transition select-none",
-                    "data-[highlighted]:bg-gold-soft/70 data-[highlighted]:text-[#17191a]",
-                    "data-[selected]:bg-gold-soft/70 data-[selected]:font-bold data-[selected]:text-[#17191a]"
+                    "flex w-full cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-700 outline-none transition select-none dark:text-zinc-200",
+                    "data-[highlighted]:bg-gold-soft/70 data-[highlighted]:text-[#17191a] dark:data-[highlighted]:bg-[#D4AF37]/15 dark:data-[highlighted]:text-[#E5C158]",
+                    "data-[selected]:bg-gold-soft/70 data-[selected]:font-bold data-[selected]:text-[#17191a] dark:data-[selected]:bg-[#D4AF37]/20 dark:data-[selected]:text-[#E5C158]"
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-2">
@@ -121,7 +122,7 @@ export function StatusFilterSelect({
                         aria-hidden="true"
                       />
                     ) : option.icon ? (
-                      <option.icon className="h-3.5 w-3.5 shrink-0 text-stone-400" />
+                      <option.icon className="h-3.5 w-3.5 shrink-0 text-stone-400 dark:text-zinc-400" />
                     ) : null}
                     <Select.ItemText className="truncate">
                       {option.label}
@@ -129,12 +130,12 @@ export function StatusFilterSelect({
                   </div>
                   <div className="flex shrink-0 items-center gap-2 ml-2">
                     {option.count !== undefined && (
-                      <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold text-stone-500 tabular-nums">
+                      <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold text-stone-500 tabular-nums dark:bg-zinc-800 dark:text-zinc-400">
                         {option.count}
                       </span>
                     )}
                     <Select.ItemIndicator>
-                      <Check className="h-3.5 w-3.5 text-gold-dark" aria-hidden="true" />
+                      <Check className="h-3.5 w-3.5 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />
                     </Select.ItemIndicator>
                   </div>
                 </Select.Item>

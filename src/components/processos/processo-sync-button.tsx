@@ -41,7 +41,7 @@ export function ProcessoSyncButton({
   return (
     <div className="flex items-center gap-2">
       {error && (
-        <p role="alert" aria-atomic="true" className="text-xs text-red-500">
+        <p role="alert" aria-atomic="true" className="text-xs text-red-500 dark:text-red-400">
           {error}
         </p>
       )}
@@ -54,7 +54,7 @@ export function ProcessoSyncButton({
         aria-busy={syncing}
         className={cn(
           "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors",
-          "border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          "border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
         )}
       >
         <RefreshCw

@@ -52,7 +52,7 @@ function getMovementIcon(tipo: string) {
   if (t.includes("publicacao") || t.includes("djen") || t.includes("diario")) {
     return {
       icon: Newspaper,
-      style: "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25",
+      style: "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]",
     };
   }
   if (t.includes("despacho") || t.includes("decisao")) {
@@ -70,7 +70,7 @@ function getMovementIcon(tipo: string) {
   if (t.includes("sentenca") || t.includes("acordao")) {
     return {
       icon: Scale,
-      style: "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25",
+      style: "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]",
     };
   }
   return {
@@ -248,7 +248,7 @@ export function CnjRadarCard({
 
                     {/* Badge de Novo Andamento */}
                     {item.isNovo && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/30 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
                         Novo
                       </span>
@@ -307,14 +307,14 @@ export function CnjRadarCard({
                     className={cn(
                       "group/btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition-colors duration-150",
                       isCopied
-                        ? "bg-[#FBF6E9] text-[#9A7A1A] border-[#D4AF37]/40"
+                        ? "bg-[#FBF6E9] text-[#9A7A1A] border-[#D4AF37]/40 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]"
                         : "bg-gray-50 hover:bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-gray-200/60 dark:border-zinc-700"
                     )}
                   >
                     {isCopied ? (
                       <>
-                        <Check className="h-3 w-3 text-[#9A7A1A]" />
-                        <span className="text-[11px] font-sans font-bold text-[#9A7A1A]">
+                        <Check className="h-3 w-3 text-[#9A7A1A] dark:text-[#D4AF37]" />
+                        <span className="text-[11px] font-sans font-bold text-[#9A7A1A] dark:text-[#D4AF37]">
                           CNJ copiado!
                         </span>
                       </>

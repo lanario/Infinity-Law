@@ -4,12 +4,9 @@ import { startTransition, useEffect, useRef, useState, type ChangeEvent, type Fo
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Camera,
   Check,
   CircleHelp,
   IdCard,
-  ImagePlus,
-  Mail,
   Phone,
   Save,
   ShieldCheck,
@@ -17,7 +14,8 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { salvarDadosPessoaisPerfil, salvarAvatarPerfil } from "@/app/actions/perfil";
-import { ProfileAvatar } from "@/components/layout/profile-avatar";
+import { useProfileAvatarUrl } from "@/components/layout/profile-avatar";
+import { TelegramHeader } from "@/components/ui/telegram-profile-header";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useUser } from "@/components/layout/user-context";
@@ -35,7 +33,8 @@ const SEX_OPTIONS = [
   { value: "outro", label: "Outro", icon: CircleHelp },
 ] as const satisfies ReadonlyArray<{ value: ProfileSex; label: string; icon: typeof UserRound }>;
 
-const fieldClass = "mt-1 h-11 w-full min-w-0 rounded-xl border border-stone-200 bg-white px-3.5 text-sm text-[#242627] outline-none transition placeholder:text-stone-400 focus:border-gold focus:ring-4 focus:ring-gold/10";
+const fieldClass =
+  "mt-1 h-11 w-full min-w-0 rounded-xl border border-stone-200/90 bg-[#FAFAFA] px-3.5 text-sm font-medium text-[#17191A] outline-none transition placeholder:text-stone-400 focus:border-[#D4AF37] focus:bg-white focus:ring-4 focus:ring-[#D4AF37]/10 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:focus:bg-zinc-800";
 
 function localDateValue(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -86,6 +85,7 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const [avatarPath, setAvatarPath] = useState(user?.avatar_path ?? null);
   const [legacyAvatarUrl, setLegacyAvatarUrl] = useState(user?.avatar_url ?? null);
+  const { imageUrl: resolvedAvatarUrl } = useProfileAvatarUrl(avatarPath, legacyAvatarUrl);
   const [profileName, setProfileName] = useState(user?.nome ?? "");
   const [birthDate, setBirthDate] = useState(user?.data_nascimento ?? "");
   const [profileSex, setProfileSex] = useState<ProfileSex | "">(user?.sexo ?? "");
@@ -288,58 +288,34 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: "easeOut" }}
-      className={cn("mx-auto max-w-5xl space-y-5", isModal && "max-w-none space-y-4")}
+      className={cn(
+        "mx-auto max-w-2xl font-sans",
+        isModal && "max-w-none",
+      )}
     >
-      <section className={cn("overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)]", isModal && "overflow-visible rounded-none border-0 bg-transparent shadow-none")}>
-        <div className={cn("flex flex-col items-start gap-4 bg-gradient-to-br from-gold-soft/70 via-white to-white p-4 sm:flex-row sm:items-start sm:p-5", isModal && "rounded-2xl border border-stone-200/80 p-4 sm:p-5")}>
-          <div className="relative w-fit shrink-0">
-            <ProfileAvatar
-              path={avatarPath}
-              url={legacyAvatarUrl}
-              initials={initials}
-              name={profileName || "Usuário"}
-              className="h-20 w-20 border-4 border-white text-xl shadow-[0_8px_24px_-12px_rgba(23,25,26,0.35)]"
-            />
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              disabled={uploading}
-              aria-label={avatarPath || legacyAvatarUrl ? "Trocar foto do perfil" : "Adicionar foto ao perfil"}
-              className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gold text-[#17191a] shadow-sm transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Camera className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="min-w-0 flex-1 pt-0.5">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gold-dark">Perfil pessoal</p>
-            <h2 className="mt-1 truncate text-lg font-black tracking-tight text-[#17191a] sm:text-xl">{profileName || "Usuário"}</h2>
-            <span className="mt-1 inline-flex max-w-full rounded-full bg-gold-soft px-3 py-1 text-xs font-bold text-gold-dark">
-              <span className="truncate">{user?.cargo_nome ?? "Integrante do escritório"}</span>
-            </span>
-            <p className="mt-2 flex min-w-0 items-center gap-1.5 break-all text-xs text-stone-500">
-              <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> {user?.email ?? ""}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => inputRef.current?.click()}
-                disabled={uploading}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-gold px-4 text-xs font-bold text-white shadow-sm transition hover:bg-gold-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {uploading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <ImagePlus className="h-4 w-4" aria-hidden="true" />}
-                {uploading ? "Enviando foto..." : avatarPath || legacyAvatarUrl ? "Trocar foto" : "Adicionar foto"}
-              </button>
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={chooseAvatar}
-                className="sr-only"
-                aria-label="Selecionar foto do perfil"
-              />
-            </div>
-          </div>
-        </div>
+      <div className="space-y-3.5 rounded-[28px] border border-stone-200/70 bg-[#F4F4F6]/85 p-3 sm:p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+        <TelegramHeader
+          avatar={resolvedAvatarUrl ?? ""}
+          name={profileName || "Usuário"}
+          phone={phone || "Telefone não informado"}
+          username={user?.email ?? "@usuario"}
+          roleBadge={user?.cargo_nome ?? "Integrante do escritório"}
+          initials={initials}
+          uploading={uploading}
+          actionButton={{
+            text: uploading ? "Enviando..." : avatarPath || legacyAvatarUrl ? "Trocar foto" : "Adicionar foto",
+            onClick: () => inputRef.current?.click(),
+            backgroundColor: "#D4AF37",
+          }}
+        />
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={chooseAvatar}
+          className="sr-only"
+          aria-label="Selecionar foto do perfil"
+        />
 
         <AnimatePresence mode="wait" initial={false}>
           {message && (
@@ -350,11 +326,10 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
               exit={{ opacity: 0 }}
               role="status"
               className={cn(
-                "mx-4 mt-4 rounded-xl border px-4 py-3 text-xs sm:mx-5",
-                isModal && "mx-1 sm:mx-0",
+                "rounded-2xl border px-4 py-3 text-xs font-medium",
                 message.kind === "error"
-                  ? "border-red-200 bg-red-50 text-red-700"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-700",
+                  ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300",
               )}
             >
               {message.kind === "success" && <Check className="mr-1.5 inline h-3.5 w-3.5" aria-hidden="true" />}
@@ -363,14 +338,21 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
           )}
         </AnimatePresence>
 
-        <form onSubmit={saveProfile} className={cn("space-y-4 p-4 sm:p-5", isModal && "p-0 pt-4 sm:pt-5")}>
-          <section className="rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#17191a]">
-              <IdCard className="h-5 w-5 text-gold-dark" aria-hidden="true" /> Dados pessoais
+        <form onSubmit={saveProfile} className="space-y-3.5">
+          <section className="overflow-hidden rounded-[22px] border border-stone-200/60 bg-white shadow-[0_2px_12px_-4px_rgba(23,25,26,0.05)] dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-[#FBF6E9] text-[#9A7A1A] dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
+                <IdCard className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#9A7A1A] dark:text-[#E5C158]">Identificação</p>
+                <h3 className="text-sm font-black tracking-tight text-[#17191A] dark:text-zinc-100">Dados pessoais</h3>
+              </div>
             </div>
-            <div className="mt-4 grid gap-x-5 gap-y-4 sm:grid-cols-2">
+            <div className="h-[1px] bg-[#F1F1F6] dark:bg-zinc-800" />
+            <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:p-5">
               <label className="block sm:col-span-2">
-                <span className="text-xs font-semibold text-stone-600">Nome completo</span>
+                <span className="text-xs font-semibold text-stone-600 dark:text-zinc-400">Nome completo</span>
                 <input
                   type="text"
                   autoComplete="name"
@@ -388,18 +370,24 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
                 max={localDateValue(new Date())}
                 onChange={setBirthDate}
                 autoComplete="bday"
-                inputClassName="h-11 bg-white text-[#242627]"
+                inputClassName="h-11 bg-[#FAFAFA] focus:bg-white text-[#17191A] font-medium dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:focus:bg-zinc-800"
               />
 
               <fieldset className="min-w-0">
-                <legend className="text-xs font-semibold text-stone-600">Sexo</legend>
-                <div role="radiogroup" aria-label="Sexo" className="mt-1 grid h-11 grid-cols-3 gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">
+                <legend className="text-xs font-semibold text-stone-600 dark:text-zinc-400">Sexo</legend>
+                <div
+                  role="radiogroup"
+                  aria-label="Sexo"
+                  className="mt-1 grid h-11 grid-cols-3 gap-1 rounded-xl border border-stone-200/60 bg-[#F4F4F6] p-1 dark:border-zinc-700 dark:bg-zinc-800"
+                >
                   {SEX_OPTIONS.map(({ value, label, icon: Icon }) => (
                     <label
                       key={value}
                       className={cn(
-                        "flex min-w-0 cursor-pointer items-center justify-center gap-1 rounded-lg px-1 text-[10px] font-semibold transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold/40 sm:gap-1.5 sm:text-xs",
-                        profileSex === value ? "bg-white text-gold-dark shadow-sm" : "text-stone-500 hover:text-stone-800",
+                        "flex min-w-0 cursor-pointer items-center justify-center gap-1 rounded-lg px-1 text-[10px] font-bold transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold/40 sm:gap-1.5 sm:text-xs",
+                        profileSex === value
+                          ? "bg-white text-[#9A7A1A] shadow-sm dark:bg-zinc-700 dark:text-[#F5D77F]"
+                          : "text-stone-500 hover:text-stone-800 dark:text-zinc-400 dark:hover:text-zinc-200",
                       )}
                     >
                       <input
@@ -417,8 +405,8 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
                 </div>
               </fieldset>
 
-              <label className="block min-w-0">
-                <span className="text-xs font-semibold text-stone-600">CPF</span>
+              <label className="block min-w-0 sm:col-span-2">
+                <span className="text-xs font-semibold text-stone-600 dark:text-zinc-400">CPF</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -433,13 +421,20 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
             </div>
           </section>
 
-          <section className="rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#17191a]">
-              <Phone className="h-5 w-5 text-gold-dark" aria-hidden="true" /> Contato
+          <section className="overflow-hidden rounded-[22px] border border-stone-200/60 bg-white shadow-[0_2px_12px_-4px_rgba(23,25,26,0.05)] dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-[#FBF6E9] text-[#9A7A1A] dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
+                <Phone className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#9A7A1A] dark:text-[#E5C158]">Comunicação</p>
+                <h3 className="text-sm font-black tracking-tight text-[#17191A] dark:text-zinc-100">Contato</h3>
+              </div>
             </div>
-            <div className="mt-4 grid gap-x-5 gap-y-4 sm:grid-cols-2">
+            <div className="h-[1px] bg-[#F1F1F6] dark:bg-zinc-800" />
+            <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:p-5">
               <label className="block min-w-0">
-                <span className="text-xs font-semibold text-stone-600">Telefone</span>
+                <span className="text-xs font-semibold text-stone-600 dark:text-zinc-400">Telefone</span>
                 <input
                   type="tel"
                   inputMode="tel"
@@ -453,35 +448,37 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
               </label>
 
               <div className="min-w-0">
-                <label htmlFor="profile-email" className="text-xs font-semibold text-stone-600">E-mail de login</label>
+                <label htmlFor="profile-email" className="text-xs font-semibold text-stone-600 dark:text-zinc-400">
+                  E-mail de login
+                </label>
                 <input
                   id="profile-email"
                   type="email"
                   value={user?.email ?? ""}
                   readOnly
                   aria-describedby="profile-email-help"
-                  className={cn(fieldClass, "cursor-not-allowed bg-stone-50 text-stone-500")}
+                  className={cn(fieldClass, "cursor-not-allowed bg-[#F4F4F6] text-stone-500 dark:bg-zinc-800/50 dark:text-zinc-400")}
                 />
-                <p id="profile-email-help" className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-stone-500">
-                  <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-dark" aria-hidden="true" />
+                <p id="profile-email-help" className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-stone-500 dark:text-zinc-400">
+                  <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9A7A1A] dark:text-[#E5C158]" aria-hidden="true" />
                   Para alterar e-mail ou senha, solicite ao suporte do sistema.
                 </p>
               </div>
             </div>
           </section>
 
-          <div className="flex justify-end pb-1">
+          <div className="flex justify-end pt-0.5">
             <button
               type="submit"
               disabled={!user || savingProfile || !hasProfileChanges}
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl gold-sheen px-5 text-sm font-bold text-[#17191a] shadow-sm transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl gold-sheen px-6 text-sm font-bold text-[#17191a] shadow-sm transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {savingProfile ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#17191a]/25 border-t-[#17191a]" aria-hidden="true" /> : <Save className="h-4 w-4" aria-hidden="true" />}
               {savingProfile ? "Salvando..." : "Salvar alterações"}
             </button>
           </div>
         </form>
-      </section>
+      </div>
 
       <Dialog
         open={cropDialogOpen}
@@ -490,10 +487,10 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
           else closeCropDialog();
         }}
       >
-        <DialogContent className="w-[calc(100%-1rem)] max-w-md gap-0 overflow-y-auto rounded-3xl border border-stone-200 bg-white p-0 shadow-[0_24px_80px_-24px_rgba(23,25,26,0.4)] sm:max-w-md">
-          <div className="border-b border-stone-100 px-5 py-4 pr-12 sm:px-6">
-            <DialogTitle className="text-base font-bold text-[#17191a]">Ajustar foto do perfil</DialogTitle>
-            <DialogDescription className="mt-1 text-xs leading-relaxed text-stone-500">
+        <DialogContent className="w-[calc(100%-1rem)] max-w-md gap-0 overflow-y-auto rounded-3xl border border-stone-200 bg-white p-0 shadow-[0_24px_80px_-24px_rgba(23,25,26,0.4)] sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="border-b border-stone-100 px-5 py-4 pr-12 sm:px-6 dark:border-zinc-800">
+            <DialogTitle className="text-base font-bold text-[#17191a] dark:text-zinc-100">Ajustar foto do perfil</DialogTitle>
+            <DialogDescription className="mt-1 text-xs leading-relaxed text-stone-500 dark:text-zinc-400">
               Arraste a imagem para enquadrar e ajuste o zoom. A área circular mostra como a foto aparecerá no sistema.
             </DialogDescription>
           </div>
@@ -504,7 +501,7 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
               role="img"
               aria-label="Prévia circular da foto de perfil; arraste para ajustar o enquadramento"
               className={cn(
-                "relative aspect-square touch-none select-none overflow-hidden rounded-full border-[5px] border-white bg-stone-100 ring-2 ring-gold/70 shadow-[0_12px_32px_-12px_rgba(23,25,26,0.45)]",
+                "relative aspect-square touch-none select-none overflow-hidden rounded-full border-[5px] border-white bg-stone-100 ring-2 ring-gold/70 shadow-[0_12px_32px_-12px_rgba(23,25,26,0.45)] dark:border-zinc-800 dark:bg-zinc-800",
                 cropImageSize ? (isDraggingCrop ? "cursor-grabbing" : "cursor-grab") : "cursor-wait",
               )}
               style={{ width: "min(16rem, calc(100vw - 5rem))" }}
@@ -557,16 +554,16 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
                 />
               )}
               {!cropImageSize && (
-                <div className="absolute inset-0 flex items-center justify-center text-xs text-stone-500">
+                <div className="absolute inset-0 flex items-center justify-center text-xs text-stone-500 dark:text-zinc-400">
                   Preparando imagem...
                 </div>
               )}
             </div>
 
             <div className="w-full max-w-xs">
-              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-600">
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-zinc-300">
                 <label htmlFor="profile-photo-zoom" className="inline-flex items-center gap-1.5">
-                  <ZoomIn className="h-4 w-4 text-gold-dark" aria-hidden="true" /> Zoom
+                  <ZoomIn className="h-4 w-4 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" /> Zoom
                 </label>
                 <span>{Math.round(cropZoom * 100)}%</span>
               </div>
@@ -581,11 +578,11 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
                 disabled={!cropImageSize || uploading}
                 className="h-2 w-full cursor-pointer accent-gold disabled:cursor-not-allowed"
               />
-              <p className="mt-2 text-center text-[11px] text-stone-400">Arraste a foto para posicioná-la no círculo.</p>
+              <p className="mt-2 text-center text-[11px] text-stone-400 dark:text-zinc-500">Arraste a foto para posicioná-la no círculo.</p>
             </div>
 
             {cropError && (
-              <p role="alert" className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <p role="alert" className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
                 {cropError}
               </p>
             )}
@@ -595,7 +592,7 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
                 type="button"
                 onClick={() => closeCropDialog()}
                 disabled={uploading}
-                className="inline-flex h-10 items-center justify-center rounded-xl border border-stone-200 px-4 text-sm font-semibold text-stone-600 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-28"
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-stone-200 px-4 text-sm font-semibold text-stone-600 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-28 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 Cancelar
               </button>

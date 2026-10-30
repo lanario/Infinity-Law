@@ -34,10 +34,10 @@ type TeamMember = { id: string; nome: string; avatar_url: string | null; ativo: 
 type TimelineLane = { id: string; name: string; member: TeamMember | null; tone: string; items: AgendaTimelineItem<TimelineEvent>[] };
 
 const TYPE_STYLE: Record<EventoTipo, { label: string; className: string }> = {
-  audiencia: { label: "Audiência", className: "border-gold/45 bg-[#fbf6e9] text-[#80600b]" },
-  reuniao: { label: "Reunião", className: "border-stone-300 bg-stone-100 text-[#303334]" },
-  prazo: { label: "Prazo", className: "border-rose-300 bg-rose-50 text-rose-800" },
-  compromisso: { label: "Compromisso", className: "border-sky-200 bg-sky-50 text-sky-800" },
+  audiencia: { label: "Audiência", className: "border-gold/45 bg-[#fbf6e9] text-[#80600b] dark:border-gold/40 dark:bg-gold/15 dark:text-[#f3d06a]" },
+  reuniao: { label: "Reunião", className: "border-stone-300 bg-stone-200/75 text-[#303334] dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100" },
+  prazo: { label: "Prazo", className: "border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-500/40 dark:bg-rose-950/70 dark:text-rose-200" },
+  compromisso: { label: "Compromisso", className: "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-500/40 dark:bg-sky-950/70 dark:text-sky-200" },
 };
 
 const isAvatarUrl = (value: string | null) => Boolean(value && /^https?:\/\//i.test(value));
@@ -52,7 +52,7 @@ function formatMinute(minute: number) {
 }
 
 function avatarTone(index: number) {
-  return ["bg-[#f7edc9] text-[#80600b]", "bg-stone-200 text-stone-700", "bg-rose-100 text-rose-700", "bg-sky-100 text-sky-700", "bg-emerald-100 text-emerald-700"][index % 5] ?? "bg-stone-100 text-stone-600";
+  return ["bg-[#f7edc9] text-[#80600b] dark:bg-gold/15 dark:text-gold", "bg-stone-200 text-stone-700 dark:bg-zinc-800 dark:text-zinc-300", "bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300", "bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300", "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300"][index % 5] ?? "bg-stone-200/70 text-stone-600 dark:bg-zinc-800 dark:text-zinc-400";
 }
 
 interface TeamDayTimelineProps {
@@ -105,7 +105,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
     }));
     const unassigned = layoutAgendaEvents(eventsByMember.get(null) ?? [], dateKey);
     if (unassigned.length > 0 || lanes.length === 0) {
-      lanes.push({ id: "unassigned", name: "Sem responsável", member: null, tone: "bg-stone-100 text-stone-500", items: unassigned });
+      lanes.push({ id: "unassigned", name: "Sem responsável", member: null, tone: "bg-stone-200/70 text-stone-500 dark:bg-zinc-800 dark:text-zinc-400", items: unassigned });
     }
     return lanes;
   }, [assignedMembers, dateKey, eventsByMember]);
@@ -117,7 +117,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
   }, [currentMinute, dateKey, eventos]);
   const range = useMemo(() => getAgendaTimelineRange(intervals), [intervals]);
   const hourCount = (range.endMinute - range.startMinute) / 60;
-  const axisBackground = `linear-gradient(to right, #e9e7e3 1px, transparent 1px)`;
+  const axisBackground = `linear-gradient(to right, rgba(120, 113, 108, 0.16) 1px, transparent 1px)`;
   const currentPosition = currentMinute === null ? null : positionOnAgendaAxis(currentMinute, currentMinute + 1, range).leftPercent;
   const hasEvents = laneData.some((lane) => lane.items.length > 0);
   const visibleEventCount = laneData.reduce((count, lane) => count + lane.items.length, 0);
@@ -133,7 +133,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
       <div className="overflow-x-auto overscroll-x-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold" tabIndex={0} aria-label="Linha do tempo. Use as setas de rolagem horizontal para consultar outros horários.">
         <div className="grid min-w-[1060px] grid-cols-[220px_minmax(840px,1fr)]">
           <div className="sticky left-0 top-0 z-30 flex h-14 items-center gap-2 border-b border-r border-stone-200 bg-stone-50 px-4 text-[11px] font-bold uppercase tracking-[0.08em] text-stone-600">
-            <UserRound className="h-4 w-4 text-gold-dark" aria-hidden="true" /> Equipe <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-[10px] text-stone-500">{assignedMembers.length}</span>
+            <UserRound className="h-4 w-4 text-gold-dark dark:text-gold" aria-hidden="true" /> Equipe <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-[10px] text-stone-500">{assignedMembers.length}</span>
           </div>
           {/* px-7 gutter: first/last hour labels (centered on their line) stay inside the cell, clear of the sticky team column */}
           <div className="sticky top-0 z-20 h-14 border-b border-stone-200 bg-stone-50 px-7" aria-label="Eixo de horários">
@@ -152,20 +152,20 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
               <div key={lane.id} className="contents">
                 <div className="sticky left-0 z-10 flex min-w-0 items-center gap-3 border-b border-r border-stone-100 bg-white px-3 py-2.5">
                   {lane.member ? (
-                    <ProfileAvatar path={isAvatarUrl(lane.member.avatar_url) ? null : lane.member.avatar_url} url={isAvatarUrl(lane.member.avatar_url) ? lane.member.avatar_url : null} initials={initials(lane.name)} name={lane.name} className="h-9 w-9 border border-stone-200 !bg-gold-soft !text-gold-dark text-[11px]" />
+                    <ProfileAvatar path={isAvatarUrl(lane.member.avatar_url) ? null : lane.member.avatar_url} url={isAvatarUrl(lane.member.avatar_url) ? lane.member.avatar_url : null} initials={initials(lane.name)} name={lane.name} className="h-9 w-9 border border-stone-200 !bg-gold-soft !text-gold-dark dark:border-zinc-700 dark:!bg-gold/15 dark:!text-gold text-[11px]" />
                   ) : (
-                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white text-[11px] font-extrabold", lane.tone)} aria-hidden="true">
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white text-[11px] font-extrabold dark:border-zinc-700", lane.tone)} aria-hidden="true">
                       {lane.member ? initials(lane.name) : <CircleUserRound className="h-4 w-4" />}
                     </span>
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-bold text-[#303334]">{lane.name}</span>
+                    <span className="block truncate text-xs font-bold text-[#303334] dark:text-zinc-100">{lane.name}</span>
                     <span className="mt-0.5 block truncate text-[10px] text-stone-400">{lane.member ? lane.member.ativo ? "Equipe do escritório" : "Responsável inativo" : `${lane.items.length} ${lane.items.length === 1 ? "evento" : "eventos"}`}</span>
                   </span>
                 </div>
                 <div className="border-b border-stone-100 px-7">
                 <div
-                  className={cn("relative border-r border-[#e9e7e3]", onSelectTime && "cursor-crosshair")}
+                  className={cn("relative border-r border-stone-200/80 dark:border-zinc-800", onSelectTime && "cursor-crosshair")}
                   style={{
                     height,
                     backgroundImage: axisBackground,
@@ -180,7 +180,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
                     setSlotHover((current) => current?.laneId === lane.id && current.minute === minute ? current : { laneId: lane.id, minute });
                   }} onPointerLeave={() => setSlotHover(null)} />}
                   {onSelectTime && slotHover?.laneId === lane.id && <SlotPreview minute={slotHover.minute} compact className="inset-y-1" style={{ left: `${((slotHover.minute - range.startMinute) / (range.endMinute - range.startMinute)) * 100}%`, width: `${(SLOT_STEP_MINUTES / (range.endMinute - range.startMinute)) * 100}%` }} />}
-                  {currentPosition !== null && <span role="img" aria-label={`Horário atual ${formatAgendaTime(clock)}`} className="pointer-events-none absolute -top-1 bottom-0 z-10 w-px bg-rose-500" style={{ left: `${currentPosition}%` }}><span className="absolute -left-[4px] -top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-white" /></span>}
+                  {currentPosition !== null && <span role="img" aria-label={`Horário atual ${formatAgendaTime(clock)}`} className="pointer-events-none absolute -top-1 bottom-0 z-10 w-px bg-rose-500" style={{ left: `${currentPosition}%` }}><span className="absolute -left-[4px] -top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-zinc-900" /></span>}
                   {lane.items.map(({ event, startMinute, endMinute, row }) => {
                     const position = positionOnAgendaAxis(startMinute, endMinute, range);
                     const typeStyle = TYPE_STYLE[event.tipo];
@@ -217,7 +217,7 @@ export function TeamDayTimeline({ dateKey, eventos, membros, clientes, processos
       </div>
       {!hasEvents && (
         <div className="flex items-center gap-3 border-t border-stone-100 bg-[#fcfcfb] px-4 py-3 text-xs text-stone-500 sm:px-6">
-          <CalendarClock className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
+          <CalendarClock className="h-4 w-4 shrink-0 text-gold-dark dark:text-gold" aria-hidden="true" />
           <span>Nenhum evento nesta data. Agendamentos reais da equipe aparecerão nesta linha do tempo.</span>
           {isToday && <span className="ml-auto hidden items-center gap-1.5 text-[10px] text-stone-400 sm:inline-flex"><Clock3 className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" /> Horário atual</span>}
         </div>

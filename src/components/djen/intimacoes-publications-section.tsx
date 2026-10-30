@@ -78,8 +78,8 @@ function DetailField({ label, children }: { label: string; children: ReactNode }
   if (children === null || children === undefined || children === "") return null;
   return (
     <div className="min-w-0">
-      <dt className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{label}</dt>
-      <dd className="mt-1 break-words text-xs leading-5 text-gray-700">{children}</dd>
+      <dt className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-zinc-400">{label}</dt>
+      <dd className="mt-1 break-words text-xs leading-5 text-gray-700 dark:text-zinc-200">{children}</dd>
     </div>
   );
 }
@@ -162,20 +162,20 @@ export function DjenPublicationsSection({
   const hasFilters = Boolean(query || tribunalFilter || typeFilter);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm" aria-labelledby="djen-publications-heading">
-      <div className="border-b border-gray-100 px-5 py-4 sm:px-6">
+    <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900" aria-labelledby="djen-publications-heading">
+      <div className="border-b border-gray-100 px-5 py-4 dark:border-zinc-800 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 id="djen-publications-heading" className="text-base font-semibold text-gray-900">Publicações recebidas</h2>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <h2 id="djen-publications-heading" className="text-base font-semibold text-gray-900 dark:text-zinc-100">Publicações recebidas</h2>
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
               Confira o teor e os dados da comunicação. A data exibida é a disponibilização no diário e não representa vencimento de prazo.
             </p>
           </div>
-          <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600" aria-live="polite">
+          <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-300" aria-live="polite">
             {filteredPublicacoes.length} de {publicacoes.length} carregadas
           </span>
         </div>
-        <p className="mt-3 text-[11px] text-gray-400">
+        <p className="mt-3 text-[11px] text-gray-400 dark:text-zinc-500">
           {publicacoes.length === 100
             ? "Exibindo até as 100 publicações mais recentes carregadas deste escritório."
             : `${publicacoes.length} publicação(ões) carregada(s) deste escritório.`}
@@ -184,9 +184,9 @@ export function DjenPublicationsSection({
 
         {publicacoes.length > 0 && !publicationError && (
           <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,0.45fr)_minmax(10rem,0.45fr)]">
-            <label className="relative block text-xs font-medium text-gray-600">
+            <label className="relative block text-xs font-medium text-gray-600 dark:text-zinc-300">
               Buscar nas publicações carregadas
-              <span className="pointer-events-none absolute left-3 top-[2.15rem] text-gray-400" aria-hidden="true">
+              <span className="pointer-events-none absolute left-3 top-[2.15rem] text-gray-400 dark:text-zinc-500" aria-hidden="true">
                 <Search className="h-4 w-4" />
               </span>
               <input
@@ -194,26 +194,26 @@ export function DjenPublicationsSection({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Processo, teor, tribunal, destinatário…"
-                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm font-normal text-gray-800 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/10"
+                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm font-normal text-gray-800 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100 dark:placeholder:text-zinc-500"
               />
             </label>
-            <label className="text-xs font-medium text-gray-600">
+            <label className="text-xs font-medium text-gray-600 dark:text-zinc-300">
               Tribunal
               <select
                 value={tribunalFilter}
                 onChange={(event) => setTribunalFilter(event.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-normal text-gray-700 outline-none focus:border-gold focus:ring-2 focus:ring-gold/10"
+                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-normal text-gray-700 outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100"
               >
                 <option value="">Todos os tribunais</option>
                 {tribunais.map((tribunal) => <option key={tribunal} value={tribunal}>{tribunal}</option>)}
               </select>
             </label>
-            <label className="text-xs font-medium text-gray-600">
+            <label className="text-xs font-medium text-gray-600 dark:text-zinc-300">
               Tipo de comunicação
               <select
                 value={typeFilter}
                 onChange={(event) => setTypeFilter(event.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-normal text-gray-700 outline-none focus:border-gold focus:ring-2 focus:ring-gold/10"
+                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-normal text-gray-700 outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100"
               >
                 <option value="">Todos os tipos</option>
                 {tipos.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}
@@ -225,7 +225,7 @@ export function DjenPublicationsSection({
           <button
             type="button"
             onClick={clearFilters}
-            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-[#E5C158]"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
             Limpar filtros
@@ -234,31 +234,31 @@ export function DjenPublicationsSection({
       </div>
 
       {relatedDataError && (
-        <div className="border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs leading-5 text-amber-900 sm:px-6" role="status">
+        <div className="border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs leading-5 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200 sm:px-6" role="status">
           {relatedDataError}
         </div>
       )}
 
       {publicationError ? (
-        <div className="px-5 py-10 text-center text-sm text-gray-500 sm:px-6" role="status">
+        <div className="px-5 py-10 text-center text-sm text-gray-500 dark:text-zinc-400 sm:px-6" role="status">
           {publicationError}
         </div>
       ) : publicacoes.length === 0 ? (
         <div className="px-5 py-10 text-center sm:px-6">
-          <p className="text-sm font-medium text-gray-700">Nenhuma publicação salva ainda.</p>
-          <p className="mt-1 text-sm text-gray-400">
+          <p className="text-sm font-medium text-gray-700 dark:text-zinc-200">Nenhuma publicação salva ainda.</p>
+          <p className="mt-1 text-sm text-gray-400 dark:text-zinc-400">
             Consulte o DJEN por OAB ou cliente nos controles abaixo para trazer publicações a este painel.
           </p>
         </div>
       ) : filteredPublicacoes.length === 0 ? (
         <div className="px-5 py-10 text-center sm:px-6" role="status">
-          <p className="text-sm font-medium text-gray-700">Nenhuma publicação corresponde aos filtros.</p>
-          <button type="button" onClick={clearFilters} className="mt-2 text-xs font-medium text-gold-dark hover:text-gold">
+          <p className="text-sm font-medium text-gray-700 dark:text-zinc-200">Nenhuma publicação corresponde aos filtros.</p>
+          <button type="button" onClick={clearFilters} className="mt-2 text-xs font-medium text-gold-dark hover:text-gold dark:text-[#E5C158]">
             Limpar filtros
           </button>
         </div>
       ) : (
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 dark:divide-zinc-800">
           <AnimatePresence initial={false} mode="popLayout">
             {filteredPublicacoes.map((publicacao) => {
               const foundBy = associationsByPublication.get(publicacao.id) ?? [];
@@ -294,40 +294,40 @@ export function DjenPublicationsSection({
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <p className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-dark">
+                        <p className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
                           {publicacao.tipo_comunicacao ?? "Comunicação judicial"}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-zinc-400">
                           Disponibilizada em{" "}
-                          <time dateTime={publicacao.data_disponibilizacao ?? undefined} className="font-medium text-gray-700">
+                          <time dateTime={publicacao.data_disponibilizacao ?? undefined} className="font-medium text-gray-700 dark:text-zinc-200">
                             {formatDate(publicacao.data_disponibilizacao)}
                           </time>
                         </p>
                       </div>
 
-                      <p className="mt-2 break-all font-mono text-sm font-semibold text-gray-900">
+                      <p className="mt-2 break-all font-mono text-sm font-semibold text-gray-900 dark:text-zinc-100">
                         {podeLerProcessos && process ? (
-                          <Link href={`/processos/${process.id}`} className="underline decoration-gray-300 underline-offset-2 hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
+                          <Link href={`/processos/${process.id}`} className="underline decoration-gray-300 underline-offset-2 hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:decoration-zinc-700 dark:hover:text-[#E5C158]">
                             {process.numero_cnj ?? "Processo sem número CNJ"}
                           </Link>
                         ) : caseNumber}
                       </p>
                       {publicacao.processo_id && process && podeLerProcessos && (
-                        <span className="mt-1 inline-flex items-center gap-1 font-sans text-[10px] text-emerald-700">
+                        <span className="mt-1 inline-flex items-center gap-1 font-sans text-[10px] text-emerald-700 dark:text-emerald-400">
                           <BriefcaseBusiness className="h-3 w-3" aria-hidden="true" />
                           Processo vinculado
                         </span>
                       )}
 
-                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
-                        <span><span className="font-medium text-gray-700">Tribunal:</span> {publicacao.tribunal ?? "Não informado"}</span>
-                        {publicacao.orgao && <span><span className="font-medium text-gray-700">Órgão:</span> {publicacao.orgao}</span>}
-                        {publicacao.nome_classe && <span><span className="font-medium text-gray-700">Classe:</span> {publicacao.nome_classe}</span>}
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-zinc-400">
+                        <span><span className="font-medium text-gray-700 dark:text-zinc-300">Tribunal:</span> {publicacao.tribunal ?? "Não informado"}</span>
+                        {publicacao.orgao && <span><span className="font-medium text-gray-700 dark:text-zinc-300">Órgão:</span> {publicacao.orgao}</span>}
+                        {publicacao.nome_classe && <span><span className="font-medium text-gray-700 dark:text-zinc-300">Classe:</span> {publicacao.nome_classe}</span>}
                       </div>
 
                       {publicacao.destinatarios.length > 0 && (
-                        <p className="mt-2 text-xs leading-5 text-gray-500">
-                          <span className="font-medium text-gray-700">Destinatários:</span>{" "}
+                        <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-zinc-400">
+                          <span className="font-medium text-gray-700 dark:text-zinc-300">Destinatários:</span>{" "}
                           {publicacao.destinatarios.slice(0, 3).map((destinatario, index) => (
                             <span key={`${destinatario.nome ?? "destinatario"}-${index}`}>
                               {index > 0 ? "; " : ""}
@@ -340,8 +340,8 @@ export function DjenPublicationsSection({
                       )}
 
                       {publicacao.destinatario_advogados.length > 0 && (
-                        <p className="mt-1 text-xs leading-5 text-gray-500">
-                          <span className="font-medium text-gray-700">Advogado destinatário:</span>{" "}
+                        <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-zinc-400">
+                          <span className="font-medium text-gray-700 dark:text-zinc-300">Advogado destinatário:</span>{" "}
                           {describeLawyer(publicacao.destinatario_advogados[0])}
                           {publicacao.destinatario_advogados.length > 1 && `; +${publicacao.destinatario_advogados.length - 1}`}
                         </p>
@@ -349,9 +349,9 @@ export function DjenPublicationsSection({
 
                       {foundBy.length > 0 && (
                         <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                          <span className="text-[10px] text-gray-400">Localizada por</span>
+                          <span className="text-[10px] text-gray-400 dark:text-zinc-500">Localizada por</span>
                           {foundBy.map((monitoramento) => (
-                            <span key={monitoramento.id} className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600">
+                            <span key={monitoramento.id} className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600 dark:bg-zinc-800 dark:text-zinc-300">
                               {monitoramento.numero_oab}/{monitoramento.uf_oab}
                             </span>
                           ))}
@@ -364,7 +364,7 @@ export function DjenPublicationsSection({
                         href={publicacao.link}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                        className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-[#E5C158]"
                       >
                         Abrir no tribunal
                         <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -373,13 +373,13 @@ export function DjenPublicationsSection({
                   </div>
 
                   {hasExtraDetails && (
-                    <div className="mt-4 border-t border-gray-100 pt-3">
+                    <div className="mt-4 border-t border-gray-100 pt-3 dark:border-zinc-800">
                       <button
                         type="button"
                         aria-expanded={isExpanded}
                         aria-controls={`djen-publication-details-${publicacao.id}`}
                         onClick={() => toggleExpanded(publicacao.id)}
-                        className="inline-flex items-center gap-2 rounded-md text-xs font-medium text-gray-600 transition hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                        className="inline-flex items-center gap-2 rounded-md text-xs font-medium text-gray-600 transition hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-400 dark:hover:text-[#E5C158]"
                       >
                         {isExpanded ? "Ocultar detalhes" : "Ver teor e detalhes da comunicação"}
                         <ChevronDown className={`h-3.5 w-3.5 ${reduceMotion ? "" : "transition-transform"} ${isExpanded ? "rotate-180" : ""}`} aria-hidden="true" />
@@ -394,7 +394,7 @@ export function DjenPublicationsSection({
                         transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <dl className="mt-3 grid gap-x-5 gap-y-4 rounded-xl bg-gray-50 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <dl className="mt-3 grid gap-x-5 gap-y-4 rounded-xl bg-gray-50 p-4 dark:bg-zinc-800/60 sm:grid-cols-2 lg:grid-cols-3">
                           <DetailField label="Tipo de documento">{publicacao.tipo_documento}</DetailField>
                           <DetailField label="Meio">
                             {[publicacao.meio_completo, publicacao.meio].filter(Boolean).join(" · ")}
@@ -429,9 +429,9 @@ export function DjenPublicationsSection({
                           )}
                         </dl>
                         {publicacao.texto && (
-                          <div className="mt-3 rounded-xl border border-gray-100 bg-white p-4">
-                            <h3 className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Teor da publicação</h3>
-                            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-gray-700">
+                          <div className="mt-3 rounded-xl border border-gray-100 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                            <h3 className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-zinc-400">Teor da publicação</h3>
+                            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-gray-700 dark:text-zinc-200">
                               {publicacao.texto}
                             </p>
                           </div>

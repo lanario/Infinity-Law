@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -48,6 +49,48 @@ export async function PATCH(
   } catch {
     return NextResponse.json(
       { error: "Não foi possível atualizar o monitoramento." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const auth = await authorizeDjen("delete");
+  if (!auth.ok) return auth.response;
+
+  if (!monitorIdSchema.safeParse(params.id).success) {
+    return NextResponse.json({ error: "Monitoramento inválido." }, { status: 400 });
+  }
+
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("djen_oab_monitoramentos")
+      .delete()
+      .eq("id", params.id)
+      .eq("escritorio_id", auth.escritorioId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Não foi possível excluir o monitoramento." },
+        { status: 500 }
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json({ error: "Monitoramento não encontrado." }, { status: 404 });
+    }
+
+    // A FK apaga os vínculos desta OAB, mas as publicações compartilhadas permanecem no histórico.
+    return NextResponse.json({ excluido: true });
+  } catch {
+    return NextResponse.json(
+      { error: "Não foi possível excluir o monitoramento." },
       { status: 500 }
     );
   }

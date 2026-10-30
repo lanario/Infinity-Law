@@ -22,7 +22,7 @@ export function SlotPreviewBody({ minute, compact }: { minute: number; compact?:
       <span className="inline-flex items-center gap-1 text-[11px] font-extrabold tabular-nums leading-4">
         <CalendarClock className="h-3 w-3 shrink-0" aria-hidden="true" />{formatSlotTime(minute)}
       </span>
-      {!compact && <span className="max-w-full truncate px-1 text-[9px] font-medium leading-3 text-stone-600">Clique para criar um agendamento</span>}
+      {!compact && <span className="max-w-full truncate px-1 text-[9px] font-medium leading-3 text-stone-600 dark:text-zinc-300">Clique para criar um agendamento</span>}
     </>
   );
 }
@@ -30,7 +30,7 @@ export function SlotPreviewBody({ minute, compact }: { minute: number; compact?:
 // Bloco flutuante (somente ponteiro): o chamador define posição/tamanho via style.
 export function SlotPreview({ minute, compact, className, style }: { minute: number; compact?: boolean; className?: string; style: React.CSSProperties }) {
   return (
-    <div aria-hidden="true" style={style} className={cn("pointer-events-none absolute z-[5] flex flex-col items-center justify-center overflow-hidden rounded-md border border-gold/50 bg-gold/15 text-gold-dark", className)}>
+    <div aria-hidden="true" style={style} className={cn("pointer-events-none absolute z-[5] flex flex-col items-center justify-center overflow-hidden rounded-md border border-gold/50 bg-gold/15 text-gold-dark dark:text-gold", className)}>
       <SlotPreviewBody minute={minute} compact={compact} />
     </div>
   );

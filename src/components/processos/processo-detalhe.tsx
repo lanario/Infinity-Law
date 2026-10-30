@@ -14,10 +14,10 @@ import { ProcessoDetalheDialog } from "@/components/processos/processo-detalhe-d
 import { EditarDadosPedidoDialog, type DadosPedidoInicial } from "@/components/processos/editar-dados-pedido-dialog";
 
 const STATUS_BADGE: Record<string, string> = {
-  ativo: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  suspenso: "bg-amber-50 text-amber-700 border-amber-200",
-  arquivado: "bg-gray-50 text-gray-500 border-gray-200",
-  encerrado: "bg-blue-50 text-blue-700 border-blue-200",
+  ativo: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30",
+  suspenso: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
+  arquivado: "bg-gray-50 text-gray-500 border-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700",
+  encerrado: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/30",
 };
 
 const dataHoraFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" });
@@ -135,7 +135,7 @@ export async function ProcessoDetalhe({
     if (!embedded) notFound();
     return emModal(
       "Processo não encontrado",
-      <p className="p-6 text-sm text-gray-500">Este processo não existe ou você não tem acesso a ele.</p>,
+      <p className="p-6 text-sm text-gray-500 dark:text-zinc-400">Este processo não existe ou você não tem acesso a ele.</p>,
     );
   }
 
@@ -198,7 +198,7 @@ export async function ProcessoDetalhe({
         {!embedded && (
           <Link
             href="/processos"
-            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors dark:text-zinc-400 dark:hover:text-zinc-200"
           >
             <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
             Voltar para Processos
@@ -206,17 +206,17 @@ export async function ProcessoDetalhe({
         )}
 
         {juridico && juridico.nivel_sigilo > 0 && (
-          <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+          <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
             Este processo tem nível de sigilo ({juridico.nivel_sigilo}). Compartilhe as informações com cautela.
           </div>
         )}
 
         {/* Card principal */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 dark:bg-zinc-900 dark:border-zinc-800">
           <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="text-xs text-gray-400 mb-1">Número CNJ</p>
-              <p className="text-lg font-bold font-mono text-gray-900">
+              <p className="text-xs text-gray-400 mb-1 dark:text-zinc-400">Número CNJ</p>
+              <p className="text-lg font-bold font-mono text-gray-900 dark:text-zinc-100">
                 {processo.numero_cnj ?? "CNJ ainda não informado"}
               </p>
             </div>
@@ -224,7 +224,7 @@ export async function ProcessoDetalhe({
               <span
                 className={cn(
                   "text-xs font-medium px-2.5 py-1 rounded-full border capitalize",
-                  STATUS_BADGE[processo.status] ?? "bg-gray-50 text-gray-500 border-gray-200"
+                  STATUS_BADGE[processo.status] ?? "bg-gray-50 text-gray-500 border-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
                 )}
               >
                 {processo.status}
@@ -272,13 +272,13 @@ export async function ProcessoDetalhe({
           </div>
 
           {processo.observacoes && (
-            <div className="mt-4 pt-4 border-t border-gray-50">
-              <p className="text-xs text-gray-400 mb-1">Observações</p>
-              <p className="text-sm text-gray-600">{processo.observacoes}</p>
+            <div className="mt-4 pt-4 border-t border-gray-50 dark:border-zinc-800">
+              <p className="text-xs text-gray-400 mb-1 dark:text-zinc-400">Observações</p>
+              <p className="text-sm text-gray-600 dark:text-zinc-300">{processo.observacoes}</p>
             </div>
           )}
 
-          <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2">
+          <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2 dark:border-zinc-800">
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
@@ -286,7 +286,7 @@ export async function ProcessoDetalhe({
               )}
               aria-hidden="true"
             />
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-zinc-400">
               {syncDate
                 ? `Última sincronização: ${syncDate.toLocaleString("pt-BR")}`
                 : "Nunca sincronizado com o DataJud"}
@@ -294,14 +294,14 @@ export async function ProcessoDetalhe({
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="flex items-start justify-between gap-4 border-b border-gray-50 px-6 py-4">
+        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-start justify-between gap-4 border-b border-gray-50 px-6 py-4 dark:border-zinc-800">
             <div>
               <div className="flex items-center gap-2">
                 <BriefcaseBusiness className="h-4 w-4 text-gold" aria-hidden="true" />
-                <h2 className="text-sm font-semibold text-gray-800">Dados do pedido</h2>
+                <h2 className="text-sm font-semibold text-gray-800 dark:text-zinc-100">Dados do pedido</h2>
               </div>
-              <p className="mt-1 text-xs text-gray-400">Informações recebidas na abertura e no acompanhamento do caso.</p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-zinc-400">Informações recebidas na abertura e no acompanhamento do caso.</p>
             </div>
             {canEditDadosPedido && (
               <EditarDadosPedidoDialog
@@ -365,12 +365,12 @@ export async function ProcessoDetalhe({
         </div>
 
         {/* Movimentações */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-50">
-            <h2 className="text-sm font-semibold text-gray-700">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm dark:bg-zinc-900 dark:border-zinc-800">
+          <div className="px-6 py-4 border-b border-gray-50 dark:border-zinc-800">
+            <h2 className="text-sm font-semibold text-gray-700 dark:text-zinc-100">
               Movimentações ({movimentacoes?.length ?? 0}){totalNovos > 0 ? ` · ${totalNovos} nova${totalNovos > 1 ? "s" : ""}` : ""}
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-gray-400 mt-0.5 dark:text-zinc-400">
               Dados públicos via CNJ — pode haver delay de até 12h. Exibindo as 100 mais recentes.
             </p>
             {totalNovos > 0 && <MarcarMovimentacoesVistas processoId={params.id} />}
@@ -378,8 +378,8 @@ export async function ProcessoDetalhe({
 
           {!movimentacoes || movimentacoes.length === 0 ? (
             <div className="px-6 py-12 text-center">
-              <Calendar className="h-8 w-8 text-gray-200 mx-auto mb-2" aria-hidden="true" />
-              <p className="text-sm text-gray-400">
+              <Calendar className="h-8 w-8 text-gray-200 mx-auto mb-2 dark:text-zinc-700" aria-hidden="true" />
+              <p className="text-sm text-gray-400 dark:text-zinc-400">
               {processo.numero_cnj ? "Nenhuma movimentação registrada. Sincronize com o CNJ." : "As movimentações ficarão disponíveis quando o número CNJ for informado."}
               </p>
             </div>
@@ -403,30 +403,30 @@ export async function ProcessoDetalhe({
                           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-yellow-400" />
                         </span>
                       ) : (
-                        <span className={cn("mt-1.5 block h-2.5 w-2.5 rounded-full", destaque ? "bg-gold" : "bg-gray-300")} />
+                        <span className={cn("mt-1.5 block h-2.5 w-2.5 rounded-full", destaque ? "bg-gold" : "bg-gray-300 dark:bg-zinc-600")} />
                       )}
-                      {index < movimentacoes.length - 1 && <span className="mt-1 w-px flex-1 bg-gray-100" />}
+                      {index < movimentacoes.length - 1 && <span className="mt-1 w-px flex-1 bg-gray-100 dark:bg-zinc-800" />}
                     </div>
                     <div className="min-w-0 flex-1 pb-5">
                       <div className="mb-0.5 flex flex-wrap items-center gap-2">
-                        <time dateTime={mov.data_hora ?? mov.data_movimento ?? undefined} className="text-xs font-medium text-gray-500">
+                        <time dateTime={mov.data_hora ?? mov.data_movimento ?? undefined} className="text-xs font-medium text-gray-500 dark:text-zinc-400">
                           {quando}
                         </time>
                         {index === 0 && (
-                          <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-semibold text-yellow-800">Última movimentação</span>
+                          <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-semibold text-yellow-800 dark:bg-amber-500/15 dark:text-amber-300">Última movimentação</span>
                         )}
                         {novo && (
-                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Novo</span>
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-sky-500/15 dark:text-sky-300">Novo</span>
                         )}
                         {mov.codigo_cnj && (
-                          <span className="font-mono text-[10px] text-gray-400">#{mov.codigo_cnj}</span>
+                          <span className="font-mono text-[10px] text-gray-400 dark:text-zinc-500">#{mov.codigo_cnj}</span>
                         )}
                       </div>
-                      <p className={cn("text-sm leading-relaxed", destaque ? "font-semibold text-gray-900" : "text-gray-700")}>
+                      <p className={cn("text-sm leading-relaxed", destaque ? "font-semibold text-gray-900 dark:text-zinc-100" : "text-gray-700 dark:text-zinc-300")}>
                         {mov.descricao}
                       </p>
                       {complementos.length > 0 && (
-                        <p className="mt-0.5 text-xs text-gray-500">
+                        <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
                           {complementos.map((c) => (c.descricao ? `${c.nome}: ${c.descricao}` : c.nome)).join(" · ")}
                         </p>
                       )}
@@ -455,11 +455,11 @@ function InfoItem({
 }) {
   return (
     <div>
-      <div className="flex items-center gap-1 mb-1 text-gray-400">
+      <div className="flex items-center gap-1 mb-1 text-gray-400 dark:text-zinc-400">
         {icon}
         <p className="text-[10px] font-medium uppercase tracking-wide">{label}</p>
       </div>
-      <p className="text-sm font-medium text-gray-700">{value || "—"}</p>
+      <p className="text-sm font-medium text-gray-700 dark:text-zinc-200">{value || "—"}</p>
     </div>
   );
 }

@@ -117,7 +117,13 @@ export async function searchDataJud(opts) {
     if (!Array.isArray(hits)) {
       throw new DataJudError("DataJud invalid response", res.status, "invalid_response");
     }
-    return hits[0]?._source ?? null;
+    if (hits.length === 0) return null;
+
+    const source = hits[0]?._source;
+    if (!source || typeof source !== "object" || Array.isArray(source)) {
+      throw new DataJudError("DataJud invalid response", res.status, "invalid_response");
+    }
+    return source;
   }
 
   // Backoff exponencial só para 429, respeitando o orçamento total.

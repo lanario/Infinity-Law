@@ -104,10 +104,10 @@ function Field({
   const hintId = attention?.hint ? `${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-hint` : undefined;
 
   return (
-    <label className="block min-w-0 text-xs font-semibold text-stone-600">
+    <label className="block min-w-0 text-xs font-semibold text-stone-600 dark:text-zinc-300">
       <span className="flex min-h-4 items-center justify-between gap-2">
-        <span>{label}{required && <span className="ml-1 text-gold-dark">*</span>}</span>
-        {attention && <span className="shrink-0 rounded-full border border-gold/25 bg-gold-soft px-2 py-0.5 text-[9px] font-bold text-gold-dark">{attention.badge}</span>}
+        <span>{label}{required && <span className="ml-1 text-gold-dark dark:text-[#E5C158]">*</span>}</span>
+        {attention && <span className="shrink-0 rounded-full border border-gold/25 bg-gold-soft px-2 py-0.5 text-[9px] font-bold text-gold-dark dark:border-[#D4AF37]/30 dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{attention.badge}</span>}
       </span>
       <input
         type={type}
@@ -118,11 +118,11 @@ function Field({
         placeholder={placeholder}
         aria-describedby={hintId}
         className={cn(
-          "mt-1.5 w-full rounded-xl border px-3.5 py-2.5 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:bg-white focus:ring-4 focus:ring-gold/10",
-          attention ? "border-gold/50 bg-gold-soft/25 focus:border-gold/70" : "border-stone-200 bg-stone-50/60 focus:border-gold/70",
+          "mt-1.5 w-full rounded-xl border px-3.5 py-2.5 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:bg-white focus:ring-4 focus:ring-gold/10 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900",
+          attention ? "border-gold/50 bg-gold-soft/25 focus:border-gold/70 dark:border-[#D4AF37]/40 dark:bg-[#D4AF37]/10" : "border-stone-200 bg-stone-50/60 focus:border-gold/70 dark:border-zinc-700 dark:bg-zinc-800/60",
         )}
       />
-      {attention?.hint && <span id={hintId} className="mt-1 block text-[10px] font-medium leading-relaxed text-gold-dark/80">{attention.hint}</span>}
+      {attention?.hint && <span id={hintId} className="mt-1 block text-[10px] font-medium leading-relaxed text-gold-dark/80 dark:text-[#E5C158]/85">{attention.hint}</span>}
     </label>
   );
 }
@@ -247,20 +247,20 @@ export function ClienteForm({
     <div className={cn("mx-auto space-y-5", layout === "modal" ? "max-w-none" : "max-w-6xl")}>
       {layout === "page" && <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Link href="/clientes" className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 transition hover:text-gold-dark">
+          <Link href="/clientes" className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 transition hover:text-gold-dark dark:text-zinc-400 dark:hover:text-[#E5C158]">
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Voltar para clientes
           </Link>
-          <h2 className="mt-2 text-xl font-black tracking-tight text-[#17191a]">
+          <h2 className="mt-2 text-xl font-black tracking-tight text-[#17191a] dark:text-zinc-100">
             {isEditing ? cliente?.nome : "Cadastrar cliente"}
           </h2>
-          <p className="mt-1 text-sm text-stone-500">
+          <p className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             {isEditing ? "Mantenha os dados e vínculos do cliente atualizados." : "Centralize os dados de contato e identificação do cliente."}
           </p>
         </div>
         {isEditing && (
           <span className={cn(
             "rounded-full border px-3 py-1.5 text-xs font-bold",
-            form.ativo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-stone-200 bg-stone-100 text-stone-500"
+            form.ativo ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300" : "border-stone-200 bg-stone-100 text-stone-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
           )}>
             {form.ativo ? "Cadastro ativo" : "Cadastro arquivado"}
           </span>
@@ -270,18 +270,18 @@ export function ClienteForm({
       <div className={cn("grid gap-5", (layout === "page" || cliente) && "xl:grid-cols-[minmax(0,1fr)_310px]")}>
         <form onSubmit={submit} className="space-y-5">
           <fieldset disabled={!canEdit || saving} className="m-0 min-w-0 space-y-5 border-0 p-0">
-          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] sm:p-6">
+          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <div className="mb-5 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-soft text-gold-dark">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-soft text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
                 {form.tipo === "pf" ? <UserRound className="h-5 w-5" aria-hidden="true" /> : <Building2 className="h-5 w-5" aria-hidden="true" />}
               </span>
               <div>
-                <h3 className="text-sm font-black text-[#17191a]">Identificação</h3>
-                <p className="mt-0.5 text-xs text-stone-400">Dados principais e documento</p>
+                <h3 className="text-sm font-black text-[#17191a] dark:text-zinc-100">Identificação</h3>
+                <p className="mt-0.5 text-xs text-stone-400 dark:text-zinc-400">Dados principais e documento</p>
               </div>
             </div>
 
-            <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-stone-100/80 p-1">
+            <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-stone-100/80 p-1 dark:bg-zinc-800">
               {(["pf", "pj"] as const).map((tipo) => (
                 <button
                   key={tipo}
@@ -291,7 +291,7 @@ export function ClienteForm({
                   aria-pressed={form.tipo === tipo}
                   className={cn(
                     "flex h-10 items-center justify-center gap-2 rounded-lg border text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/40",
-                    form.tipo === tipo ? "gold-sheen border-gold/60 bg-gold text-[#17191a] shadow-sm" : "border-transparent text-stone-500 hover:text-stone-800",
+                    form.tipo === tipo ? "gold-sheen border-gold/60 bg-gold text-[#17191a] shadow-sm" : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400 dark:hover:text-zinc-200",
                     !canEdit && "cursor-not-allowed opacity-60"
                   )}
                 >
@@ -310,17 +310,17 @@ export function ClienteForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] sm:p-6">
+          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <div className="mb-5 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-600"><MapPin className="h-5 w-5" aria-hidden="true" /></span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-600 dark:bg-zinc-800 dark:text-zinc-300"><MapPin className="h-5 w-5" aria-hidden="true" /></span>
               <div>
-                <h3 className="text-sm font-black text-[#17191a]">Endereço</h3>
-                <p className="mt-0.5 text-xs text-stone-400">Informe o CEP primeiro; número e complemento são preenchidos manualmente.</p>
+                <h3 className="text-sm font-black text-[#17191a] dark:text-zinc-100">Endereço</h3>
+                <p className="mt-0.5 text-xs text-stone-400 dark:text-zinc-400">Informe o CEP primeiro; número e complemento são preenchidos manualmente.</p>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-6">
-              <label className="block min-w-0 text-xs font-semibold text-stone-600 sm:col-span-6">
-                CEP{!isEditing && <span className="ml-1 text-gold-dark">*</span>}
+              <label className="block min-w-0 text-xs font-semibold text-stone-600 dark:text-zinc-300 sm:col-span-6">
+                CEP{!isEditing && <span className="ml-1 text-gold-dark dark:text-[#E5C158]">*</span>}
                 <span className="relative mt-1.5 block">
                   <input
                     type="text"
@@ -333,9 +333,9 @@ export function ClienteForm({
                     required={!isEditing}
                     aria-describedby="cliente-cep-status"
                     aria-busy={cepLookup === "loading"}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900"
                   />
-                  {cepLookup === "loading" && <LoaderCircle aria-hidden="true" className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-gold-dark" />}
+                  {cepLookup === "loading" && <LoaderCircle aria-hidden="true" className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-gold-dark dark:text-[#E5C158]" />}
                   {cepLookup === "success" && <span aria-hidden="true" className="absolute right-3.5 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-emerald-500" />}
                 </span>
                 <span
@@ -344,7 +344,7 @@ export function ClienteForm({
                   aria-live="polite"
                   className={cn(
                     "mt-1.5 block min-h-4 text-[10px] font-medium",
-                    cepLookup === "success" ? "text-emerald-700" : cepLookup === "not-found" || cepLookup === "error" ? "text-amber-700" : "text-stone-400",
+                    cepLookup === "success" ? "text-emerald-700 dark:text-emerald-400" : cepLookup === "not-found" || cepLookup === "error" ? "text-amber-700 dark:text-amber-400" : "text-stone-400 dark:text-zinc-400",
                   )}
                 >
                   {cepLookup === "loading" && "Buscando endereço..."}
@@ -363,42 +363,42 @@ export function ClienteForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] sm:p-6">
-            <label className="block text-xs font-semibold text-stone-600">
+          <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+            <label className="block text-xs font-semibold text-stone-600 dark:text-zinc-300">
               Observações internas
               <textarea
                 value={form.observacoes}
                 onChange={(event) => update("observacoes", event.target.value)}
                 rows={4}
                 placeholder="Informações úteis para o atendimento e acompanhamento..."
-                className="mt-1.5 w-full resize-y rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-3 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10"
+                className="mt-1.5 w-full resize-y rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-3 text-sm font-medium text-stone-800 outline-none transition placeholder:font-normal placeholder:text-stone-400 focus:border-gold/70 focus:bg-white focus:ring-4 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900"
               />
             </label>
             {isEditing && (
-              <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-stone-100 bg-stone-50/70 p-3.5">
+              <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-stone-100 bg-stone-50/70 p-3.5 dark:border-zinc-800 dark:bg-zinc-800/50">
                 <input type="checkbox" checked={form.ativo} onChange={(event) => update("ativo", event.target.checked)} className="mt-0.5 h-4 w-4 accent-[#D4AF37]" />
-                <span><span className="block text-xs font-bold text-stone-700">Cliente ativo</span><span className="mt-0.5 block text-[11px] text-stone-400">Desmarque para arquivar sem excluir o histórico ou os vínculos.</span></span>
+                <span><span className="block text-xs font-bold text-stone-700 dark:text-zinc-200">Cliente ativo</span><span className="mt-0.5 block text-[11px] text-stone-400 dark:text-zinc-400">Desmarque para arquivar sem excluir o histórico ou os vínculos.</span></span>
               </label>
             )}
           </section>
 
           <AnimatePresence mode="wait">
             {message && (
-              <motion.p key={message.text} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="status" className={cn("rounded-xl border px-4 py-3 text-sm", message.kind === "error" ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700")}>
+              <motion.p key={message.text} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="status" className={cn("rounded-xl border px-4 py-3 text-sm", message.kind === "error" ? "border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300" : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300")}>
                 {message.text}
               </motion.p>
             )}
           </AnimatePresence>
 
-          {!canEdit && <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">Seu perfil pode consultar clientes, mas não pode editar este cadastro.</p>}
+          {!canEdit && <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">Seu perfil pode consultar clientes, mas não pode editar este cadastro.</p>}
           <div className={cn(
             "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-            layout === "modal" && "sticky bottom-0 z-10 -mx-4 -mb-4 border-t border-stone-200/80 bg-[#fcfcfb]/95 px-4 pb-1 pt-4 backdrop-blur-md sm:-mx-6 sm:-mb-6 sm:px-6"
+            layout === "modal" && "sticky bottom-0 z-10 -mx-4 -mb-4 border-t border-stone-200/80 bg-[#fcfcfb]/95 px-4 pb-1 pt-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/95 sm:-mx-6 sm:-mb-6 sm:px-6"
           )}>
             {layout === "modal" ? (
-              <button type="button" onClick={onCancel} className="inline-flex h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-bold text-stone-600 transition hover:bg-stone-50">Cancelar</button>
+              <button type="button" onClick={onCancel} className="inline-flex h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-bold text-stone-600 transition hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">Cancelar</button>
             ) : (
-              <Link href="/clientes" className="inline-flex h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-bold text-stone-600 transition hover:bg-stone-50">Cancelar</Link>
+              <Link href="/clientes" className="inline-flex h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-bold text-stone-600 transition hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">Cancelar</Link>
             )}
             {canEdit && (
               <button type="submit" disabled={saving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gold px-5 text-sm font-bold text-white shadow-sm transition hover:bg-gold-hover disabled:cursor-not-allowed disabled:opacity-60">
@@ -411,7 +411,7 @@ export function ClienteForm({
         </form>
 
         {(layout === "page" || cliente) && <aside className="space-y-4">
-          <div className="rounded-2xl border border-stone-200/80 bg-[#17191a] p-5 text-white shadow-[0_12px_32px_-24px_rgba(23,25,26,0.8)]">
+          <div className="rounded-2xl border border-stone-200/80 bg-[#17191a] p-5 text-white shadow-[0_12px_32px_-24px_rgba(23,25,26,0.8)] dark:border-zinc-800">
             <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gold">Resumo do cadastro</p>
             <p className="mt-3 text-lg font-black leading-tight">{form.nome || "Novo cliente"}</p>
             <p className="mt-1 text-xs text-white/55">{form.tipo === "pf" ? "Pessoa física" : "Pessoa jurídica"}</p>
@@ -423,22 +423,22 @@ export function ClienteForm({
           </div>
 
           {cliente && (
-            <div className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)]">
+            <div className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900">
               <div className="flex items-center justify-between gap-2 px-1 pb-3">
-                <div><h3 className="text-xs font-black text-[#17191a]">Processos vinculados</h3><p className="mt-0.5 text-[10px] text-stone-400">Acesso rápido aos casos</p></div>
-                <span className="rounded-full bg-gold-soft px-2 py-1 text-[10px] font-bold text-gold-dark">{processos.length}</span>
+                <div><h3 className="text-xs font-black text-[#17191a] dark:text-zinc-100">Processos vinculados</h3><p className="mt-0.5 text-[10px] text-stone-400 dark:text-zinc-400">Acesso rápido aos casos</p></div>
+                <span className="rounded-full bg-gold-soft px-2 py-1 text-[10px] font-bold text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{processos.length}</span>
               </div>
               {processos.length ? (
                 <div className="space-y-2">
                   {processos.map((processo) => (
-                    <Link key={processo.id} href={`/processos/${processo.id}`} className="block rounded-xl border border-stone-100 px-3 py-2.5 transition hover:border-gold/40 hover:bg-gold-soft/35">
-                      <p className="truncate font-mono text-[10px] font-bold text-stone-700">{processo.numero_cnj || processo.tipo_acao || "Processo em preparação"}</p>
-                      <p className="mt-1 truncate text-[10px] text-stone-400">{processo.papel} · {processo.status}</p>
+                    <Link key={processo.id} href={`/processos/${processo.id}`} className="block rounded-xl border border-stone-100 px-3 py-2.5 transition hover:border-gold/40 hover:bg-gold-soft/35 dark:border-zinc-800 dark:hover:bg-[#D4AF37]/10">
+                      <p className="truncate font-mono text-[10px] font-bold text-stone-700 dark:text-zinc-200">{processo.numero_cnj || processo.tipo_acao || "Processo em preparação"}</p>
+                      <p className="mt-1 truncate text-[10px] text-stone-400 dark:text-zinc-400">{processo.papel} · {processo.status}</p>
                     </Link>
                   ))}
                 </div>
-              ) : <p className="rounded-xl bg-stone-50 px-3 py-5 text-center text-[11px] text-stone-400">Ainda sem processos vinculados</p>}
-              <Link href="/processos/novo" className="mt-3 flex h-9 items-center justify-center gap-1.5 rounded-xl border border-gold/30 text-xs font-bold text-gold-dark transition hover:bg-gold-soft"><BriefcaseBusiness className="h-3.5 w-3.5" aria-hidden="true" /> Criar processo</Link>
+              ) : <p className="rounded-xl bg-stone-50 px-3 py-5 text-center text-[11px] text-stone-400 dark:bg-zinc-800/60 dark:text-zinc-400">Ainda sem processos vinculados</p>}
+              <Link href="/processos/novo" className="mt-3 flex h-9 items-center justify-center gap-1.5 rounded-xl border border-gold/30 text-xs font-bold text-gold-dark transition hover:bg-gold-soft dark:text-[#E5C158] dark:hover:bg-[#D4AF37]/15"><BriefcaseBusiness className="h-3.5 w-3.5" aria-hidden="true" /> Criar processo</Link>
             </div>
           )}
         </aside>}

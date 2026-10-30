@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export type DjenPermissionAction = "read" | "write";
+export type DjenPermissionAction = "read" | "write" | "delete";
 
 export async function authorizeDjen(action: DjenPermissionAction) {
   const supabase = createClient();

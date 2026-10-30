@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizeDjen } from "@/lib/djen/server-auth";
 import { oabInputSchema } from "@/lib/djen/validation";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   const auth = await authorizeDjen("write");
   if (!auth.ok) return auth.response;

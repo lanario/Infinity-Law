@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-[#FAFAFA] overflow-hidden">
+    <div className="dashboard-root flex h-screen bg-[#FAFAFA] overflow-hidden dark:bg-zinc-950">
       {/* Sidebar com variantes Desktop e Mobile */}
       <Sidebar />
 

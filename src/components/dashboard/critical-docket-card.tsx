@@ -186,7 +186,7 @@ export function CriticalDocketCard({
       {/* Header do Card */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-gray-100 dark:border-zinc-800">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/30 shadow-sm">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/30 shadow-sm dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]">
             <CalendarClock className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
@@ -208,14 +208,14 @@ export function CriticalDocketCard({
         </div>
 
         {/* Filtros em Segmented Pill */}
-        <div className="inline-flex items-center self-start sm:self-auto p-1 bg-gray-100/80 dark:bg-zinc-800/60 rounded-full border border-gray-200/60 dark:border-zinc-700 text-xs font-normal">
+        <div className="inline-flex items-center self-start sm:self-auto p-1 bg-gray-200/60 dark:bg-zinc-800/80 rounded-full border border-gray-200/60 dark:border-zinc-700 text-xs font-normal">
           <button
             type="button"
             onClick={() => setFilter("todos")}
             className={cn(
               "px-3 py-1 rounded-full transition-colors duration-150",
               filter === "todos"
-                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold"
+                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold dark:ring-1 dark:ring-white/10"
                 : "text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-zinc-200"
             )}
           >
@@ -227,7 +227,7 @@ export function CriticalDocketCard({
             className={cn(
               "px-3 py-1 rounded-full transition-colors duration-150 flex items-center gap-1",
               filter === "prazo"
-                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold"
+                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold dark:ring-1 dark:ring-white/10"
                 : "text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-zinc-200"
             )}
           >
@@ -240,7 +240,7 @@ export function CriticalDocketCard({
             className={cn(
               "px-3 py-1 rounded-full transition-colors duration-150 flex items-center gap-1",
               filter === "audiencia"
-                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold"
+                ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 shadow-sm font-bold dark:ring-1 dark:ring-white/10"
                 : "text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-zinc-200"
             )}
           >
@@ -253,8 +253,8 @@ export function CriticalDocketCard({
       {/* Lista de Eventos com Animação Stagger do Framer Motion */}
       {filteredEvents.length === 0 ? (
         <div className="py-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 dark:bg-zinc-800 text-gray-600 border border-gray-200/60 mb-3">
-            <Check className="h-6 w-6 text-[#9A7A1A]" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 border border-gray-200/60 dark:border-zinc-700 mb-3">
+            <Check className="h-6 w-6 text-[#9A7A1A] dark:text-[#D4AF37]" />
           </div>
           <p className="text-sm font-bold text-gray-700 dark:text-zinc-300">
             Nenhuma ocorrência encontrada
@@ -307,7 +307,7 @@ export function CriticalDocketCard({
                     className={cn(
                       "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl mt-0.5",
                       isAudiencia
-                        ? "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25"
+                        ? "bg-[#FBF6E9] text-[#9A7A1A] border border-[#D4AF37]/25 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]"
                         : "bg-gray-50 text-gray-600 border border-gray-200/60 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
                     )}
                   >
@@ -413,14 +413,14 @@ export function CriticalDocketCard({
                       className={cn(
                         "group/btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono border transition-colors duration-150",
                         isCopied
-                          ? "bg-[#FBF6E9] text-[#9A7A1A] border-[#D4AF37]/40"
+                          ? "bg-[#FBF6E9] text-[#9A7A1A] border-[#D4AF37]/40 dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]"
                           : "bg-gray-50/80 hover:bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-gray-200/80 dark:border-zinc-700"
                       )}
                     >
                       {isCopied ? (
                         <>
-                          <Check className="h-3.5 w-3.5 text-[#9A7A1A] animate-scale-in" />
-                          <span className="text-[11px] font-sans font-bold text-[#9A7A1A]">
+                          <Check className="h-3.5 w-3.5 text-[#9A7A1A] dark:text-[#D4AF37] animate-scale-in" />
+                          <span className="text-[11px] font-sans font-bold text-[#9A7A1A] dark:text-[#D4AF37]">
                             Copiado!
                           </span>
                         </>

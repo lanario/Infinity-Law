@@ -54,7 +54,21 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
 export function CourtTrendsChart({ data, hasRecords, className }: CourtTrendsChartProps) {
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const root = document.documentElement;
+    const syncTheme = () => setIsDark(root.classList.contains("dark"));
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const movementsStroke = isDark ? "#E4E4E7" : "#1F2937";
+  const gridStroke = isDark ? "#27272A" : "#E5E7EB";
+  const axisTickFill = isDark ? "#A1A1AA" : "#9CA3AF";
 
   const totals = useMemo(
     () =>
@@ -93,7 +107,7 @@ export function CourtTrendsChart({ data, hasRecords, className }: CourtTrendsCha
 
       <div className="mb-5 grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50/70 p-3 dark:border-zinc-800 dark:bg-zinc-800/40">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FBF6E9] text-[#9A7A1A]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FBF6E9] text-[#9A7A1A] dark:bg-[#D4AF37]/15 dark:text-[#D4AF37]">
             <Sparkles className="h-4 w-4" aria-hidden="true" />
           </div>
           <div>
@@ -104,7 +118,7 @@ export function CourtTrendsChart({ data, hasRecords, className }: CourtTrendsCha
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-200/70 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
             <Scale className="h-4 w-4" aria-hidden="true" />
           </div>
           <div>
@@ -145,17 +159,17 @@ export function CourtTrendsChart({ data, hasRecords, className }: CourtTrendsCha
                   <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="dashboardMovements" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1F2937" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#1F2937" stopOpacity={0} />
+                  <stop offset="0%" stopColor={movementsStroke} stopOpacity={isDark ? 0.18 : 0.1} />
+                  <stop offset="95%" stopColor={movementsStroke} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.5} />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#9CA3AF" }} dy={6} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} strokeOpacity={isDark ? 0.7 : 0.5} />
+              <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: axisTickFill }} dy={6} />
               <YAxis
                 yAxisId="receipts"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fontSize: 10, fill: "#9CA3AF" }}
+                tick={{ fontSize: 10, fill: axisTickFill }}
                 tickFormatter={(value: number) => (value >= 1000 ? `${Math.round(value / 1000)}k` : `${value}`)}
               />
               <YAxis yAxisId="movements" orientation="right" hide />
@@ -173,7 +187,7 @@ export function CourtTrendsChart({ data, hasRecords, className }: CourtTrendsCha
                 yAxisId="movements"
                 type="monotone"
                 dataKey="movimentacoes"
-                stroke="#1F2937"
+                stroke={movementsStroke}
                 strokeWidth={2.2}
                 fill="url(#dashboardMovements)"
                 name="Movimentações"

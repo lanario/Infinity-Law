@@ -176,28 +176,28 @@ function displayLabel(value: string | null | undefined) {
 }
 
 function statusTone(status: string) {
-  if (["ativo", "pago", "realizado", "enviado"].includes(status)) return "border-emerald-200 bg-emerald-50 text-emerald-700";
-  if (["suspenso", "pendente", "agendado", "iniciado"].includes(status)) return "border-amber-200 bg-amber-50 text-amber-800";
-  if (["vencido", "cancelado"].includes(status)) return "border-red-200 bg-red-50 text-red-700";
-  return "border-stone-200 bg-stone-100 text-stone-600";
+  if (["ativo", "pago", "realizado", "enviado"].includes(status)) return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300";
+  if (["suspenso", "pendente", "agendado", "iniciado"].includes(status)) return "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300";
+  if (["vencido", "cancelado"].includes(status)) return "border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300";
+  return "border-stone-200 bg-stone-100 text-stone-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
 }
 
 function Detail({ label, value, icon: Icon }: { label: string; value?: string | null; icon?: typeof UserRound }) {
   return (
     <div className="min-w-0">
-      <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-stone-400">
-        {Icon && <Icon className="h-3.5 w-3.5 text-gold-dark" aria-hidden="true" />}{label}
+      <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-stone-400 dark:text-zinc-400">
+        {Icon && <Icon className="h-3.5 w-3.5 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />}{label}
       </p>
-      <p className="mt-1 break-words text-xs font-semibold leading-relaxed text-stone-700">{value?.trim() || "Não informado"}</p>
+      <p className="mt-1 break-words text-xs font-semibold leading-relaxed text-stone-700 dark:text-zinc-200">{value?.trim() || "Não informado"}</p>
     </div>
   );
 }
 
 function SectionCard({ title, icon: Icon, children, aside }: { title: string; icon: typeof UserRound; children: ReactNode; aside?: ReactNode }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)]">
-      <div className="flex items-center justify-between gap-3 border-b border-stone-100 px-4 py-4 sm:px-5">
-        <div className="flex min-w-0 items-center gap-2.5"><Icon className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" /><h2 className="truncate text-sm font-black text-[#17191a]">{title}</h2></div>
+    <section className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between gap-3 border-b border-stone-100 px-4 py-4 dark:border-zinc-800 sm:px-5">
+        <div className="flex min-w-0 items-center gap-2.5"><Icon className="h-4 w-4 shrink-0 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" /><h2 className="truncate text-sm font-black text-[#17191a] dark:text-zinc-100">{title}</h2></div>
         {aside}
       </div>
       <div className="p-4 sm:p-5">{children}</div>
@@ -207,20 +207,20 @@ function SectionCard({ title, icon: Icon, children, aside }: { title: string; ic
 
 function EmptyState({ title, description, icon: Icon = FolderKanban }: { title: string; description: string; icon?: typeof UserRound }) {
   return (
-    <div className="rounded-2xl border border-dashed border-stone-200 bg-white/70 px-5 py-12 text-center">
-      <Icon className="mx-auto h-7 w-7 text-stone-300" aria-hidden="true" />
-      <p className="mt-3 text-sm font-bold text-stone-700">{title}</p>
-      <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-stone-400">{description}</p>
+    <div className="rounded-2xl border border-dashed border-stone-200 bg-white/70 px-5 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900/70">
+      <Icon className="mx-auto h-7 w-7 text-stone-300 dark:text-zinc-600" aria-hidden="true" />
+      <p className="mt-3 text-sm font-bold text-stone-700 dark:text-zinc-200">{title}</p>
+      <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-stone-400 dark:text-zinc-400">{description}</p>
     </div>
   );
 }
 
 function StatCard({ label, value, detail, icon: Icon }: { label: string; value: string | number; detail: string; icon: typeof UserRound }) {
   return (
-    <article className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)]">
-      <div className="flex items-center justify-between gap-3"><p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">{label}</p><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold-soft text-gold-dark"><Icon className="h-4 w-4" aria-hidden="true" /></span></div>
-      <p className="mt-3 text-xl font-black tracking-tight text-[#17191a]">{value}</p>
-      <p className="mt-1 text-[10px] text-stone-400">{detail}</p>
+    <article className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between gap-3"><p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 dark:text-zinc-400">{label}</p><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold-soft text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]"><Icon className="h-4 w-4" aria-hidden="true" /></span></div>
+      <p className="mt-3 text-xl font-black tracking-tight text-[#17191a] dark:text-zinc-100">{value}</p>
+      <p className="mt-1 text-[10px] text-stone-400 dark:text-zinc-400">{detail}</p>
     </article>
   );
 }
@@ -325,21 +325,21 @@ export function ClienteProntuario({
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfaf8]">
+    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
       <Header title="Prontuário do cliente" actions={(
-        <Link href="/clientes" className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 text-[11px] font-bold text-stone-600 shadow-sm transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark">
+        <Link href="/clientes" className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 text-[11px] font-bold text-stone-600 shadow-sm transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-[#D4AF37]/15 dark:hover:text-[#E5C158]">
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">Clientes</span>
         </Link>
       )} />
 
       <main className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8">
-        <div className="flex items-center gap-1.5 text-[10px] font-semibold text-stone-400">
-          <Link href="/clientes" className="transition hover:text-gold-dark">Clientes</Link><span aria-hidden="true">/</span><span className="truncate text-stone-600">{cliente.nome}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-semibold text-stone-400 dark:text-zinc-500">
+          <Link href="/clientes" className="transition hover:text-gold-dark dark:hover:text-[#E5C158]">Clientes</Link><span aria-hidden="true">/</span><span className="truncate text-stone-600 dark:text-zinc-300">{cliente.nome}</span>
         </div>
 
-        {hasPartialData && <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">Alguns dados relacionados não puderam ser carregados. As demais áreas do prontuário continuam disponíveis; atualize a página para tentar novamente.</p>}
+        {hasPartialData && <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">Alguns dados relacionados não puderam ser carregados. As demais áreas do prontuário continuam disponíveis; atualize a página para tentar novamente.</p>}
 
-        <section className="relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-26px_rgba(23,25,26,0.4)]">
+        <section className="relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-26px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900">
           <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-gold-dark via-gold to-gold-soft" aria-hidden="true" />
           <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4 sm:py-3">
             <div className="flex min-w-0 items-center gap-3 sm:flex-1">
@@ -348,30 +348,30 @@ export function ClienteProntuario({
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                  <h2 className="max-w-full truncate text-base font-black tracking-tight text-[#17191a] sm:text-lg">{cliente.nome}</h2>
-                  <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold", cliente.ativo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-stone-200 bg-stone-100 text-stone-500")}>
+                  <h2 className="max-w-full truncate text-base font-black tracking-tight text-[#17191a] dark:text-zinc-100 sm:text-lg">{cliente.nome}</h2>
+                  <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold", cliente.ativo ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300" : "border-stone-200 bg-stone-100 text-stone-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400")}>
                     <CheckCircle2 className="h-3 w-3" aria-hidden="true" />{cliente.ativo ? "Ativo" : "Arquivado"}
                   </span>
                 </div>
-                <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] leading-4 text-stone-500 sm:gap-x-3">
+                <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] leading-4 text-stone-500 dark:text-zinc-400 sm:gap-x-3">
                   <span>{cliente.tipo === "pf" ? "Pessoa física" : "Pessoa jurídica"}</span>
-                  {cliente.cpf_cnpj && <><span className="text-stone-300" aria-hidden="true">·</span><span className="font-mono">{formatDocument(cliente.cpf_cnpj, cliente.tipo as "pf" | "pj")}</span></>}
-                  <span className="text-stone-300" aria-hidden="true">·</span><span>Desde {formatDate(cliente.created_at)}</span>
-                  {cliente.telefone && <><span className="text-stone-300" aria-hidden="true">·</span><span className="inline-flex items-center gap-1 whitespace-nowrap"><Phone className="h-3 w-3 text-gold-dark" aria-hidden="true" />{formatPhone(cliente.telefone)}</span></>}
-                  {cliente.email && <><span className="text-stone-300" aria-hidden="true">·</span><span className="inline-flex min-w-0 items-center gap-1"><Mail className="h-3 w-3 shrink-0 text-gold-dark" aria-hidden="true" /><span className="truncate">{cliente.email}</span></span></>}
+                  {cliente.cpf_cnpj && <><span className="text-stone-300 dark:text-zinc-700" aria-hidden="true">·</span><span className="font-mono">{formatDocument(cliente.cpf_cnpj, cliente.tipo as "pf" | "pj")}</span></>}
+                  <span className="text-stone-300 dark:text-zinc-700" aria-hidden="true">·</span><span>Desde {formatDate(cliente.created_at)}</span>
+                  {cliente.telefone && <><span className="text-stone-300 dark:text-zinc-700" aria-hidden="true">·</span><span className="inline-flex items-center gap-1 whitespace-nowrap"><Phone className="h-3 w-3 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />{formatPhone(cliente.telefone)}</span></>}
+                  {cliente.email && <><span className="text-stone-300 dark:text-zinc-700" aria-hidden="true">·</span><span className="inline-flex min-w-0 items-center gap-1"><Mail className="h-3 w-3 shrink-0 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" /><span className="truncate">{cliente.email}</span></span></>}
                 </div>
               </div>
             </div>
 
             <div className="flex shrink-0 flex-wrap gap-1.5 pl-14 sm:pl-0">
-              {cliente.telefone && <a href={`https://wa.me/55${cliente.telefone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label="Enviar WhatsApp para o cliente" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 text-[10px] font-bold text-emerald-700 transition hover:bg-emerald-100"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">WhatsApp</span></a>}
+              {cliente.telefone && <a href={`https://wa.me/55${cliente.telefone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label="Enviar WhatsApp para o cliente" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 text-[10px] font-bold text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300 dark:hover:bg-emerald-500/25"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">WhatsApp</span></a>}
               {canEdit && <button type="button" onClick={() => goToTab("cadastro")} aria-label="Editar cadastro do cliente" className="inline-flex h-8 items-center gap-1.5 rounded-lg gold-sheen px-2.5 text-[10px] font-bold text-[#17191a] shadow-sm transition hover:opacity-95"><UserRound className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">Editar</span></button>}
             </div>
           </div>
         </section>
 
-        <nav aria-label="Seções do prontuário do cliente" className="sticky top-[72px] z-10 -mx-3 overflow-x-auto bg-[#fbfaf8]/90 px-3 py-1 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div role="tablist" className="inline-flex min-w-full gap-1 rounded-2xl border border-stone-200/80 bg-white p-1.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.3)] sm:min-w-0 sm:flex sm:flex-wrap">
+        <nav aria-label="Seções do prontuário do cliente" className="sticky top-[72px] z-10 -mx-3 overflow-x-auto bg-[#fbfaf8]/90 px-3 py-1 backdrop-blur-md dark:bg-zinc-950/90 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          <div role="tablist" className="inline-flex min-w-full gap-1 rounded-2xl border border-stone-200/80 bg-white p-1.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.3)] dark:border-zinc-800 dark:bg-zinc-900 sm:min-w-0 sm:flex sm:flex-wrap">
             {enabledTabs.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -383,13 +383,13 @@ export function ClienteProntuario({
                 onClick={() => goToTab(id)}
                 className={cn(
                   "inline-flex h-10 shrink-0 items-center gap-2 rounded-xl px-3 text-[10px] font-bold transition-all duration-200 sm:px-4 sm:text-xs",
-                  selectedTab === id ? "gold-sheen text-[#17191a] shadow-[0_5px_14px_-10px_rgba(156,125,31,0.8)]" : "text-stone-500 hover:bg-stone-50 hover:text-stone-800",
+                  selectedTab === id ? "gold-sheen text-[#17191a] shadow-[0_5px_14px_-10px_rgba(156,125,31,0.8)]" : "text-stone-500 hover:bg-stone-50 hover:text-stone-800 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200",
                 )}
               >
                 <Icon className="h-3.5 w-3.5" aria-hidden="true" />{label}
-                {id === "processos" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55" : "bg-stone-100")}>{processCount}</span>}
-                {id === "intimacoes" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55" : "bg-stone-100")}>{publicacoes.length}</span>}
-                {id === "documentos" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55" : "bg-stone-100")}>{documentos.length}</span>}
+                {id === "processos" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55 text-[#17191a]" : "bg-stone-100 dark:bg-zinc-800 dark:text-zinc-300")}>{processCount}</span>}
+                {id === "intimacoes" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55 text-[#17191a]" : "bg-stone-100 dark:bg-zinc-800 dark:text-zinc-300")}>{publicacoes.length}</span>}
+                {id === "documentos" && <span className={cn("rounded-full px-1.5 py-0.5 text-[9px] tabular-nums", selectedTab === id ? "bg-white/55 text-[#17191a]" : "bg-stone-100 dark:bg-zinc-800 dark:text-zinc-300")}>{documentos.length}</span>}
               </button>
             ))}
           </div>
@@ -417,7 +417,7 @@ export function ClienteProntuario({
                 </div>
 
                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.85fr)]">
-                  <SectionCard title="Dados principais" icon={UserRound} aside={<button type="button" onClick={() => goToTab("cadastro")} className="text-[10px] font-bold text-gold-dark transition hover:text-gold">Ver cadastro</button>}>
+                  <SectionCard title="Dados principais" icon={UserRound} aside={<button type="button" onClick={() => goToTab("cadastro")} className="text-[10px] font-bold text-gold-dark transition hover:text-gold dark:text-[#E5C158]">Ver cadastro</button>}>
                     <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                       <Detail label={cliente.tipo === "pf" ? "Nome completo" : "Razão social"} value={cliente.nome} icon={cliente.tipo === "pf" ? UserRound : Building2} />
                       <Detail label={cliente.tipo === "pf" ? "CPF" : "CNPJ"} value={cliente.cpf_cnpj ? formatDocument(cliente.cpf_cnpj, cliente.tipo as "pf" | "pj") : null} icon={FileText} />
@@ -432,20 +432,20 @@ export function ClienteProntuario({
                       ].filter(Boolean).join(" · ")} icon={MapPin} />
                       <Detail label="Incluído no sistema" value={formatDateTime(cliente.created_at)} icon={Clock3} />
                     </div>
-                    {cliente.observacoes && <div className="mt-5 rounded-xl border border-gold/15 bg-gold-soft/30 p-3.5"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark">Observações internas</p><p className="mt-1.5 whitespace-pre-wrap text-xs leading-relaxed text-stone-600">{cliente.observacoes}</p></div>}
+                    {cliente.observacoes && <div className="mt-5 rounded-xl border border-gold/15 bg-gold-soft/30 p-3.5 dark:border-[#D4AF37]/25 dark:bg-[#D4AF37]/10"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark dark:text-[#E5C158]">Observações internas</p><p className="mt-1.5 whitespace-pre-wrap text-xs leading-relaxed text-stone-600 dark:text-zinc-300">{cliente.observacoes}</p></div>}
                   </SectionCard>
 
-                  <SectionCard title="Atividade recente" icon={History} aside={<button type="button" onClick={() => goToTab("historico")} className="text-[10px] font-bold text-gold-dark transition hover:text-gold">Ver histórico</button>}>
+                  <SectionCard title="Atividade recente" icon={History} aside={<button type="button" onClick={() => goToTab("historico")} className="text-[10px] font-bold text-gold-dark transition hover:text-gold dark:text-[#E5C158]">Ver histórico</button>}>
                     {activity.length === 0 ? (
-                      <p className="py-6 text-center text-xs text-stone-400">As movimentações vinculadas ao cliente aparecerão aqui.</p>
+                      <p className="py-6 text-center text-xs text-stone-400 dark:text-zinc-400">As movimentações vinculadas ao cliente aparecerão aqui.</p>
                     ) : (
                       <ol className="space-y-4">
                         {activity.slice(0, 5).map((item, index) => {
                           const Icon = item.icon;
                           return <li key={item.id} className="relative flex gap-3">
-                            {index < 4 && <span className="absolute bottom-[-16px] left-[15px] top-8 w-px bg-stone-100" aria-hidden="true" />}
-                            <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-stone-50 text-gold-dark"><Icon className="h-3.5 w-3.5" aria-hidden="true" /></span>
-                            <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-x-2"><p className="text-[10px] font-bold text-stone-700">{item.title}</p><time className="text-[9px] text-stone-400">{formatDate(item.date)}</time></div><p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-stone-500">{item.description}</p><p className="mt-1 text-[9px] text-stone-400">{item.meta}</p></div>
+                            {index < 4 && <span className="absolute bottom-[-16px] left-[15px] top-8 w-px bg-stone-100 dark:bg-zinc-800" aria-hidden="true" />}
+                            <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-stone-50 text-gold-dark dark:bg-zinc-800 dark:text-[#E5C158]"><Icon className="h-3.5 w-3.5" aria-hidden="true" /></span>
+                            <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-x-2"><p className="text-[10px] font-bold text-stone-700 dark:text-zinc-200">{item.title}</p><time className="text-[9px] text-stone-400 dark:text-zinc-500">{formatDate(item.date)}</time></div><p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-stone-500 dark:text-zinc-400">{item.description}</p><p className="mt-1 text-[9px] text-stone-400 dark:text-zinc-500">{item.meta}</p></div>
                           </li>;
                         })}
                       </ol>
@@ -469,18 +469,18 @@ export function ClienteProntuario({
             )}
 
             {selectedTab === "processos" && (
-              <SectionCard title="Processos vinculados" icon={BriefcaseBusiness} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark">{processCount} registro{processCount === 1 ? "" : "s"}</span>}>
+              <SectionCard title="Processos vinculados" icon={BriefcaseBusiness} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{processCount} registro{processCount === 1 ? "" : "s"}</span>}>
                 {processos.length === 0 ? (
                   <EmptyState title="Nenhum processo vinculado" description="Os casos associados a este cliente serão reunidos nesta área." icon={BriefcaseBusiness} />
                 ) : (
                   <div className="space-y-3">
                     {processos.map((processo) => (
-                      <article key={processo.id} className="rounded-2xl border border-stone-200/80 bg-white p-4 transition hover:border-gold/30 hover:shadow-[0_10px_25px_-20px_rgba(23,25,26,0.3)] sm:p-5">
+                      <article key={processo.id} className="rounded-2xl border border-stone-200/80 bg-white p-4 transition hover:border-gold/30 hover:shadow-[0_10px_25px_-20px_rgba(23,25,26,0.3)] dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-gold/40 sm:p-5">
                         <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="min-w-0"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark">{displayLabel(processo.papel)} · {displayLabel(processo.area || processo.grupo_acao || "Processo")}</p><h3 className="mt-1 break-all font-mono text-sm font-bold text-[#17191a]">{processo.numero_cnj || processo.numero_protocolo || processo.pasta_caso || "Número do processo não informado"}</h3><p className="mt-1 text-xs text-stone-500">{processo.tipo_acao || processo.classe_processual || processo.grupo_acao || "Ação sem classificação"}</p></div>
+                          <div className="min-w-0"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark dark:text-[#E5C158]">{displayLabel(processo.papel)} · {displayLabel(processo.area || processo.grupo_acao || "Processo")}</p><h3 className="mt-1 break-all font-mono text-sm font-bold text-[#17191a] dark:text-zinc-100">{processo.numero_cnj || processo.numero_protocolo || processo.pasta_caso || "Número do processo não informado"}</h3><p className="mt-1 text-xs text-stone-500 dark:text-zinc-400">{processo.tipo_acao || processo.classe_processual || processo.grupo_acao || "Ação sem classificação"}</p></div>
                           <span className={cn("rounded-full border px-2.5 py-1 text-[9px] font-bold", statusTone(processo.status))}>{displayLabel(processo.status)}</span>
                         </div>
-                        <div className="mt-4 grid gap-3 rounded-xl bg-stone-50/80 p-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="mt-4 grid gap-3 rounded-xl bg-stone-50/80 p-3 dark:bg-zinc-800/60 sm:grid-cols-2 lg:grid-cols-4">
                           <Detail label="Tribunal / Vara" value={[processo.tribunal, processo.vara].filter(Boolean).join(" · ")} />
                           <Detail label="Comarca / UF" value={[processo.comarca, processo.uf].filter(Boolean).join(" / ")} />
                           <Detail label="Distribuição" value={formatDate(processo.data_distribuicao)} />
@@ -490,12 +490,12 @@ export function ClienteProntuario({
                           <Detail label="Processo originário" value={processo.processo_originario} />
                           <Detail label="Data do requerimento" value={formatDate(processo.data_requerimento)} />
                         </div>
-                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 pt-3">
-                          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-stone-500"><span>Classe: {processo.classe_processual || "Não informada"}</span><span>Grupo: {processo.grupo_acao || "Não informado"}</span><span>Fase: {displayLabel(processo.fase)}</span><span>Etapa: {displayLabel(processo.etapa)}</span>{processo.valor_causa != null && <span>Valor da causa: {formatCurrency(processo.valor_causa)}</span>}</div>
-                          <Link href={`/processos/${processo.id}`} className="inline-flex items-center gap-1 text-[10px] font-bold text-gold-dark transition hover:text-gold">Abrir processo <ArrowUpRight className="h-3 w-3" aria-hidden="true" /></Link>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 pt-3 dark:border-zinc-800">
+                          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-stone-500 dark:text-zinc-400"><span>Classe: {processo.classe_processual || "Não informada"}</span><span>Grupo: {processo.grupo_acao || "Não informado"}</span><span>Fase: {displayLabel(processo.fase)}</span><span>Etapa: {displayLabel(processo.etapa)}</span>{processo.valor_causa != null && <span>Valor da causa: {formatCurrency(processo.valor_causa)}</span>}</div>
+                          <Link href={`/processos/${processo.id}`} className="inline-flex items-center gap-1 text-[10px] font-bold text-gold-dark transition hover:text-gold dark:text-[#E5C158]">Abrir processo <ArrowUpRight className="h-3 w-3" aria-hidden="true" /></Link>
                         </div>
-                        {processo.observacoes && <p className="mt-3 whitespace-pre-wrap rounded-xl border border-gold/15 bg-gold-soft/25 p-3 text-[10px] leading-relaxed text-stone-600"><b className="text-gold-dark">Observações: </b>{processo.observacoes}</p>}
-                        {processo.movimentacoes.length > 0 && <div className="mt-3 rounded-xl border border-stone-100 p-3"><p className="mb-2 text-[9px] font-black uppercase tracking-wide text-stone-400">Movimentações mais recentes</p><ul className="space-y-2">{processo.movimentacoes.slice(0, 3).map((movimentacao) => <li key={movimentacao.id} className="flex gap-2 text-[10px]"><time className="shrink-0 font-semibold text-stone-400">{formatDate(movimentacao.data_movimento)}</time><span className="text-stone-600">{movimentacao.descricao}</span></li>)}</ul></div>}
+                        {processo.observacoes && <p className="mt-3 whitespace-pre-wrap rounded-xl border border-gold/15 bg-gold-soft/25 p-3 text-[10px] leading-relaxed text-stone-600 dark:border-[#D4AF37]/25 dark:bg-[#D4AF37]/10 dark:text-zinc-300"><b className="text-gold-dark dark:text-[#E5C158]">Observações: </b>{processo.observacoes}</p>}
+                        {processo.movimentacoes.length > 0 && <div className="mt-3 rounded-xl border border-stone-100 p-3 dark:border-zinc-800"><p className="mb-2 text-[9px] font-black uppercase tracking-wide text-stone-400 dark:text-zinc-400">Movimentações mais recentes</p><ul className="space-y-2">{processo.movimentacoes.slice(0, 3).map((movimentacao) => <li key={movimentacao.id} className="flex gap-2 text-[10px]"><time className="shrink-0 font-semibold text-stone-400 dark:text-zinc-500">{formatDate(movimentacao.data_movimento)}</time><span className="text-stone-600 dark:text-zinc-300">{movimentacao.descricao}</span></li>)}</ul></div>}
                       </article>
                     ))}
                   </div>
@@ -506,18 +506,18 @@ export function ClienteProntuario({
             {selectedTab === "documentos" && (
               documentosError ? (
                 <SectionCard title="Documentos do cliente" icon={FileText}>
-                  <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">{documentosError}</div>
+                  <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">{documentosError}</div>
                 </SectionCard>
               ) : <ClienteDocumentos clienteId={cliente.id} escritorioId={escritorioId} documentos={documentos} canUpload={canEdit} />
             )}
 
             {selectedTab === "intimacoes" && (
-              <SectionCard title="Intimações e publicações" icon={Scale} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark">{publicacoes.length}</span>}>
+              <SectionCard title="Intimações e publicações" icon={Scale} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{publicacoes.length}</span>}>
                 {publicacoes.length === 0 ? <EmptyState title="Nenhuma publicação vinculada" description="Publicações do DJEN relacionadas aos processos deste cliente aparecerão aqui." icon={Scale} /> : <div className="space-y-3">{publicacoes.map((publicacao) => (
-                  <article key={publicacao.id} className="rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5">
-                    <div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark">{publicacao.tribunal || "DJEN"}{publicacao.orgao ? ` · ${publicacao.orgao}` : ""}</p><h3 className="mt-1 text-xs font-black text-[#17191a]">{publicacao.tipo_comunicacao || publicacao.nome_classe || "Publicação processual"}</h3><p className="mt-1 text-[10px] text-stone-400">{processNumberById.get(publicacao.processo_id ?? "") || publicacao.numero_processo_com_mascara || publicacao.numero_processo || "Processo não identificado"} · disponibilizada em {formatDate(publicacao.data_disponibilizacao ?? publicacao.created_at)}</p></div><span className={cn("rounded-full border px-2.5 py-1 text-[9px] font-bold", publicacao.comunicacao_ativa === false ? "border-stone-200 bg-stone-100 text-stone-500" : "border-emerald-200 bg-emerald-50 text-emerald-700")}>{publicacao.comunicacao_ativa === false ? "Inativa" : "Ativa"}</span></div>
-                    {publicacao.texto && <p className="mt-3 whitespace-pre-wrap break-words rounded-xl bg-stone-50 p-3 text-[11px] leading-relaxed text-stone-600">{publicacao.texto}</p>}
-                    {publicacao.link && <a href={publicacao.link} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold text-gold-dark transition hover:text-gold">Acessar publicação <ArrowUpRight className="h-3 w-3" aria-hidden="true" /></a>}
+                  <article key={publicacao.id} className="rounded-2xl border border-stone-200/80 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0"><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark dark:text-[#E5C158]">{publicacao.tribunal || "DJEN"}{publicacao.orgao ? ` · ${publicacao.orgao}` : ""}</p><h3 className="mt-1 text-xs font-black text-[#17191a] dark:text-zinc-100">{publicacao.tipo_comunicacao || publicacao.nome_classe || "Publicação processual"}</h3><p className="mt-1 text-[10px] text-stone-400 dark:text-zinc-400">{processNumberById.get(publicacao.processo_id ?? "") || publicacao.numero_processo_com_mascara || publicacao.numero_processo || "Processo não identificado"} · disponibilizada em {formatDate(publicacao.data_disponibilizacao ?? publicacao.created_at)}</p></div><span className={cn("rounded-full border px-2.5 py-1 text-[9px] font-bold", publicacao.comunicacao_ativa === false ? "border-stone-200 bg-stone-100 text-stone-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400" : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300")}>{publicacao.comunicacao_ativa === false ? "Inativa" : "Ativa"}</span></div>
+                    {publicacao.texto && <p className="mt-3 whitespace-pre-wrap break-words rounded-xl bg-stone-50 p-3 text-[11px] leading-relaxed text-stone-600 dark:bg-zinc-800/60 dark:text-zinc-300">{publicacao.texto}</p>}
+                    {publicacao.link && <a href={publicacao.link} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold text-gold-dark transition hover:text-gold dark:text-[#E5C158]">Acessar publicação <ArrowUpRight className="h-3 w-3" aria-hidden="true" /></a>}
                   </article>
                 ))}</div>}
               </SectionCard>
@@ -534,26 +534,26 @@ export function ClienteProntuario({
                   {honorarios.length === 0 ? <EmptyState title="Nenhum contrato financeiro" description="Os honorários vinculados ao cliente serão exibidos nesta seção." icon={Wallet} /> : <div className="space-y-3">{honorarios.map((honorario) => {
                     const contratoParcelas = honorario.parcelas;
                     const valueLabel = honorario.valor_fixo != null ? formatCurrency(honorario.valor_fixo) : honorario.percentual_exito != null ? `${honorario.percentual_exito}% de êxito` : "Valor a definir";
-                    return <article key={honorario.id} className="rounded-2xl border border-stone-200/80 p-4 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark">Honorários {displayLabel(honorario.tipo)}</p><h3 className="mt-1 text-sm font-black text-[#17191a]">{honorario.descricao || valueLabel}</h3><p className="mt-1 text-[10px] text-stone-400">Criado em {formatDate(honorario.created_at)}{honorario.processo_id ? ` · ${processNumberById.get(honorario.processo_id) ?? "Processo vinculado"}` : ""}</p></div><span className={cn("rounded-full border px-2.5 py-1 text-[9px] font-bold", statusTone(honorario.status))}>{displayLabel(honorario.status)}</span></div><div className="mt-3 flex flex-wrap gap-4 text-[10px] text-stone-500"><span>Valor fixo: <b className="text-stone-700">{honorario.valor_fixo != null ? formatCurrency(honorario.valor_fixo) : "—"}</b></span><span>Êxito: <b className="text-stone-700">{honorario.percentual_exito != null ? `${honorario.percentual_exito}%` : "—"}</b></span>{honorario.base_calculo_exito && <span>Base: <b className="text-stone-700">{honorario.base_calculo_exito}</b></span>}</div>{contratoParcelas.length > 0 && <div className="mt-4 overflow-x-auto rounded-xl border border-stone-100"><table className="w-full min-w-[520px] text-left text-[10px]"><thead className="bg-stone-50 text-stone-400"><tr><th className="px-3 py-2 font-bold">Parcela</th><th className="px-3 py-2 font-bold">Vencimento</th><th className="px-3 py-2 font-bold">Valor</th><th className="px-3 py-2 font-bold">Situação</th><th className="px-3 py-2 font-bold">Pagamento</th></tr></thead><tbody className="divide-y divide-stone-100">{contratoParcelas.map((parcela) => <tr key={parcela.id}><td className="px-3 py-2.5 font-semibold text-stone-700">{parcela.numero_parcela}</td><td className="px-3 py-2.5 text-stone-500">{formatDate(parcela.vencimento)}</td><td className="px-3 py-2.5 font-semibold text-stone-700">{formatCurrency(parcela.valor)}</td><td className="px-3 py-2.5"><span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-bold", statusTone(parcela.status))}>{displayLabel(parcela.status)}</span></td><td className="px-3 py-2.5 text-stone-500">{formatDate(parcela.data_pagamento)}</td></tr>)}</tbody></table></div>}</article>;
+                    return <article key={honorario.id} className="rounded-2xl border border-stone-200/80 p-4 dark:border-zinc-800 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[9px] font-black uppercase tracking-wide text-gold-dark dark:text-[#E5C158]">Honorários {displayLabel(honorario.tipo)}</p><h3 className="mt-1 text-sm font-black text-[#17191a] dark:text-zinc-100">{honorario.descricao || valueLabel}</h3><p className="mt-1 text-[10px] text-stone-400 dark:text-zinc-400">Criado em {formatDate(honorario.created_at)}{honorario.processo_id ? ` · ${processNumberById.get(honorario.processo_id) ?? "Processo vinculado"}` : ""}</p></div><span className={cn("rounded-full border px-2.5 py-1 text-[9px] font-bold", statusTone(honorario.status))}>{displayLabel(honorario.status)}</span></div><div className="mt-3 flex flex-wrap gap-4 text-[10px] text-stone-500 dark:text-zinc-400"><span>Valor fixo: <b className="text-stone-700 dark:text-zinc-200">{honorario.valor_fixo != null ? formatCurrency(honorario.valor_fixo) : "—"}</b></span><span>Êxito: <b className="text-stone-700 dark:text-zinc-200">{honorario.percentual_exito != null ? `${honorario.percentual_exito}%` : "—"}</b></span>{honorario.base_calculo_exito && <span>Base: <b className="text-stone-700 dark:text-zinc-200">{honorario.base_calculo_exito}</b></span>}</div>{contratoParcelas.length > 0 && <div className="mt-4 overflow-x-auto rounded-xl border border-stone-100 dark:border-zinc-800"><table className="w-full min-w-[520px] text-left text-[10px]"><thead className="bg-stone-50 text-stone-400 dark:bg-zinc-800/60 dark:text-zinc-400"><tr><th className="px-3 py-2 font-bold">Parcela</th><th className="px-3 py-2 font-bold">Vencimento</th><th className="px-3 py-2 font-bold">Valor</th><th className="px-3 py-2 font-bold">Situação</th><th className="px-3 py-2 font-bold">Pagamento</th></tr></thead><tbody className="divide-y divide-stone-100 dark:divide-zinc-800">{contratoParcelas.map((parcela) => <tr key={parcela.id}><td className="px-3 py-2.5 font-semibold text-stone-700 dark:text-zinc-200">{parcela.numero_parcela}</td><td className="px-3 py-2.5 text-stone-500 dark:text-zinc-400">{formatDate(parcela.vencimento)}</td><td className="px-3 py-2.5 font-semibold text-stone-700 dark:text-zinc-200">{formatCurrency(parcela.valor)}</td><td className="px-3 py-2.5"><span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-bold", statusTone(parcela.status))}>{displayLabel(parcela.status)}</span></td><td className="px-3 py-2.5 text-stone-500 dark:text-zinc-400">{formatDate(parcela.data_pagamento)}</td></tr>)}</tbody></table></div>}</article>;
                   })}</div>}
                 </SectionCard>
                 <SectionCard title="Lançamentos do cliente" icon={CircleDollarSign}>
-                  {lancamentos.length === 0 ? <EmptyState title="Nenhum lançamento avulso" description="Receitas e despesas vinculadas diretamente a este cliente serão exibidas aqui." icon={CircleDollarSign} /> : <div className="divide-y divide-stone-100">{lancamentos.map((lancamento) => <div key={lancamento.id} className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"><div className="min-w-0"><p className="truncate text-xs font-bold text-stone-800">{lancamento.descricao}</p><p className="mt-1 text-[10px] text-stone-400">{displayLabel(lancamento.categoria)} · vence em {formatDate(lancamento.vencimento)}</p></div><div className="flex items-center gap-2"><span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold", statusTone(lancamento.status))}>{displayLabel(lancamento.status)}</span><span className={cn("text-xs font-black tabular-nums", lancamento.tipo === "receita" ? "text-emerald-700" : "text-red-600")}>{lancamento.tipo === "despesa" ? "−" : "+"}{formatCurrency(lancamento.valor)}</span></div></div>)}</div>}
+                  {lancamentos.length === 0 ? <EmptyState title="Nenhum lançamento avulso" description="Receitas e despesas vinculadas diretamente a este cliente serão exibidas aqui." icon={CircleDollarSign} /> : <div className="divide-y divide-stone-100 dark:divide-zinc-800">{lancamentos.map((lancamento) => <div key={lancamento.id} className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"><div className="min-w-0"><p className="truncate text-xs font-bold text-stone-800 dark:text-zinc-100">{lancamento.descricao}</p><p className="mt-1 text-[10px] text-stone-400 dark:text-zinc-400">{displayLabel(lancamento.categoria)} · vence em {formatDate(lancamento.vencimento)}</p></div><div className="flex items-center gap-2"><span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold", statusTone(lancamento.status))}>{displayLabel(lancamento.status)}</span><span className={cn("text-xs font-black tabular-nums", lancamento.tipo === "receita" ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400")}>{lancamento.tipo === "despesa" ? "−" : "+"}{formatCurrency(lancamento.valor)}</span></div></div>)}</div>}
                 </SectionCard>
               </div>
             )}
 
             {selectedTab === "agenda" && (
-              <SectionCard title="Compromissos e prazos" icon={CalendarDays} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark">{eventos.length}</span>}>
-                {eventos.length === 0 ? <EmptyState title="Nenhum compromisso vinculado" description="Audiências, reuniões, prazos e compromissos associados ao cliente aparecerão aqui." icon={CalendarDays} /> : <div className="divide-y divide-stone-100">{eventos.map((evento) => <article key={evento.id} className="flex gap-3 py-4 first:pt-0 last:pb-0"><span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-gold-soft text-gold-dark"><span className="text-[8px] font-black uppercase">{new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "America/Sao_Paulo" }).format(new Date(evento.inicio)).replace(".", "")}</span><span className="text-sm font-black leading-none">{new Intl.DateTimeFormat("pt-BR", { day: "2-digit", timeZone: "America/Sao_Paulo" }).format(new Date(evento.inicio))}</span></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-xs font-bold text-stone-800">{evento.titulo}</h3><span className="rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[9px] font-bold text-stone-500">{displayLabel(evento.tipo)}</span></div><p className="mt-1 text-[10px] text-stone-500">{formatDateTime(evento.inicio)}{evento.fim ? ` · até ${formatDateTime(evento.fim)}` : evento.dia_inteiro ? " · dia inteiro" : ""}</p>{evento.descricao && <p className="mt-1 text-[10px] leading-relaxed text-stone-500">{evento.descricao}</p>}<p className="mt-1 flex flex-wrap gap-x-2 text-[9px] text-stone-400">{evento.local && <span>{evento.local}</span>}{evento.processo_id && <span>Processo: {processNumberById.get(evento.processo_id) ?? "vinculado"}</span>}{evento.link_videoconf && <a href={evento.link_videoconf} target="_blank" rel="noopener noreferrer" className="font-bold text-gold-dark hover:underline">Acessar videoconferência</a>}</p></div></article>)}</div>}
+              <SectionCard title="Compromissos e prazos" icon={CalendarDays} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{eventos.length}</span>}>
+                {eventos.length === 0 ? <EmptyState title="Nenhum compromisso vinculado" description="Audiências, reuniões, prazos e compromissos associados ao cliente aparecerão aqui." icon={CalendarDays} /> : <div className="divide-y divide-stone-100 dark:divide-zinc-800">{eventos.map((evento) => <article key={evento.id} className="flex gap-3 py-4 first:pt-0 last:pb-0"><span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-gold-soft text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]"><span className="text-[8px] font-black uppercase">{new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "America/Sao_Paulo" }).format(new Date(evento.inicio)).replace(".", "")}</span><span className="text-sm font-black leading-none">{new Intl.DateTimeFormat("pt-BR", { day: "2-digit", timeZone: "America/Sao_Paulo" }).format(new Date(evento.inicio))}</span></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-xs font-bold text-stone-800 dark:text-zinc-100">{evento.titulo}</h3><span className="rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[9px] font-bold text-stone-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">{displayLabel(evento.tipo)}</span></div><p className="mt-1 text-[10px] text-stone-500 dark:text-zinc-400">{formatDateTime(evento.inicio)}{evento.fim ? ` · até ${formatDateTime(evento.fim)}` : evento.dia_inteiro ? " · dia inteiro" : ""}</p>{evento.descricao && <p className="mt-1 text-[10px] leading-relaxed text-stone-500 dark:text-zinc-400">{evento.descricao}</p>}<p className="mt-1 flex flex-wrap gap-x-2 text-[9px] text-stone-400 dark:text-zinc-500">{evento.local && <span>{evento.local}</span>}{evento.processo_id && <span>Processo: {processNumberById.get(evento.processo_id) ?? "vinculado"}</span>}{evento.link_videoconf && <a href={evento.link_videoconf} target="_blank" rel="noopener noreferrer" className="font-bold text-gold-dark hover:underline dark:text-[#E5C158]">Acessar videoconferência</a>}</p></div></article>)}</div>}
               </SectionCard>
             )}
 
             {selectedTab === "historico" && (
-              <SectionCard title="Histórico de atividades" icon={History} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark">{activity.length}</span>}>
+              <SectionCard title="Histórico de atividades" icon={History} aside={<span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-bold text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">{activity.length}</span>}>
                 {activity.length === 0 ? <EmptyState title="Ainda sem atividades registradas" description="As movimentações dos processos, compromissos e comunicações vinculados serão reunidos aqui." icon={History} /> : <ol className="space-y-0">{activity.map((item, index) => {
                   const Icon = item.icon;
-                  return <li key={item.id} className="relative flex gap-3 pb-5 last:pb-0"><span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gold/20 bg-gold-soft text-gold-dark"><Icon className="h-4 w-4" aria-hidden="true" /></span>{index < activity.length - 1 && <span className="absolute bottom-0 left-[17px] top-9 w-px bg-stone-100" aria-hidden="true" />}<div className="min-w-0 flex-1 rounded-xl border border-stone-100 bg-white p-3"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><h3 className="text-xs font-bold text-stone-800">{item.title}</h3><time className="text-[9px] font-semibold text-stone-400">{formatDateTime(item.date)}</time></div><p className="mt-1.5 whitespace-pre-wrap break-words text-[11px] leading-relaxed text-stone-600">{item.description}</p><p className="mt-1.5 text-[9px] text-stone-400">{item.meta}</p></div></li>;
+                  return <li key={item.id} className="relative flex gap-3 pb-5 last:pb-0"><span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gold/20 bg-gold-soft text-gold-dark dark:border-[#D4AF37]/30 dark:bg-[#D4AF37]/15 dark:text-[#E5C158]"><Icon className="h-4 w-4" aria-hidden="true" /></span>{index < activity.length - 1 && <span className="absolute bottom-0 left-[17px] top-9 w-px bg-stone-100 dark:bg-zinc-800" aria-hidden="true" />}<div className="min-w-0 flex-1 rounded-xl border border-stone-100 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><h3 className="text-xs font-bold text-stone-800 dark:text-zinc-100">{item.title}</h3><time className="text-[9px] font-semibold text-stone-400 dark:text-zinc-500">{formatDateTime(item.date)}</time></div><p className="mt-1.5 whitespace-pre-wrap break-words text-[11px] leading-relaxed text-stone-600 dark:text-zinc-300">{item.description}</p><p className="mt-1.5 text-[9px] text-stone-400 dark:text-zinc-500">{item.meta}</p></div></li>;
                 })}</ol>}
               </SectionCard>
             )}

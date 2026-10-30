@@ -4,6 +4,7 @@ import { getCurrentProfile, getSessionUser } from "@/lib/server/current-profile"
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { UserProvider } from "@/components/layout/user-context";
 import { PerformanceModeProvider } from "@/components/layout/performance-mode-context";
+import { ThemeProvider } from "@/components/layout/theme-context";
 import type { ProfileSex, UserWithPermissions, PermissionsMap } from "@/types/permissions";
 
 export default async function DashboardLayout({
@@ -63,12 +64,14 @@ export default async function DashboardLayout({
 
   return (
     <UserProvider user={userWithPermissions}>
-      <PerformanceModeProvider>
-        <DashboardShell>
-          {children}
-          {modal}
-        </DashboardShell>
-      </PerformanceModeProvider>
+      <ThemeProvider>
+        <PerformanceModeProvider>
+          <DashboardShell>
+            {children}
+            {modal}
+          </DashboardShell>
+        </PerformanceModeProvider>
+      </ThemeProvider>
     </UserProvider>
   );
 }

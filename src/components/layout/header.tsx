@@ -28,7 +28,7 @@ function HeaderGreeting({ firstName }: { firstName: string }) {
   const hour = useNow(60_000).getHours();
   const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
   return (
-    <h1 className="truncate text-base font-black leading-tight tracking-tight text-[#17191a] sm:text-xl">
+    <h1 className="truncate text-base font-black leading-tight tracking-tight text-[#17191a] dark:text-zinc-100 sm:text-xl">
       {greeting}, {firstName}
     </h1>
   );
@@ -39,7 +39,7 @@ const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute
 function HeaderClock() {
   const now = useNow(30_000);
   return (
-    <time className="text-sm font-black tabular-nums tracking-[0.12em] text-[#17191a]">
+    <time className="text-sm font-black tabular-nums tracking-[0.12em] text-[#17191a] dark:text-zinc-100">
       {timeFormatter.format(now)}
     </time>
   );
@@ -51,7 +51,7 @@ export function Header({ title, actions }: HeaderProps) {
   const firstName = user?.nome?.split(" ")[0] ?? "";
 
   return (
-    <header className="infinity-header sticky top-0 z-20 h-[72px] border-b border-stone-200/90 bg-[#fcfcfb]/90 backdrop-blur-xl">
+    <header className="infinity-header sticky top-0 z-20 h-[72px] border-b border-stone-200/90 bg-[#fcfcfb]/90 backdrop-blur-xl dark:border-zinc-800/90 dark:bg-[#141618]/90">
       <div className="relative flex h-full items-center justify-between gap-3 px-3 sm:px-5 lg:px-7">
         <div className="infinity-header-grid" aria-hidden="true" />
 
@@ -60,7 +60,7 @@ export function Header({ title, actions }: HeaderProps) {
           <button
             type="button"
             onClick={() => setIsMobileOpen(true)}
-            className="-ml-1 rounded-xl p-2 text-gray-500 transition-colors hover:bg-gold-soft hover:text-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25 lg:hidden"
+            className="-ml-1 rounded-xl p-2 text-gray-500 transition-colors hover:bg-gold-soft hover:text-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25 dark:text-zinc-400 dark:hover:bg-gold/15 dark:hover:text-[#E5C158] lg:hidden"
             aria-label="Abrir menu lateral"
           >
             <Menu className="h-5 w-5" />
@@ -68,13 +68,13 @@ export function Header({ title, actions }: HeaderProps) {
 
           <div className="min-w-0">
             {title ? (
-              <h1 className="truncate text-base font-black leading-tight tracking-tight text-[#17191a] sm:text-xl">
+              <h1 className="truncate text-base font-black leading-tight tracking-tight text-[#17191a] dark:text-zinc-100 sm:text-xl">
                 {title}
               </h1>
             ) : (
               <>
                 <HeaderGreeting firstName={firstName} />
-                <p className="mt-0.5 hidden text-[10px] font-bold uppercase tracking-[0.16em] text-stone-400 sm:block">
+                <p className="mt-0.5 hidden text-[10px] font-bold uppercase tracking-[0.16em] text-stone-400 dark:text-zinc-500 sm:block">
                   Painel de gestão jurídica
                 </p>
               </>
@@ -87,7 +87,7 @@ export function Header({ title, actions }: HeaderProps) {
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="hidden items-center gap-2 rounded-2xl border border-stone-200 bg-white/80 px-3 py-2 shadow-[0_8px_20px_-18px_rgba(23,25,26,0.7)] sm:flex"
+          className="hidden items-center gap-2 rounded-2xl border border-stone-200 bg-white/80 px-3 py-2 shadow-[0_8px_20px_-18px_rgba(23,25,26,0.7)] dark:border-zinc-800 dark:bg-zinc-900/80 sm:flex"
           title="Horário atual"
         >
           <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-gold/15">

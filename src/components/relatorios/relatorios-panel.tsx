@@ -68,13 +68,13 @@ export function RelatoriosPanel() {
           { label: "Relatórios disponíveis", value: "03", icon: ChartNoAxesColumnIncreasing },
           { label: "Formatos de exportação", value: "PDF · XLSX", icon: FileText },
           { label: "Acesso", value: "Dados do escritório", icon: CheckCircle2 },
-        ].map((item, index) => <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white px-4 py-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,.4)]"><span className={cn("h-8 w-1 rounded-full", index === 1 ? "bg-gold" : "bg-[#17191a]")} /><div className="min-w-0 flex-1"><p className="text-base font-black text-[#17191a]">{item.value}</p><p className="mt-1 text-[10px] text-stone-500">{item.label}</p></div><item.icon className="h-4 w-4 text-stone-300" /></div>)}
+        ].map((item, index) => <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white px-4 py-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,.4)] dark:border-zinc-800 dark:bg-zinc-900"><span className={cn("h-8 w-1 rounded-full", index === 1 ? "bg-gold" : "bg-[#17191a] dark:bg-zinc-600")} /><div className="min-w-0 flex-1"><p className="text-base font-black text-[#17191a] dark:text-zinc-100">{item.value}</p><p className="mt-1 text-[10px] text-stone-500 dark:text-zinc-400">{item.label}</p></div><item.icon className="h-4 w-4 text-stone-300 dark:text-zinc-600" /></div>)}
       </div>
 
-      <section className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,.4)] sm:p-6">
-        <div className="mb-5 flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold"><CalendarRange className="h-5 w-5" /></span><div><h2 className="text-sm font-black text-[#17191a]">Gerar relatório</h2><p className="mt-1 text-xs text-stone-400">Selecione a visão e o período para exportar.</p></div></div>
+      <section className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-[0_8px_24px_-20px_rgba(23,25,26,.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+        <div className="mb-5 flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold dark:bg-zinc-800 dark:text-[#E5C158]"><CalendarRange className="h-5 w-5" /></span><div><h2 className="text-sm font-black text-[#17191a] dark:text-zinc-100">Gerar relatório</h2><p className="mt-1 text-xs text-stone-400 dark:text-zinc-400">Selecione a visão e o período para exportar.</p></div></div>
         <div>
-          <label className="mb-2 block text-xs font-semibold text-stone-600">Tipo de relatório</label>
+          <label className="mb-2 block text-xs font-semibold text-stone-600 dark:text-zinc-300">Tipo de relatório</label>
           <div className="grid gap-2 md:grid-cols-3">
             {RELATORIOS.map((r) => (
               <button
@@ -85,8 +85,8 @@ export function RelatoriosPanel() {
                 className={cn(
                   "flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all",
                   tipo === r.id
-                    ? "border-gold/50 bg-gold-soft text-gold-dark shadow-sm"
-                    : "border-stone-200 text-stone-700 hover:border-gold/35 hover:bg-stone-50"
+                    ? "border-gold/50 bg-gold-soft text-gold-dark shadow-sm dark:border-[#D4AF37]/50 dark:bg-[#D4AF37]/15 dark:text-[#E5C158]"
+                    : "border-stone-200 text-stone-700 hover:border-gold/35 hover:bg-stone-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:border-[#D4AF37]/40 dark:hover:bg-zinc-800/70"
                 )}
               >
                 <r.icon className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
@@ -97,16 +97,16 @@ export function RelatoriosPanel() {
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <DatePicker label="Data inicial" value={inicio} onChange={setInicio} inputClassName="bg-stone-50/60" />
-          <DatePicker label="Data final" value={fim} onChange={setFim} inputClassName="bg-stone-50/60" />
+          <DatePicker label="Data inicial" value={inicio} onChange={setInicio} inputClassName="bg-stone-50/60 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100" />
+          <DatePicker label="Data final" value={fim} onChange={setFim} inputClassName="bg-stone-50/60 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100" />
         </div>
 
-        {error && <p role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700">{error}</p>}
-        <div className="mt-5 flex flex-col gap-2 border-t border-stone-100 pt-4 sm:flex-row sm:justify-end">
+        {error && <p role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300">{error}</p>}
+        <div className="mt-5 flex flex-col gap-2 border-t border-stone-100 pt-4 dark:border-zinc-800 sm:flex-row sm:justify-end">
           <button
             onClick={() => download("pdf")}
             disabled={loading !== null}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#17191a] px-5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#303334] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#17191a] px-5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#303334] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
           >
             {loading === "pdf" ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

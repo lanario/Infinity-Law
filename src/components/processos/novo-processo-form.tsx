@@ -141,9 +141,9 @@ const STATUS_OPTIONS = [
 ];
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-sm text-[#242627] shadow-sm outline-none transition duration-200 placeholder:text-stone-400 hover:border-stone-300 focus:border-gold focus:ring-4 focus:ring-gold/10 disabled:cursor-not-allowed disabled:bg-stone-50";
+  "mt-1.5 w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-sm text-[#242627] shadow-sm outline-none transition duration-200 placeholder:text-stone-400 hover:border-stone-300 focus:border-gold focus:ring-4 focus:ring-gold/10 disabled:cursor-not-allowed disabled:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:hover:border-zinc-600 dark:disabled:bg-zinc-800/30";
 const selectClass = `${inputClass} appearance-none`;
-const labelClass = "block text-xs font-bold tracking-wide text-stone-600";
+const labelClass = "block text-xs font-bold tracking-wide text-stone-600 dark:text-zinc-300";
 type ProcessFormSectionId = "partes" | "classificacao" | "identificacao" | "financeiro" | "anotacoes";
 interface FormValidationFocusRequest {
   sectionId: ProcessFormSectionId;
@@ -154,7 +154,7 @@ interface FormValidationFocusRequest {
 function ViaDataJud({ show }: { show: boolean }) {
   if (!show) return null;
   return (
-    <span className="ml-1.5 inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-emerald-700">
+    <span className="ml-1.5 inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 align-middle text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
       via DataJud
     </span>
   );
@@ -183,8 +183,8 @@ function FormSection({
   const panelId = `novo-processo-${id}-panel`;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(23,25,26,0.35)]">
-      <div className={`px-4 py-3.5 sm:px-6 sm:py-4 ${expanded ? "border-b border-stone-100" : ""}`}>
+    <section className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(23,25,26,0.35)] dark:border-zinc-800 dark:bg-zinc-900">
+      <div className={`px-4 py-3.5 sm:px-6 sm:py-4 ${expanded ? "border-b border-stone-100 dark:border-zinc-800" : ""}`}>
         <h2 className="min-w-0">
           <button
             id={triggerId}
@@ -194,21 +194,21 @@ function FormSection({
             aria-expanded={expanded}
             aria-controls={panelId}
             onClick={() => onToggle(id)}
-            className="group flex w-full items-center gap-3 rounded-xl text-left outline-none transition hover:bg-stone-50 focus-visible:ring-4 focus-visible:ring-gold/25"
+            className="group flex w-full items-center gap-3 rounded-xl text-left outline-none transition hover:bg-stone-50 focus-visible:ring-4 focus-visible:ring-gold/25 dark:hover:bg-zinc-800/60"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold-dark">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
               {icon}
             </span>
             <span className="min-w-0 flex-1 py-0.5">
-              <span id={titleId} className="block text-sm font-black text-[#242627]">
+              <span id={titleId} className="block text-sm font-black text-[#242627] dark:text-zinc-100">
                 {title}
               </span>
-              <span id={descriptionId} className="mt-0.5 block text-xs text-stone-500">
+              <span id={descriptionId} className="mt-0.5 block text-xs text-stone-500 dark:text-zinc-400">
                 {description}
               </span>
             </span>
             <ChevronDown
-              className={`mr-2 h-4 w-4 shrink-0 text-stone-400 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+              className={`mr-2 h-4 w-4 shrink-0 text-stone-400 transition-transform duration-200 dark:text-zinc-500 ${expanded ? "rotate-180" : ""}`}
               aria-hidden="true"
             />
           </button>
@@ -480,18 +480,18 @@ export function NovoProcessoForm({
       >
         <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
           <fieldset className="sm:col-span-2">
-            <legend className={labelClass}>Partes envolvidas <span className="text-gold-dark">*</span></legend>
-            <p className="mt-1 text-[11px] font-normal text-stone-400">Selecione um ou mais clientes e indique o polo de cada um.</p>
+            <legend className={labelClass}>Partes envolvidas <span className="text-gold-dark dark:text-[#E5C158]">*</span></legend>
+            <p className="mt-1 text-[11px] font-normal text-stone-400 dark:text-zinc-400">Selecione um ou mais clientes e indique o polo de cada um.</p>
             {clientes.length === 0 ? (
-              <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-medium text-amber-800">
+              <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                 Cadastre um cliente antes de abrir um processo.
               </p>
             ) : (
-              <div className="mt-2 max-h-64 space-y-2 overflow-y-auto rounded-xl border border-stone-200 bg-stone-50/60 p-2.5">
+              <div className="mt-2 max-h-64 space-y-2 overflow-y-auto rounded-xl border border-stone-200 bg-stone-50/60 p-2.5 dark:border-zinc-800 dark:bg-zinc-800/40">
                 {clientes.map((cliente) => {
                   const parte = form.partes.find((item) => item.clienteId === cliente.id);
                   return (
-                    <div key={cliente.id} className="flex flex-col gap-2 rounded-lg bg-white p-2.5 shadow-sm sm:flex-row sm:items-center">
+                    <div key={cliente.id} className="flex flex-col gap-2 rounded-lg bg-white p-2.5 shadow-sm dark:bg-zinc-900 sm:flex-row sm:items-center">
                       <button
                         type="button"
                         aria-pressed={Boolean(parte)}
@@ -504,11 +504,11 @@ export function NovoProcessoForm({
                         className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-1.5 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-gold"
                       >
                         {parte
-                          ? <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
-                          : <Circle className="h-4 w-4 shrink-0 text-stone-300" aria-hidden="true" />}
+                          ? <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />
+                          : <Circle className="h-4 w-4 shrink-0 text-stone-300 dark:text-zinc-600" aria-hidden="true" />}
                         <span className="min-w-0">
-                          <span className="block truncate text-xs font-bold text-stone-700">{cliente.nome}</span>
-                          <span className="mt-0.5 block text-[10px] text-stone-400">{cliente.tipo === "pj" ? "Pessoa jurídica" : "Pessoa física"}</span>
+                          <span className="block truncate text-xs font-bold text-stone-700 dark:text-zinc-100">{cliente.nome}</span>
+                          <span className="mt-0.5 block text-[10px] text-stone-400 dark:text-zinc-400">{cliente.tipo === "pj" ? "Pessoa jurídica" : "Pessoa física"}</span>
                         </span>
                       </button>
                       {parte && (
@@ -521,7 +521,7 @@ export function NovoProcessoForm({
                               ? { ...item, papel: event.target.value as "autor" | "reu" | "terceiro" }
                               : item),
                           }))}
-                          className="rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-[11px] font-semibold text-stone-600 outline-none focus:border-gold/70 focus:ring-2 focus:ring-gold/10"
+                          className="rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-[11px] font-semibold text-stone-600 outline-none focus:border-gold/70 focus:ring-2 focus:ring-gold/10 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
                         >
                           <option value="autor">Autor / requerente</option>
                           <option value="reu">Réu / requerido</option>
@@ -533,7 +533,7 @@ export function NovoProcessoForm({
                 })}
               </div>
             )}
-            <p className="mt-1.5 text-[10px] text-stone-400">{form.partes.length} parte{form.partes.length === 1 ? "" : "s"} selecionada{form.partes.length === 1 ? "" : "s"}</p>
+            <p className="mt-1.5 text-[10px] text-stone-400 dark:text-zinc-400">{form.partes.length} parte{form.partes.length === 1 ? "" : "s"} selecionada{form.partes.length === 1 ? "" : "s"}</p>
           </fieldset>
 
           <label className={labelClass}>
@@ -709,16 +709,16 @@ export function NovoProcessoForm({
                 onClick={buscarCNJ}
                 disabled={!valid || buscando}
                 aria-busy={buscando}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-600 transition hover:border-gold/50 hover:bg-gold-soft/60 hover:text-gold-dark focus:outline-none focus:ring-4 focus:ring-gold/10 disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-600 transition hover:border-gold/50 hover:bg-gold-soft/60 hover:text-gold-dark focus:outline-none focus:ring-4 focus:ring-gold/10 disabled:cursor-not-allowed disabled:opacity-45 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-[#D4AF37]/15 dark:hover:text-[#E5C158]"
               >
                 {buscando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 {buscando ? "Consultando" : "Consultar CNJ"}
               </button>
             </div>
             {numeroCNJ && !valid && (
-              <p className="mt-1.5 text-[11px] text-rose-600">Use o formato NNNNNNN-DD.AAAA.J.TT.OOOO ou deixe em branco.</p>
+              <p className="mt-1.5 text-[11px] text-rose-600 dark:text-rose-400">Use o formato NNNNNNN-DD.AAAA.J.TT.OOOO ou deixe em branco.</p>
             )}
-            <p className="mt-2 text-[11px] leading-5 text-stone-500">
+            <p className="mt-2 text-[11px] leading-5 text-stone-500 dark:text-zinc-400">
               Encontre o CNJ na capa do processo, na consulta processual ou no comprovante de distribuição do tribunal. Consultar no DataJud é opcional e usa uma configuração do servidor compartilhada por este sistema.
             </p>
           </div>
@@ -756,7 +756,7 @@ export function NovoProcessoForm({
               labelClassName={labelClass}
               value={form.dataRequerimento}
               onChange={(dataRequerimento) => setForm((state) => ({ ...state, dataRequerimento }))}
-              inputClassName="bg-white text-[#242627] shadow-sm"
+              inputClassName="bg-white text-[#242627] shadow-sm dark:bg-zinc-800/60 dark:text-zinc-100"
             />
           </div>
 
@@ -846,13 +846,13 @@ export function NovoProcessoForm({
               labelClassName={labelClass}
               value={form.dataDistribuicao}
               onChange={(dataDistribuicao) => setForm((state) => ({ ...state, dataDistribuicao }))}
-              inputClassName="bg-white text-[#242627] shadow-sm"
+              inputClassName="bg-white text-[#242627] shadow-sm dark:bg-zinc-800/60 dark:text-zinc-100"
             />
           </div>
 
           <div role="status" aria-live="polite">
             {sigiloAviso && (
-              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-medium text-amber-800">
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                 Este processo tem nível de sigilo. Por segurança, os dados do DataJud não foram usados; preencha manualmente.
               </p>
             )}
@@ -862,27 +862,27 @@ export function NovoProcessoForm({
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4"
+              className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10"
             >
-              <div className="flex items-center gap-2 text-sm font-bold text-emerald-800">
+              <div className="flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">
                 <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                 Dados encontrados no DataJud
               </div>
-              <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-                <p><span className="text-stone-500">Tribunal:</span> <strong>{resultado.tribunal || "—"}</strong></p>
-                <p><span className="text-stone-500">Classe processual:</span> <strong>{resultado.classe || "—"}</strong></p>
-                <p><span className="text-stone-500">Órgão julgador:</span> <strong>{resultado.orgaoJulgador || "—"}</strong></p>
-                <p><span className="text-stone-500">Assunto:</span> <strong>{resultado.assunto || "—"}</strong></p>
-                {resultado.grau && <p><span className="text-stone-500">Grau:</span> <strong>{resultado.grau}</strong></p>}
-                {resultado.sistema && <p><span className="text-stone-500">Sistema:</span> <strong>{resultado.sistema}</strong></p>}
+              <div className="mt-3 grid gap-2 text-xs text-stone-800 dark:text-zinc-200 sm:grid-cols-2">
+                <p><span className="text-stone-500 dark:text-zinc-400">Tribunal:</span> <strong>{resultado.tribunal || "—"}</strong></p>
+                <p><span className="text-stone-500 dark:text-zinc-400">Classe processual:</span> <strong>{resultado.classe || "—"}</strong></p>
+                <p><span className="text-stone-500 dark:text-zinc-400">Órgão julgador:</span> <strong>{resultado.orgaoJulgador || "—"}</strong></p>
+                <p><span className="text-stone-500 dark:text-zinc-400">Assunto:</span> <strong>{resultado.assunto || "—"}</strong></p>
+                {resultado.grau && <p><span className="text-stone-500 dark:text-zinc-400">Grau:</span> <strong>{resultado.grau}</strong></p>}
+                {resultado.sistema && <p><span className="text-stone-500 dark:text-zinc-400">Sistema:</span> <strong>{resultado.sistema}</strong></p>}
               </div>
               {Object.keys(autoFilled).length > 0 && (
-                <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600">
+                <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600 dark:border-emerald-500/20 dark:text-zinc-300">
                   Preenchido automaticamente (campos vazios): {Object.keys(autoFilled).map((key) => DATAJUD_FIELD_LABELS[key as keyof typeof DATAJUD_FIELD_LABELS]).join(", ")}. Revise antes de cadastrar.
                 </p>
               )}
               {resultado.partes.length > 0 && (
-                <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600">
+                <p className="mt-2 border-t border-emerald-200/80 pt-2 text-xs text-stone-600 dark:border-emerald-500/20 dark:text-zinc-300">
                   {resultado.partes.length} partes identificadas no processo.
                 </p>
               )}
@@ -995,7 +995,7 @@ export function NovoProcessoForm({
             exit={{ opacity: 0, y: -6 }}
             ref={erroRef}
             role="alert"
-            className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+            className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>{erro}</span>
@@ -1005,12 +1005,12 @@ export function NovoProcessoForm({
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-stone-200 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:justify-end sm:px-6">
+      <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-stone-200 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:justify-end sm:px-6">
         <button
           type="button"
           onClick={onCancel}
           disabled={salvando}
-          className="rounded-xl px-5 py-2.5 text-sm font-bold text-stone-600 transition hover:bg-stone-100 focus:outline-none focus:ring-4 focus:ring-stone-200"
+          className="rounded-xl px-5 py-2.5 text-sm font-bold text-stone-600 transition hover:bg-stone-100 focus:outline-none focus:ring-4 focus:ring-stone-200 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           Cancelar
         </button>
@@ -1018,7 +1018,7 @@ export function NovoProcessoForm({
           type="submit"
           whileTap={{ scale: 0.98 }}
           disabled={salvando || clientes.length === 0}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#17191a] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-[#292c2d] focus:outline-none focus:ring-4 focus:ring-gold/25 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#17191a] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-[#292c2d] focus:outline-none focus:ring-4 focus:ring-gold/25 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
         >
           {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <BriefcaseBusiness className="h-4 w-4 text-gold" />}
           {salvando ? "Salvando processo..." : "Cadastrar processo"}

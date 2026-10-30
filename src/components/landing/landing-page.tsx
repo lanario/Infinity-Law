@@ -26,7 +26,7 @@ import { LandingNav } from "./landing-nav";
 import { Logo } from "@/components/ui/logo";
 
 // Marca o documento antes da pintura para o hero entrar animado sem piscar.
-const SCRIPT_MOVIMENTO = `try{if(matchMedia("(prefers-reduced-motion: no-preference)").matches)document.documentElement.classList.add("lp-anim")}catch(e){}`;
+const SCRIPT_MOVIMENTO = `try{if(matchMedia("(prefers-reduced-motion: no-preference)").matches){document.documentElement.classList.add("lp-anim");if(matchMedia("(max-width: 1023px)").matches)document.documentElement.classList.add("lp-anim-leve")}}catch(e){}`;
 
 const AREAS = [
   "Direito Civil",
@@ -554,24 +554,26 @@ export function LandingPage() {
                     <span className="lp-plano-periodo">/mês</span>
                   </p>
                   <p className="mt-1 text-xs text-[#66666b]">por escritório</p>
-                  <Link
-                    href="/signup"
-                    className={`lp-btn mt-7 h-12 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-claro"}`}
-                  >
-                    Assinar o {plano.nome}
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
                   <p className="lp-plano-inclui mt-7">Inclui</p>
-                  <ul className="mt-4 space-y-3 text-sm">
-                    {plano.itens.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-neutral-700">
-                        <span className="lp-plano-check" aria-hidden="true">
-                          <Check className="h-3 w-3" />
-                        </span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mt-4 flex flex-1 flex-col gap-7">
+                    <ul className="shrink-0 space-y-3 text-sm">
+                      {plano.itens.map((item) => (
+                        <li key={item} className="flex items-start gap-3 text-neutral-700">
+                          <span className="lp-plano-check" aria-hidden="true">
+                            <Check className="h-3 w-3" />
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href="/signup"
+                      className={`lp-btn mt-auto h-12 shrink-0 px-5 text-sm ${plano.destaque ? "lp-btn-ouro" : "lp-btn-claro"}`}
+                    >
+                      Assinar o {plano.nome}
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>

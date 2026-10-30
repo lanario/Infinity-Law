@@ -60,10 +60,10 @@ export type AgendaClientOption = { id: string; nome: string };
 export type AgendaProcessOption = { id: string; numero_cnj: string | null; tipo_acao: string | null };
 
 const TYPE_STYLE: Record<AgendaTipo, { label: string; dot: string; card: string; bar: string }> = {
-  audiencia: { label: "Audiência", dot: "bg-gold", card: "border-gold/45 bg-gold-soft text-[#80600b]", bar: "bg-gold" },
-  reuniao: { label: "Reunião", dot: "bg-[#303334]", card: "border-stone-300 bg-stone-100 text-[#303334]", bar: "bg-[#303334]" },
-  prazo: { label: "Prazo", dot: "bg-rose-500", card: "border-rose-300 bg-rose-50 text-rose-800", bar: "bg-rose-500" },
-  compromisso: { label: "Compromisso", dot: "bg-sky-500", card: "border-sky-200 bg-sky-50 text-sky-800", bar: "bg-sky-500" },
+  audiencia: { label: "Audiência", dot: "bg-gold", card: "border-gold/45 bg-gold-soft text-[#80600b] dark:border-gold/40 dark:bg-gold/15 dark:text-[#f3d06a]", bar: "bg-gold" },
+  reuniao: { label: "Reunião", dot: "bg-[#303334] dark:bg-zinc-300", card: "border-stone-300 bg-stone-200/75 text-[#303334] dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100", bar: "bg-[#303334] dark:bg-zinc-300" },
+  prazo: { label: "Prazo", dot: "bg-rose-500", card: "border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-500/40 dark:bg-rose-950/70 dark:text-rose-200", bar: "bg-rose-500" },
+  compromisso: { label: "Compromisso", dot: "bg-sky-500", card: "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-500/40 dark:bg-sky-950/70 dark:text-sky-200", bar: "bg-sky-500" },
 };
 
 const WEEKDAY_SHORT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -157,10 +157,10 @@ function MiniCalendar({
   return (
     <section aria-label="Calendário mensal" className="rounded-2xl border border-stone-200 bg-white p-3 shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)]">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="truncate text-xs font-extrabold capitalize text-[#303334]">{formatAgendaDateLabel(`${selectedMonth}-01`, { month: "long", year: "numeric" })}</h3>
+        <h3 className="truncate text-xs font-extrabold capitalize text-[#303334] dark:text-zinc-100">{formatAgendaDateLabel(`${selectedMonth}-01`, { month: "long", year: "numeric" })}</h3>
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => onMonthChange(-1)} aria-label="Mês anterior no mini calendário" className="flex h-7 w-7 items-center justify-center rounded-lg text-stone-500 transition hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"><ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /></button>
-          <button type="button" onClick={() => onMonthChange(1)} aria-label="Próximo mês no mini calendário" className="flex h-7 w-7 items-center justify-center rounded-lg text-stone-500 transition hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"><ChevronRight className="h-3.5 w-3.5" aria-hidden="true" /></button>
+          <button type="button" onClick={() => onMonthChange(-1)} aria-label="Mês anterior no mini calendário" className="flex h-7 w-7 items-center justify-center rounded-lg text-stone-500 transition hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-400 dark:hover:bg-gold/15 dark:hover:text-gold"><ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /></button>
+          <button type="button" onClick={() => onMonthChange(1)} aria-label="Próximo mês no mini calendário" className="flex h-7 w-7 items-center justify-center rounded-lg text-stone-500 transition hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-400 dark:hover:bg-gold/15 dark:hover:text-gold"><ChevronRight className="h-3.5 w-3.5" aria-hidden="true" /></button>
         </div>
       </div>
       <div className="grid grid-cols-7 gap-y-1 text-center">
@@ -178,18 +178,18 @@ function MiniCalendar({
               onClick={() => onSelect(dateKey)}
               aria-label={`${formatAgendaDateLabel(dateKey)}${count ? `, ${count} ${count === 1 ? "evento" : "eventos"}` : ""}`}
               aria-pressed={isSelected}
-              className={cn("relative isolate mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[10px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", !inMonth && "text-stone-300", inMonth && !isSelected && "text-stone-600 hover:bg-gold-soft", isSelected && "font-extrabold text-white", !isSelected && isToday && "ring-1 ring-gold text-gold-dark", count > 0 && !isSelected && "font-bold")}
+              className={cn("relative isolate mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[10px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", !inMonth && "text-stone-300 dark:text-zinc-600", inMonth && !isSelected && "text-stone-600 hover:bg-gold-soft dark:text-zinc-300 dark:hover:bg-gold/15", isSelected && "font-extrabold text-white dark:text-neutral-950", !isSelected && isToday && "ring-1 ring-gold text-gold-dark dark:text-gold", count > 0 && !isSelected && "font-bold")}
             >
               {isSelected && (
                 <motion.span
                   aria-hidden="true"
                   layoutId={shouldReduceMotion ? undefined : "agenda-mini-calendar-selection"}
                   transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 42 }}
-                  className="absolute inset-0 z-0 rounded-full bg-[#17191a]"
+                  className="absolute inset-0 z-0 rounded-full bg-[#17191a] dark:bg-gold"
                 />
               )}
               <span className="relative z-10">{parts.day}</span>
-              {count > 0 && <span className={cn("absolute bottom-0.5 left-1/2 z-20 h-1 w-1 -translate-x-1/2 rounded-full", isSelected ? "bg-gold" : "bg-gold-dark")} aria-hidden="true" />}
+              {count > 0 && <span className={cn("absolute bottom-0.5 left-1/2 z-20 h-1 w-1 -translate-x-1/2 rounded-full", isSelected ? "bg-gold dark:bg-neutral-950" : "bg-gold-dark dark:bg-gold")} aria-hidden="true" />}
             </button>
           );
         })}
@@ -224,7 +224,7 @@ function MembersFilter({
   return (
     <section className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)]">
       <div className="flex items-center justify-between gap-2 border-b border-stone-100 px-3 py-2.5">
-        <div><h3 className="text-xs font-extrabold text-[#303334]">Responsáveis</h3><p className="mt-0.5 text-[10px] text-stone-400">{selectedMemberIds === null ? "Todos selecionados" : `${selectedMemberIds.size} de ${members.length} selecionados`}</p></div>
+        <div><h3 className="text-xs font-extrabold text-[#303334] dark:text-zinc-100">Responsáveis</h3><p className="mt-0.5 text-[10px] text-stone-400 dark:text-zinc-400">{selectedMemberIds === null ? "Todos selecionados" : `${selectedMemberIds.size} de ${members.length} selecionados`}</p></div>
         {search && <button type="button" onClick={onClearSearch} aria-label="Limpar pesquisa de responsáveis" className="flex h-7 w-7 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-50 hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"><X className="h-3.5 w-3.5" aria-hidden="true" /></button>}
       </div>
       <label className="relative block border-b border-stone-100 px-3 py-2.5">
@@ -233,7 +233,7 @@ function MembersFilter({
       </label>
       <div className="flex items-center justify-between px-3 py-2">
         <span className="text-[10px] text-stone-500">Exibir equipe</span>
-        <button type="button" onClick={onToggleAll} className="text-[10px] font-bold text-gold-dark underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold" aria-label={allSelected ? "Desmarcar todos os responsáveis" : "Selecionar todos os responsáveis"}>{allSelected ? "Limpar" : "Todos"}</button>
+        <button type="button" onClick={onToggleAll} className="text-[10px] font-bold text-gold-dark underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-gold" aria-label={allSelected ? "Desmarcar todos os responsáveis" : "Selecionar todos os responsáveis"}>{allSelected ? "Limpar" : "Todos"}</button>
       </div>
       <ul className="max-h-56 space-y-0.5 overflow-y-auto px-2 pb-2">
         {visibleMembers.map((member) => {
@@ -243,7 +243,7 @@ function MembersFilter({
             <li key={member.id}>
               <label className="flex cursor-pointer items-center gap-2.5 rounded-xl px-2 py-2 text-[11px] text-stone-700 transition hover:bg-stone-50">
                 <input type="checkbox" checked={checked} onChange={() => onToggle(member.id)} style={{ accentColor: getMemberColor(member.id) }} className="h-3.5 w-3.5 rounded border-stone-300 focus-visible:ring-gold" />
-                <ProfileAvatar path={isAvatarUrl(member.avatar_url) ? null : member.avatar_url} url={isAvatarUrl(member.avatar_url) ? member.avatar_url : null} initials={member.nome.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toLocaleUpperCase("pt-BR") ?? "").join("")} name={member.nome} className="h-7 w-7 border border-stone-200 !bg-gold-soft !text-gold-dark text-[9px]" />
+                <ProfileAvatar path={isAvatarUrl(member.avatar_url) ? null : member.avatar_url} url={isAvatarUrl(member.avatar_url) ? member.avatar_url : null} initials={member.nome.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toLocaleUpperCase("pt-BR") ?? "").join("")} name={member.nome} className="h-7 w-7 border border-stone-200 !bg-gold-soft !text-gold-dark dark:border-zinc-700 dark:!bg-gold/15 dark:!text-gold text-[9px]" />
                 <span className="min-w-0 flex-1 truncate font-semibold">{member.nome}{!member.ativo && <span className="ml-1 text-[9px] font-medium text-stone-400">(inativo)</span>}</span>
                 <span className="rounded-full bg-stone-100 px-1.5 py-0.5 text-[9px] font-bold tabular-nums text-stone-500">{count}</span>
               </label>
@@ -301,7 +301,7 @@ function AgendaDayGrid({
       <div className="max-h-[72vh] overflow-auto overscroll-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold" tabIndex={0} aria-label="Agenda do dia. Use a rolagem horizontal para consultar responsáveis e vertical para os horários.">
         <div className="grid min-w-max" style={{ gridTemplateColumns: `70px repeat(${visibleLanes.length}, minmax(218px, 1fr))` }}>
           <div className="sticky left-0 top-0 z-40 flex h-[62px] items-center justify-center border-b border-r border-stone-200 bg-stone-50 text-[10px] font-bold uppercase tracking-wide text-stone-400">Hora</div>
-          {visibleLanes.map((lane) => <div key={lane.id} style={{ borderTop: `3px solid ${getMemberColor(lane.member?.id ?? null)}` }} className="sticky top-0 z-30 flex h-[62px] min-w-0 items-center justify-center border-b border-r border-stone-200 bg-white px-3 text-center"><div className="min-w-0"><p className="truncate text-xs font-extrabold text-[#303334]">{lane.name}</p><p className="mt-0.5 text-[10px] text-stone-400">Eventos: {events.filter((event) => lane.member ? event.responsavel_id === lane.member.id : !event.responsavel_id || !memberById.has(event.responsavel_id)).length}</p></div></div>)}
+          {visibleLanes.map((lane) => <div key={lane.id} style={{ borderTop: `3px solid ${getMemberColor(lane.member?.id ?? null)}` }} className="sticky top-0 z-30 flex h-[62px] min-w-0 items-center justify-center border-b border-r border-stone-200 bg-white px-3 text-center"><div className="min-w-0"><p className="truncate text-xs font-extrabold text-[#303334] dark:text-zinc-100">{lane.name}</p><p className="mt-0.5 text-[10px] text-stone-400 dark:text-zinc-400">Eventos: {events.filter((event) => lane.member ? event.responsavel_id === lane.member.id : !event.responsavel_id || !memberById.has(event.responsavel_id)).length}</p></div></div>)}
           <div className="sticky left-0 z-20 border-r border-stone-200 bg-white" style={{ height: gridHeight }}>
             {range.ticks.filter((tick) => tick.minute < range.endMinute).map((tick) => <span key={tick.minute} className={cn("absolute left-0 w-full pr-2 text-right text-[10px] font-semibold tabular-nums text-stone-500", tick.minute !== range.startMinute && "-translate-y-1/2")} style={{ top: ((tick.minute - range.startMinute) / 30) * HALF_HOUR_HEIGHT }}>{tick.label}</span>)}
           </div>
@@ -309,10 +309,10 @@ function AgendaDayGrid({
             const laneEvents = timedEvents.filter((event) => lane.member ? event.responsavel_id === lane.member.id : !event.responsavel_id || !memberById.has(event.responsavel_id));
             const placed = layoutAgendaEventsInColumns(laneEvents, dateKey);
             return (
-              <div key={lane.id} className="relative border-r border-stone-100" style={{ height: gridHeight, backgroundColor: memberTint(getMemberColor(lane.member?.id ?? null)), backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 43px, #ece9e4 43px, #ece9e4 44px)", backgroundSize: "100% 44px" }}>
+              <div key={lane.id} className="relative border-r border-stone-100" style={{ height: gridHeight, backgroundColor: memberTint(getMemberColor(lane.member?.id ?? null)), backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 43px, rgba(120, 113, 108, 0.16) 43px, rgba(120, 113, 108, 0.16) 44px)", backgroundSize: "100% 44px" }}>
                 {slotMinutes.map((minute) => <button key={minute} type="button" disabled={!onSelectTime || minute >= 24 * 60} aria-label={`Criar evento para ${lane.name} às ${formatTime(minute)}`} onClick={() => onSelectTime?.(dateKey, minute, lane.member?.id ?? null)} className="group absolute inset-x-0 z-0 h-[44px] cursor-pointer border-0 bg-transparent p-0 text-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold disabled:cursor-default" style={{ top: ((minute - range.startMinute) / 30) * HALF_HOUR_HEIGHT }}>
                   {/* Preview só com mouse (hover:hover) ou foco de teclado; eventos ficam acima e cancelam o hover */}
-                  {onSelectTime && <span aria-hidden="true" className="pointer-events-none absolute inset-x-0.5 inset-y-px hidden flex-col items-center justify-center overflow-hidden rounded-md border border-gold/50 bg-gold/15 text-gold-dark group-focus-visible:flex [@media(hover:hover)]:group-hover:flex"><SlotPreviewBody minute={minute} /></span>}
+                  {onSelectTime && <span aria-hidden="true" className="pointer-events-none absolute inset-x-0.5 inset-y-px hidden flex-col items-center justify-center overflow-hidden rounded-md border border-gold/50 bg-gold/15 text-gold-dark dark:text-gold group-focus-visible:flex [@media(hover:hover)]:group-hover:flex"><SlotPreviewBody minute={minute} /></span>}
                 </button>)}
                 {currentTop !== null && currentTop >= 0 && currentTop <= gridHeight && <span aria-hidden="true" className="pointer-events-none absolute left-0 right-0 z-10 h-0.5 -translate-y-1/2 bg-gold" style={{ top: currentTop }}><span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-gold" /></span>}
                 {placed.map(({ event, startMinute, endMinute, column, columns }) => {
@@ -366,7 +366,7 @@ function AgendaWeekGrid({
 
   const weekdayHeader = dateKeys.map((date, index) => {
     const dayEvents = events.filter((event) => getEventIntervalForAgendaDay(event, date));
-    return <div key={date} style={{ gridColumn: `span ${columnsPerDay}` }} className={cn("sticky top-0 z-30 flex h-[60px] min-w-0 items-center justify-center border-b border-r border-stone-200 bg-white px-2 text-center", date === getAgendaDateKey(new Date()) && "bg-gold-soft/60")}>
+    return <div key={date} style={{ gridColumn: `span ${columnsPerDay}` }} className={cn("sticky top-0 z-30 flex h-[60px] min-w-0 items-center justify-center border-b border-r border-stone-200 bg-white px-2 text-center", date === getAgendaDateKey(new Date()) && "bg-gold-soft/60 dark:bg-gold/10")}>
       <button type="button" onClick={() => onSelectDate(date)} aria-label={`Abrir agenda de ${formatAgendaDateLabel(date)}`} className="rounded-lg px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"><span className="block text-[9px] font-extrabold uppercase tracking-wide text-stone-400">{WEEKDAY_SHORT[index]} · {date.slice(8, 10)}</span><span className="mt-0.5 block text-[10px] text-stone-500">{dayEvents.length} {dayEvents.length === 1 ? "evento" : "eventos"}</span></button>
     </div>;
   });
@@ -392,7 +392,7 @@ function AgendaWeekGrid({
               return interval && belongs;
             });
             const placed = layoutAgendaEventsInColumns(ownerEvents, dayKey);
-            return <div key={`${dayKey}-${owner.id}`} className="relative min-w-[150px] border-r border-stone-100" style={{ height: gridHeight, backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 43px, #ece9e4 43px, #ece9e4 44px)", backgroundSize: "100% 44px" }}>
+            return <div key={`${dayKey}-${owner.id}`} className="relative min-w-[150px] border-r border-stone-100" style={{ height: gridHeight, backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 43px, rgba(120, 113, 108, 0.16) 43px, rgba(120, 113, 108, 0.16) 44px)", backgroundSize: "100% 44px" }}>
               <button type="button" disabled={!onSelectTime} aria-label={`Criar evento para ${owner.name} em ${formatAgendaDateLabel(dayKey)}`} onClick={(event) => {
                 const bounds = event.currentTarget.getBoundingClientRect();
                 const y = event.detail === 0 ? bounds.height / 2 : event.clientY - bounds.top;
@@ -412,7 +412,7 @@ function AgendaWeekGrid({
         </div>
       </div>
       <div className="md:hidden">
-        <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2"><p className="text-[10px] text-stone-500">Semana em telas pequenas · exibindo o dia selecionado</p><span className="text-[10px] font-bold text-gold-dark">{formatAgendaDateLabel(dateKey, { weekday: "short", day: "numeric" })}</span></div>
+        <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2"><p className="text-[10px] text-stone-500">Semana em telas pequenas · exibindo o dia selecionado</p><span className="text-[10px] font-bold text-gold-dark dark:text-gold">{formatAgendaDateLabel(dateKey, { weekday: "short", day: "numeric" })}</span></div>
         <AgendaDayGrid dateKey={dateKey} events={events} members={members} clients={clients} processes={processes} onSelectEvent={onSelectEvent} onSelectTime={onSelectTime} />
       </div>
       <p className="sr-only" aria-live="polite">Semana com {events.length} eventos reais.</p>
@@ -455,16 +455,16 @@ function AgendaMonthGrid({
           const inMonth = dayKey.slice(0, 7) === selectedMonth;
           const isSelected = dayKey === dateKey;
           const isToday = dayKey === getAgendaDateKey(new Date());
-          return <div key={dayKey} className={cn("flex min-h-[118px] min-w-0 flex-col border-b border-r border-stone-100 p-1 sm:min-h-[138px] sm:p-2", !inMonth && "bg-stone-50/70", isSelected && "bg-gold-soft/30")}>
+          return <div key={dayKey} className={cn("flex min-h-[118px] min-w-0 flex-col border-b border-r border-stone-100 p-1 sm:min-h-[138px] sm:p-2", !inMonth && "bg-stone-50/70", isSelected && "bg-gold-soft/30 dark:bg-gold/10")}>
             <div className="mb-1 flex items-start justify-between gap-1">
-              <button type="button" onClick={() => onSelectDate(dayKey)} aria-label={`Abrir dia ${formatAgendaDateLabel(dayKey)}${dayEvents.length ? `, ${dayEvents.length} eventos` : ""}`} aria-pressed={isSelected} className={cn("flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-[10px] font-bold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", !inMonth && "text-stone-300", inMonth && !isSelected && "text-stone-600 hover:bg-gold-soft", isSelected && "bg-[#17191a] text-white", !isSelected && isToday && "ring-1 ring-gold text-gold-dark")}>{parts.day}</button>
+              <button type="button" onClick={() => onSelectDate(dayKey)} aria-label={`Abrir dia ${formatAgendaDateLabel(dayKey)}${dayEvents.length ? `, ${dayEvents.length} eventos` : ""}`} aria-pressed={isSelected} className={cn("flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-[10px] font-bold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", !inMonth && "text-stone-300 dark:text-zinc-600", inMonth && !isSelected && "text-stone-600 hover:bg-gold-soft dark:text-zinc-300 dark:hover:bg-gold/15", isSelected && "bg-[#17191a] text-white dark:bg-gold dark:text-neutral-950", !isSelected && isToday && "ring-1 ring-gold text-gold-dark dark:text-gold")}>{parts.day}</button>
               {dayEvents.length > 0 && <span className="rounded-full bg-stone-100 px-1.5 py-0.5 text-[8px] font-bold tabular-nums text-stone-500 sm:text-[9px]">{dayEvents.length}</span>}
             </div>
             <div className="space-y-1 overflow-hidden">
               {dayEvents.slice(0, 3).map((event) => <button key={event.id} type="button" onClick={() => onSelectEvent(event.id)} aria-label={`Abrir evento ${event.titulo}, ${formatEventTime(event)}${eventDetails(event, clientById, processById, memberById) ? `. ${eventDetails(event, clientById, processById, memberById)}` : ""}`} className={cn("flex w-full min-w-0 items-center gap-1 overflow-hidden rounded-md border-l-[3px] px-1 py-1 text-left text-[8px] font-semibold leading-3 transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:px-1.5 sm:text-[9px]", TYPE_STYLE[event.tipo].card, "border-l-gold")}>
                 <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", TYPE_STYLE[event.tipo].dot)} aria-hidden="true" /><span className="truncate">{event.titulo}</span>
               </button>)}
-              {dayEvents.length > 3 && <button type="button" onClick={() => onSelectDate(dayKey)} aria-label={`Abrir dia com mais ${dayEvents.length - 3} eventos`} className="w-full truncate text-left text-[9px] font-bold text-gold-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"><span className="sm:hidden">+{dayEvents.length - 3}</span><span className="hidden sm:inline">+{dayEvents.length - 3} eventos · abrir dia</span></button>}
+              {dayEvents.length > 3 && <button type="button" onClick={() => onSelectDate(dayKey)} aria-label={`Abrir dia com mais ${dayEvents.length - 3} eventos`} className="w-full truncate text-left text-[9px] font-bold text-gold-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-gold"><span className="sm:hidden">+{dayEvents.length - 3}</span><span className="hidden sm:inline">+{dayEvents.length - 3} eventos · abrir dia</span></button>}
             </div>
           </div>;
         })}
@@ -602,7 +602,7 @@ export function AgendaSidebar({
   return <>
     {mobileOpen && <button type="button" aria-label="Fechar filtros da agenda" onClick={onCloseMobile} className="fixed inset-0 z-40 bg-[#17191a]/35 backdrop-blur-[1px] lg:hidden" />}
     <aside ref={sidebarRef} tabIndex={-1} id="agenda-sidebar" aria-label="Filtros da agenda" aria-hidden={isDesktop ? collapsed : !mobileOpen} inert={isDesktop ? collapsed : !mobileOpen} role={mobileOpen && !isDesktop ? "dialog" : undefined} aria-modal={mobileOpen && !isDesktop ? true : undefined} className={cn("fixed inset-y-0 left-0 z-50 flex w-[min(86vw,300px)] flex-col gap-3 overflow-y-auto overscroll-contain border-r border-stone-200 bg-[#fcfcfb] p-3 shadow-2xl transition-[transform,width,padding] duration-200 motion-reduce:transition-none lg:sticky lg:top-0 lg:z-0 lg:h-[calc(100vh-7rem)] lg:w-auto lg:translate-x-0 lg:border lg:rounded-2xl lg:shadow-none lg:overflow-x-hidden lg:overflow-y-auto", mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0", collapsed && "lg:hidden")}>
-      <div className="flex items-center justify-between gap-2 px-1 py-1 lg:hidden"><p className="text-sm font-extrabold text-[#303334]">Filtros</p><button type="button" onClick={onCloseMobile} aria-label="Fechar filtros" className="rounded-lg p-2 text-stone-500 hover:bg-stone-100"><X className="h-4 w-4" aria-hidden="true" /></button></div>
+      <div className="flex items-center justify-between gap-2 px-1 py-1 lg:hidden"><p className="text-sm font-extrabold text-[#303334] dark:text-zinc-100">Filtros</p><button type="button" onClick={onCloseMobile} aria-label="Fechar filtros" className="rounded-lg p-2 text-stone-500 hover:bg-stone-100"><X className="h-4 w-4" aria-hidden="true" /></button></div>
       <div>
         <MiniCalendar monthDateKey={miniMonthKey} selectedDateKey={dateKey} eventCounts={dateEventCounts} onSelect={onSelectDate} onMonthChange={onMiniMonthChange} />
       </div>
@@ -610,8 +610,8 @@ export function AgendaSidebar({
         <MembersFilter members={members} events={events} search={memberSearch} onSearch={onMemberSearch} onClearSearch={() => onMemberSearch("")} onToggleAll={() => onToggleMember("__all__")} selectedMemberIds={selectedMemberIds} onToggle={onToggleMember} />
       </div>
       <section className={cn("overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)]")}>
-        <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2.5"><div><h3 className="text-xs font-extrabold text-[#303334]">Alertas</h3><p className="mt-0.5 text-[10px] text-stone-400">Prazos e audiências · até 14 dias</p></div><Clock3 className="h-3.5 w-3.5 text-gold-dark" aria-hidden="true" /></div>
-        {deadlines.length ? <ul className="max-h-52 divide-y divide-stone-100 overflow-y-auto">{deadlines.map((event) => <li key={event.id}><button type="button" onClick={() => onOpenEvent(event.id)} className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left transition hover:bg-gold-soft/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"><span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", TYPE_STYLE[event.tipo].dot)} aria-hidden="true" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-bold text-stone-700">{event.titulo}</span><span className="mt-0.5 block text-[9px] text-stone-400">{formatAgendaDateLabel(getAgendaDateKey(event.inicio), { day: "numeric", month: "short" })} · {formatEventTime(event)}</span></span></button></li>)}</ul> : <p className="px-3 py-3 text-[10px] text-stone-400">Nenhum prazo ou audiência nos próximos 14 dias.</p>}
+        <div className="flex items-center justify-between border-b border-stone-100 px-3 py-2.5"><div><h3 className="text-xs font-extrabold text-[#303334] dark:text-zinc-100">Alertas</h3><p className="mt-0.5 text-[10px] text-stone-400">Prazos e audiências · até 14 dias</p></div><Clock3 className="h-3.5 w-3.5 text-gold-dark dark:text-gold" aria-hidden="true" /></div>
+        {deadlines.length ? <ul className="max-h-52 divide-y divide-stone-100 overflow-y-auto">{deadlines.map((event) => <li key={event.id}><button type="button" onClick={() => onOpenEvent(event.id)} className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left transition hover:bg-gold-soft/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold dark:hover:bg-gold/10"><span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", TYPE_STYLE[event.tipo].dot)} aria-hidden="true" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-bold text-stone-700">{event.titulo}</span><span className="mt-0.5 block text-[9px] text-stone-400">{formatAgendaDateLabel(getAgendaDateKey(event.inicio), { day: "numeric", month: "short" })} · {formatEventTime(event)}</span></span></button></li>)}</ul> : <p className="px-3 py-3 text-[10px] text-stone-400">Nenhum prazo ou audiência nos próximos 14 dias.</p>}
       </section>
     </aside>
   </>;
@@ -671,33 +671,33 @@ export function AgendaTopbar({
     count: type === "todos" ? totalEventCount : eventTypeCounts[type],
     colorDot: type === "todos" ? undefined : TYPE_STYLE[type].dot,
   }));
-  const segmentClass = (active: boolean) => cn("relative isolate shrink-0 rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:px-3 sm:text-[11px]", active ? "text-white" : "text-stone-500 hover:bg-white hover:text-stone-800");
+  const segmentClass = (active: boolean) => cn("relative isolate shrink-0 rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:px-3 sm:text-[11px]", active ? "text-white dark:text-neutral-950" : "text-stone-500 hover:bg-white hover:text-stone-800 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100");
   const segmentHighlight = shouldReduceMotion
-    ? <span aria-hidden="true" className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm" />
-    : <motion.span aria-hidden="true" layoutId="agenda-view-mode-selection" transition={{ type: "spring", stiffness: 520, damping: 42 }} className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm" />;
+    ? <span aria-hidden="true" className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm dark:bg-gold" />
+    : <motion.span aria-hidden="true" layoutId="agenda-view-mode-selection" transition={{ type: "spring", stiffness: 520, damping: 42 }} className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm dark:bg-gold" />;
   const modeItems: Array<{ value: AgendaCalendarMode; label: string }> = [{ value: "day", label: "Dia" }, { value: "week", label: "Semana" }, { value: "month", label: "Mês" }, { value: "agenda", label: "Lista" }];
 
-  return <div className="rounded-2xl border border-stone-200 bg-white p-2.5 shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)] sm:p-3">
+  return <div className="space-y-2.5 rounded-2xl border border-stone-200 bg-white p-2.5 shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)] sm:p-3">
     {/* Uma única linha em desktop; abaixo de lg os itens quebram de linha */}
     <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
-      <button type="button" onClick={onOpenFilters} aria-label="Abrir filtros e calendário" aria-controls="agenda-sidebar" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold lg:hidden"><Menu className="h-4 w-4" aria-hidden="true" /></button>
-      <button type="button" onClick={onToggleSidebar} aria-label={sidebarCollapsed ? "Mostrar barra lateral da agenda" : "Ocultar barra lateral da agenda"} aria-expanded={!sidebarCollapsed} aria-controls="agenda-sidebar" title={sidebarCollapsed ? "Mostrar barra lateral" : "Ocultar barra lateral"} className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold lg:flex"><PanelLeft className="h-4 w-4" aria-hidden="true" /></button>
-      <button type="button" onClick={onToday} className="h-9 shrink-0 rounded-xl bg-gold-soft px-2.5 text-[11px] font-bold text-gold-dark transition hover:bg-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:px-3">Hoje</button>
+      <button type="button" onClick={onOpenFilters} aria-label="Abrir filtros e calendário" aria-controls="agenda-sidebar" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:hover:bg-gold/15 dark:hover:text-gold lg:hidden"><Menu className="h-4 w-4" aria-hidden="true" /></button>
+      <button type="button" onClick={onToggleSidebar} aria-label={sidebarCollapsed ? "Mostrar barra lateral da agenda" : "Ocultar barra lateral da agenda"} aria-expanded={!sidebarCollapsed} aria-controls="agenda-sidebar" title={sidebarCollapsed ? "Mostrar barra lateral" : "Ocultar barra lateral"} className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-stone-500 transition hover:border-gold/40 hover:bg-gold-soft hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:hover:bg-gold/15 dark:hover:text-gold lg:flex"><PanelLeft className="h-4 w-4" aria-hidden="true" /></button>
+      <button type="button" onClick={onToday} className="h-9 shrink-0 rounded-xl bg-gold-soft px-2.5 text-[11px] font-bold text-gold-dark transition hover:bg-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:bg-gold/15 dark:text-gold dark:hover:bg-gold/25 sm:px-3">Hoje</button>
       <div className="flex shrink-0 items-center gap-0.5">
         <button type="button" onClick={onPrevious} aria-label="Período anterior" className="flex h-9 w-8 items-center justify-center rounded-xl text-stone-500 transition hover:bg-stone-100 hover:text-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:w-9"><ChevronLeft className="h-4 w-4" aria-hidden="true" /></button>
         <button type="button" onClick={onNext} aria-label="Próximo período" className="flex h-9 w-8 items-center justify-center rounded-xl text-stone-500 transition hover:bg-stone-100 hover:text-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:w-9"><ChevronRight className="h-4 w-4" aria-hidden="true" /></button>
       </div>
-      <p title={title} className="min-w-0 flex-1 basis-[8rem] truncate px-0.5 text-xs font-extrabold leading-tight text-[#303334] first-letter:uppercase sm:px-1 sm:text-sm">{title}</p>
-      <div className="inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-stone-100 p-1" role="group" aria-label="Visualização da agenda">
+      <p title={title} className="min-w-0 flex-1 basis-[8rem] truncate px-0.5 text-xs font-extrabold leading-tight text-[#303334] first-letter:uppercase dark:text-zinc-100 sm:px-1 sm:text-sm">{title}</p>
+      <div className="inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-stone-200/60 p-1 dark:bg-zinc-800/90" role="group" aria-label="Visualização da agenda">
         {modeItems.map((item) => {
           const isActive = mode === item.value;
           return <button key={item.value} type="button" onClick={() => onModeChange(item.value)} aria-pressed={isActive} className={segmentClass(isActive)}>{isActive && segmentHighlight}<span className="relative z-10">{item.label}</span></button>;
         })}
       </div>
-      <button type="button" onClick={() => onModeChange(mode === "team" ? "day" : "team")} aria-pressed={mode === "team"} className={cn("shrink-0 rounded-xl border px-2.5 py-2 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", mode === "team" ? "border-gold bg-gold-soft text-gold-dark" : "border-stone-200 text-stone-500 hover:border-gold/40 hover:text-gold-dark")}>{mode === "team" ? "Equipe · Dia" : "Equipe"}</button>
+      <button type="button" onClick={() => onModeChange(mode === "team" ? "day" : "team")} aria-pressed={mode === "team"} className={cn("shrink-0 rounded-xl border px-2.5 py-2 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold", mode === "team" ? "border-gold bg-gold-soft text-gold-dark dark:bg-gold/15 dark:text-gold" : "border-stone-200 text-stone-500 hover:border-gold/40 hover:text-gold-dark dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-gold/40 dark:hover:text-gold")}>{mode === "team" ? "Equipe · Dia" : "Equipe"}</button>
       <StatusFilterSelect value={selectedType} options={typeOptions} onChange={(value) => onTypeChange(value as AgendaEventTypeFilter)} ariaLabel="Filtrar agenda por tipo de evento" align="end" triggerClassName="h-9 min-w-0 shrink-0 text-[11px]" />
-      {canWrite && <button type="button" onClick={onCreate} className="ml-auto inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gold px-3 text-[11px] font-extrabold text-[#17191a] shadow-sm transition hover:-translate-y-0.5 hover:bg-gold-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 sm:px-3.5"><Plus className="h-4 w-4" aria-hidden="true" /> Agendar</button>}
-      {(mode === "day" || mode === "team") && <AgendaWeekStrip dateKey={dateKey} onSelectDate={onSelectDate} />}
     </div>
+    {(mode === "day" || mode === "team") && <AgendaWeekStrip dateKey={dateKey} onSelectDate={onSelectDate} />}
+    {canWrite && <div className="flex justify-end"><button type="button" onClick={onCreate} className="inline-flex h-9 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gold px-3 text-[11px] font-extrabold text-neutral-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-gold-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 dark:text-neutral-950 sm:w-auto sm:px-3.5"><Plus className="h-4 w-4" aria-hidden="true" /> Agendar</button></div>}
   </div>;
 }
