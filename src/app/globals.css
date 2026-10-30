@@ -732,6 +732,15 @@ html[data-performance-mode="on"] *::after {
   color: #805F11;
 }
 
+/* Rodapé da landing é escuro: logo volta às cores claras originais. */
+.lp-root .lp-footer .font-serif {
+  color: #F5F5F5;
+}
+
+.lp-root .lp-footer .font-serif > span {
+  color: #D4AF37;
+}
+
 /* ==========================================================================
    Infinity Law - Rapport Visual System (Dashboard Aesthetics)
    ========================================================================== */
