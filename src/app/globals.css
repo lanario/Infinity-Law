@@ -1196,10 +1196,12 @@ body:has(.lp-root) {
   }
 }
 
+/* Header flutua sobre o hero para os dois dividirem o mesmo fundo. */
+.lp-header { position: absolute; inset-inline: 0; top: 0; z-index: 50; }
 .lp-header .lp-nav-marca { min-height: 56px; }
 
 .lp-hero { background: linear-gradient(180deg, #fcfbf8 0%, #f7f6f1 90%); }
-.lp-hero [data-hero-parallax] { padding-top: clamp(3.5rem, calc(15vh - 4.5rem), 7.5rem); }
+.lp-hero [data-hero-parallax] { padding-top: calc(4.5rem + clamp(3.5rem, calc(15vh - 4.5rem), 7.5rem)); }
 .lp-hero-copy { padding-bottom: 1rem; }
 .lp-hero-palco { min-width: 0; }
 /* Fundo do hero: luzes à deriva, pórtico de tribunal e fios de seda (hero-fundo.tsx). */
@@ -1447,7 +1449,7 @@ body:has(.lp-root) {
   .lp-telas-legenda { min-height: 5.25rem; }
   .lp-modulos-nucleo { order: -1; min-height: 156px; border-radius: 50%; }
   .lp-modulo-cartao { min-height: 0; padding: 1.25rem; }
-  .lp-hero [data-hero-parallax] { padding-top: 3.25rem; gap: 2rem; }
+  .lp-hero [data-hero-parallax] { padding-top: 7.5rem; gap: 2rem; }
   .lp-hero .lp-titulo { font-size: clamp(2.5rem, 10.6vw, 4rem); }
   .lp-footer-topo { align-items: flex-start; flex-direction: column; }
   .lp-footer-feixe { left: 62%; width: 12rem; }
