@@ -33,7 +33,7 @@ export function LandingMotion({ children }: { children: ReactNode }) {
         .fromTo(q("[data-hero='acoes']"), { opacity: 0, y: 18 }, { opacity: 1, y: 0 }, 0.78)
         .fromTo(q("[data-hero='nota']"), { opacity: 0 }, { opacity: 1, duration: 1 }, 0.95)
         .fromTo(q("[data-hero='palco']"), { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 1.6 }, 0.45)
-        .fromTo(q("[data-hero='terreno']"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.8, ease: "power3.out" }, 0.3);
+        .fromTo(q("[data-hero='fundo']"), { opacity: 0 }, { opacity: 1, duration: 2, ease: "power2.out" }, 0);
 
       const hero = q("[data-hero-secao]")[0];
       if (hero) {
@@ -42,7 +42,7 @@ export function LandingMotion({ children }: { children: ReactNode }) {
           gsap.to(q(".lp-hero-copy"), { y: -60, ease: "none", scrollTrigger: rolagem });
           gsap.to(q("[data-scene-parallax]"), { y: 45, ease: "none", scrollTrigger: rolagem });
         }
-        gsap.to(q("[data-terreno-parallax]"), { yPercent: desktop ? -16 : -6, ease: "none", scrollTrigger: rolagem });
+        gsap.to(q("[data-fundo-parallax]"), { yPercent: desktop ? 18 : 8, ease: "none", scrollTrigger: rolagem });
       }
 
       // Tweens criados no contexto são revertidos ao sair ou reduzir movimento.
@@ -82,10 +82,14 @@ export function LandingMotion({ children }: { children: ReactNode }) {
         yPercent: 0, opacity: 1, ease: "none",
         scrollTrigger: { trigger: q(".lp-footer-assinatura")[0], start: "top bottom", end: "bottom bottom", scrub: 0.6 },
       });
-      gsap.to(q(".lp-footer-traco"), {
-        strokeDashoffset: -1500, ease: "none",
-        scrollTrigger: { trigger: q(".lp-footer")[0], start: "top bottom", end: "bottom bottom", scrub: 1 },
-      });
+      const footer = q(".lp-footer")[0];
+      const feixeFooter = q("[data-footer-beam]")[0];
+      if (footer && feixeFooter) {
+        gsap.fromTo(feixeFooter, { "--lp-footer-feixe-x": "-18%" }, {
+          "--lp-footer-feixe-x": "18%", ease: "none",
+          scrollTrigger: { trigger: footer, start: "top bottom", end: "bottom bottom", scrub: 1 },
+        });
+      }
 
       q("[data-count]").forEach((el) => {
         const alvo = Number(el.getAttribute("data-count"));

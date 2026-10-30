@@ -20,15 +20,16 @@ import {
 } from "lucide-react";
 import { LandingFooter } from "./landing-footer";
 import { LandingMotion } from "./landing-motion";
+import { HeroFundo } from "./hero-fundo";
 import { HeroTelas } from "./hero-telas";
 import { LandingNav } from "./landing-nav";
-import { TerrainCanvas } from "./terrain-canvas";
+import { Logo } from "@/components/ui/logo";
 
 // Marca o documento antes da pintura para o hero entrar animado sem piscar.
 const SCRIPT_MOVIMENTO = `try{if(matchMedia("(prefers-reduced-motion: no-preference)").matches)document.documentElement.classList.add("lp-anim")}catch(e){}`;
 
 const AREAS = [
-  "Cível",
+  "Direito Civil",
   "Trabalhista",
   "Previdenciário",
   "Família e Sucessões",
@@ -38,14 +39,6 @@ const AREAS = [
   "Consumidor",
   "Imobiliário",
   "Bancário",
-];
-
-// Números verificáveis no próprio produto (src/lib/cnj/tribunais.ts, módulos e permissões).
-const NUMEROS = [
-  { valor: 92, rotulo: "tribunais mapeados para consulta no DataJud" },
-  { valor: 7, rotulo: "módulos integrados em um só sistema" },
-  { valor: 3, rotulo: "níveis de acesso por módulo: ler, editar e excluir" },
-  { valor: 2, rotulo: "formatos de relatório: PDF e Excel" },
 ];
 
 const PASSOS = [
@@ -76,14 +69,13 @@ const PASSOS = [
   },
 ];
 
-type Modulo = { icone: LucideIcon; titulo: string; texto: string; classe?: string };
+type Modulo = { icone: LucideIcon; titulo: string; texto: string };
 
 const MODULOS: Modulo[] = [
   {
     icone: FileSearch,
     titulo: "Processos",
     texto: "Consulta por número CNJ, movimentações sincronizadas e aviso da última atualização de cada caso.",
-    classe: "lg:col-span-2",
   },
   { icone: Users, titulo: "Clientes", texto: "Cadastro, prontuário e documentos de cada cliente reunidos em uma ficha." },
   {
@@ -102,20 +94,7 @@ const MODULOS: Modulo[] = [
     icone: UserCog,
     titulo: "Permissões multiusuário",
     texto: "Cargos com acesso por módulo e por ação. Cada pessoa vê e altera apenas o que o cargo permite.",
-    classe: "sm:col-span-2",
   },
-];
-
-const MOVIMENTOS_EXEMPLO = [
-  { quando: "Hoje", texto: "Juntada de petição", novo: true },
-  { quando: "Ontem", texto: "Conclusos para decisão", novo: false },
-  { quando: "12 out", texto: "Audiência designada", novo: false },
-];
-
-const MATRIZ_EXEMPLO = [
-  { modulo: "Processos", acesso: [true, true, false] },
-  { modulo: "Financeiro", acesso: [true, false, false] },
-  { modulo: "Agenda", acesso: [true, true, true] },
 ];
 
 const SEGURANCA = [
@@ -223,6 +202,19 @@ function Cabecalho({ rotulo, titulo, destaque, texto }: { rotulo: string; titulo
   );
 }
 
+function CartaoModulo({ modulo }: { modulo: Modulo }) {
+  const Icone = modulo.icone;
+  return (
+    <article className="lp-modulo-cartao" data-reveal>
+      <span className="lp-icone"><Icone className="h-5 w-5" aria-hidden="true" /></span>
+      <div>
+        <h3>{modulo.titulo}</h3>
+        <p>{modulo.texto}</p>
+      </div>
+    </article>
+  );
+}
+
 export function LandingPage() {
   return (
     <LandingMotion>
@@ -239,6 +231,9 @@ export function LandingPage() {
         {/* Hero */}
         <section id="inicio" data-hero-secao className="lp-hero relative isolate flex min-h-[100svh] flex-col overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+            <div data-fundo-parallax data-hero="fundo" className="absolute inset-0">
+              <HeroFundo />
+            </div>
             <div className="absolute left-1/2 top-[-20%] h-[70%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(212,175,55,0.14),transparent)]" />
             <div className="absolute inset-y-0 left-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-black/[0.06] to-transparent" />
             <div className="absolute inset-y-0 right-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-black/[0.06] to-transparent" />
@@ -287,12 +282,6 @@ export function LandingPage() {
               <div data-scene-parallax><HeroTelas /></div>
             </div>
           </div>
-
-          <div data-terreno-parallax className="lp-terreno relative min-h-[220px] flex-1">
-            <div data-hero="terreno" className="absolute inset-0">
-              <TerrainCanvas className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_85%,transparent)]" />
-            </div>
-          </div>
         </section>
 
         {/* Prova social e números */}
@@ -321,16 +310,6 @@ export function LandingPage() {
               </ul>
             </div>
 
-            <dl className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-black/[0.08] bg-black/[0.08] lg:grid-cols-4">
-              {NUMEROS.map((numero) => (
-                <div key={numero.rotulo} className="flex flex-col gap-2 bg-[#FCFBF8] p-5 sm:p-8" data-reveal>
-                  <dt className="order-2 text-sm leading-snug text-neutral-600">{numero.rotulo}</dt>
-                  <dd className="lp-titulo lp-dourado order-1 text-5xl tabular-nums sm:text-6xl" data-count={numero.valor}>
-                    {numero.valor}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
         </section>
 
@@ -380,76 +359,28 @@ export function LandingPage() {
               rotulo="Módulos"
               titulo="Tudo que o escritório usa no dia a dia."
               destaque="Conectado."
-              texto="Sete módulos que conversam entre si: o processo leva ao cliente, o prazo vira compromisso e o honorário vira relatório."
+              texto="Seis frentes de trabalho conectadas a uma única base, com permissões e segurança aplicadas em todo o sistema."
             />
 
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {MODULOS.map((modulo) => {
-                const Icone = modulo.icone;
-                return (
-                  <article key={modulo.titulo} data-spotlight data-reveal className={`lp-card flex flex-col p-6 sm:p-7 ${modulo.classe ?? ""}`}>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                      <span className="lp-icone">
-                        <Icone className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                      <div>
-                        <h3 className="text-lg font-semibold tracking-tight text-[#17191a]">{modulo.titulo}</h3>
-                        <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{modulo.texto}</p>
-                      </div>
-                    </div>
-
-                    {modulo.titulo === "Processos" && (
-                      <figure className="mt-6 rounded-2xl border border-black/[0.07] bg-white/70 p-4" aria-label="Exemplo ilustrativo de movimentações">
-                        <figcaption className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-[#66666b]">
-                          <span className="break-all font-mono tracking-normal">0000000-00.0000.8.26.0000</span>
-                          <span>Exemplo</span>
-                        </figcaption>
-                        <ul className="mt-3 space-y-2">
-                          {MOVIMENTOS_EXEMPLO.map((mov) => (
-                            <li key={mov.texto} className="flex items-center gap-3 rounded-xl bg-black/[0.03] px-3 py-2.5 text-sm">
-                              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${mov.novo ? "bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.9)]" : "bg-neutral-300"}`} aria-hidden="true" />
-                              <span className="flex-1 text-neutral-800">{mov.texto}</span>
-                              <span className="shrink-0 whitespace-nowrap text-xs text-[#66666b]">{mov.quando}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </figure>
-                    )}
-
-                    {modulo.titulo === "Permissões multiusuário" && (
-                      <figure className="mt-6 overflow-x-auto rounded-2xl border border-black/[0.07] bg-white/70 p-4" aria-label="Exemplo ilustrativo de permissões de um cargo">
-                        <table className="lp-permissoes w-full text-sm">
-                          <caption className="pb-2 text-left text-xs text-[#66666b]">Cargo de exemplo: Assistente</caption>
-                          <thead>
-                            <tr className="text-xs text-[#66666b]">
-                              <th scope="col" className="pb-2 text-left font-medium">Módulo</th>
-                              <th scope="col" className="pb-2 font-medium">Ler</th>
-                              <th scope="col" className="pb-2 font-medium">Editar</th>
-                              <th scope="col" className="pb-2 font-medium">Excluir</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {MATRIZ_EXEMPLO.map((linha) => (
-                              <tr key={linha.modulo} className="border-t border-black/[0.06]">
-                                <th scope="row" className="py-2.5 text-left font-normal text-neutral-800">{linha.modulo}</th>
-                                {linha.acesso.map((permitido, indice) => (
-                                  <td key={indice} className="py-2.5 text-center">
-                                    {permitido ? (
-                                      <Check className="mx-auto h-4 w-4 text-[#805F11]" aria-label="Permitido" />
-                                    ) : (
-                                      <span className="text-[#66666b]" aria-label="Sem acesso">—</span>
-                                    )}
-                                  </td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </figure>
-                    )}
-                  </article>
-                );
-              })}
+            <div className="lp-modulos-mapa mt-12" aria-label="Módulos conectados da Infinity Law">
+              <svg className="lp-modulos-linhas" viewBox="0 0 1200 620" aria-hidden="true" preserveAspectRatio="none">
+                <path className="lp-modulos-conexao" pathLength="1" d="M350 105C405 105 415 248 450 290" />
+                <path className="lp-modulos-conexao" pathLength="1" d="M350 310H450" />
+                <path className="lp-modulos-conexao" pathLength="1" d="M350 515C405 515 415 372 450 330" />
+                <path className="lp-modulos-conexao" pathLength="1" d="M850 105C795 105 785 248 750 290" />
+                <path className="lp-modulos-conexao" pathLength="1" d="M850 310H750" />
+                <path className="lp-modulos-conexao" pathLength="1" d="M850 515C795 515 785 372 750 330" />
+              </svg>
+              <div className="lp-modulos-coluna lp-modulos-coluna-esquerda">
+                {MODULOS.slice(0, 3).map((modulo) => <CartaoModulo key={modulo.titulo} modulo={modulo} />)}
+              </div>
+              <div className="lp-modulos-nucleo" data-reveal>
+                <Logo showText={false} size="lg" className="lp-modulos-logo" />
+                <span className="sr-only">Infinity Law: núcleo que conecta os módulos do sistema.</span>
+              </div>
+              <div className="lp-modulos-coluna lp-modulos-coluna-direita">
+                {MODULOS.slice(3, 6).map((modulo) => <CartaoModulo key={modulo.titulo} modulo={modulo} />)}
+              </div>
             </div>
           </div>
         </section>

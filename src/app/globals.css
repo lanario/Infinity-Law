@@ -1193,7 +1193,49 @@ body:has(.lp-root) {
 .lp-hero [data-hero-parallax] { padding-top: clamp(8rem, 15vh, 12rem); }
 .lp-hero-copy { padding-bottom: 1rem; }
 .lp-hero-palco { min-width: 0; }
-.lp-terreno { pointer-events: none; margin-top: 1rem; }
+/* Fundo do hero: luzes à deriva, pórtico de tribunal e fios de seda (hero-fundo.tsx). */
+.lp-fundo { overflow: hidden; }
+.lp-luz {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+  will-change: transform;
+}
+.lp-luz-1 { left: -8%; top: 8%; width: 46vw; height: 38vw; background: radial-gradient(closest-side, rgba(212, 175, 55, 0.26), transparent); animation: lp-deriva-1 22s ease-in-out infinite alternate; }
+.lp-luz-2 { right: -10%; top: 22%; width: 42vw; height: 42vw; background: radial-gradient(closest-side, rgba(233, 207, 122, 0.3), transparent); animation: lp-deriva-2 26s ease-in-out infinite alternate; }
+.lp-luz-3 { left: 30%; bottom: -18%; width: 50vw; height: 30vw; background: radial-gradient(closest-side, rgba(167, 125, 22, 0.16), transparent); animation: lp-deriva-3 30s ease-in-out infinite alternate; }
+@keyframes lp-deriva-1 { to { transform: translate(14vw, 6vh) scale(1.15); } }
+@keyframes lp-deriva-2 { to { transform: translate(-12vw, 10vh) scale(0.9); } }
+@keyframes lp-deriva-3 { to { transform: translate(-10vw, -8vh) scale(1.2); } }
+.lp-portico {
+  position: absolute;
+  left: 50%;
+  top: 9%;
+  width: min(1100px, 130vw);
+  transform: translateX(-50%);
+  stroke: #a77d16;
+  stroke-opacity: 0.22;
+  stroke-width: 1;
+  -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 35%, transparent 92%);
+}
+.lp-portico * {
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lp-tracar 2.8s var(--lp-curva) 0.3s forwards;
+}
+@keyframes lp-tracar { to { stroke-dashoffset: 0; } }
+.lp-seda {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 60%), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 25%, #000 60%), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-composite: intersect;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-luz { animation: none; }
+  .lp-portico * { animation: none; stroke-dashoffset: 0; }
+}
 .lp-section { position: relative; isolation: isolate; }
 .lp-section::before {
   content: "";
@@ -1207,7 +1249,7 @@ body:has(.lp-root) {
   transform-origin: left;
 }
 .lp-section-heading > p:first-child { text-transform: none; letter-spacing: 0.02em; font-size: 0.8rem; }
-.lp-modulos { background: linear-gradient(180deg, #fcfbf8, #f3f0e7); }
+.lp-modulos { background: #fff; }
 .lp-section-luz {
   position: absolute;
   inset: 4% 0 auto auto;
@@ -1215,7 +1257,7 @@ body:has(.lp-root) {
   width: min(60vw, 800px);
   height: 70%;
   pointer-events: none;
-  background: radial-gradient(ellipse at right, #e9cf7a26, transparent 65%);
+  background: radial-gradient(ellipse at right, #e9cf7a1c, transparent 65%);
 }
 .lp-seguranca { background: #fffefa; }
 .lp-planos { background: linear-gradient(180deg, #f7f6f1, #fdfcf9); }
@@ -1235,20 +1277,20 @@ body:has(.lp-root) {
 .lp-menu .lp-nav-link { display: flex; }
 .lp-marquee:hover { animation-play-state: paused; }
 
-/* Rodapé: assinatura ampla e um infinito desenhado sobre papel claro. */
-.lp-footer { position: relative; isolation: isolate; overflow: hidden; background: #f3f0e6; border-top: 1px solid #a77d1626; }
-.lp-footer-topo { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-bottom: 2.5rem; border-bottom: 1px solid #a77d1626; }
-.lp-footer-voltar { display: inline-flex; flex-shrink: 0; align-items: center; gap: 1rem; font-size: 0.75rem; color: #625b4c; }
-.lp-footer-voltar > span { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #a77d1640; border-radius: 50%; transition: background 350ms, transform 350ms var(--lp-curva); }
-.lp-footer-voltar:hover > span { background: #e9cf7a40; transform: translateY(-4px); }
-.lp-footer-link { display: inline-block; position: relative; color: #625e54; padding-block: 2px; transition: color 300ms; }
-.lp-footer-link::after { content: ""; position: absolute; bottom: 0; inset-inline: 0; height: 1px; background: #a77d16; transform: scaleX(0); transform-origin: right; transition: transform 350ms var(--lp-curva); }
-.lp-footer-link:is(:hover, :focus-visible) { color: #805f11; }
+/* Rodapé: lâmina escura, feixe dourado e assinatura tipográfica da marca. */
+.lp-footer { position: relative; isolation: isolate; overflow: hidden; background: #070806; border-top: 1px solid rgba(233, 207, 122, 0.42); }
+.lp-footer-cenario { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: radial-gradient(90% 72% at 6% -10%, rgba(212, 175, 55, 0.16), transparent 58%), radial-gradient(48% 58% at 94% 12%, rgba(233, 207, 122, 0.08), transparent 62%); }
+.lp-footer-grade { position: absolute; inset: 0; opacity: 0.55; background-image: linear-gradient(90deg, rgba(233, 207, 122, 0.07) 1px, transparent 1px), linear-gradient(rgba(233, 207, 122, 0.045) 1px, transparent 1px); background-size: 4.5rem 4.5rem; mask-image: linear-gradient(100deg, #000, transparent 68%); }
+.lp-footer-feixe { --lp-footer-feixe-x: 0%; position: absolute; top: -20%; bottom: -20%; left: 54%; width: clamp(11rem, 22vw, 22rem); transform: translateX(var(--lp-footer-feixe-x)) rotate(20deg); opacity: 0.8; background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05) 25%, rgba(233, 207, 122, 0.3) 50%, rgba(212, 175, 55, 0.05) 75%, transparent); filter: blur(2px); }
+.lp-footer-topo { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(233, 207, 122, 0.22); }
+.lp-footer-voltar { display: inline-flex; flex-shrink: 0; align-items: center; gap: 1rem; font-size: 0.75rem; color: #d2cdc2; }
+.lp-footer-voltar > span { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgba(233, 207, 122, 0.5); border-radius: 50%; color: #e9cf7a; transition: background 350ms, color 350ms, transform 350ms var(--lp-curva); }
+.lp-footer-voltar:hover > span { color: #070806; background: #e9cf7a; transform: translateY(-4px); }
+.lp-footer-link { display: inline-block; position: relative; color: #bbb6ad; padding-block: 2px; transition: color 300ms; }
+.lp-footer-link::after { content: ""; position: absolute; bottom: 0; inset-inline: 0; height: 1px; background: #e9cf7a; transform: scaleX(0); transform-origin: right; transition: transform 350ms var(--lp-curva); }
+.lp-footer-link:is(:hover, :focus-visible) { color: #fffdf7; }
 .lp-footer-link:is(:hover, :focus-visible)::after { transform: scaleX(1); transform-origin: left; }
-.lp-footer-orbita { position: absolute; right: -15%; top: 8%; width: 65%; z-index: -1; pointer-events: none; opacity: 0.28; }
-.lp-footer-orbita svg { width: 100%; stroke: #a77d16; stroke-width: 0.6; }
-.lp-footer-traco { stroke-width: 1.5; stroke-dasharray: 120 1900; }
-.lp-footer-assinatura { overflow: hidden; padding-block: 1rem 2.25rem; font-size: clamp(4rem, 14.1vw, 11.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.075em; white-space: nowrap; color: #bfa66b; }
+.lp-footer-assinatura { overflow: hidden; padding-block: 1.5rem 2.25rem; font-size: clamp(3.75rem, 13.1vw, 10.75rem); font-weight: 600; line-height: 0.83; letter-spacing: -0.085em; white-space: nowrap; color: transparent; background: linear-gradient(112deg, #795c12 0%, #e9cf7a 34%, #fff6c9 49%, #a77d16 69%, #33270c 100%); background-clip: text; -webkit-background-clip: text; }
 .lp-footer-assinatura > span { display: block; }
 
 .lp-telas-controles { display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem; }
@@ -1261,10 +1303,88 @@ body:has(.lp-root) {
 .lp-permissoes th:first-child { width: 42%; }
 .lp-permissoes th, .lp-permissoes td { padding-inline: 2px; }
 
+/* Mapa dos módulos: a operação do escritório converge para um núcleo comum. */
+.lp-modulos-mapa {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  isolation: isolate;
+}
+.lp-modulos-coluna { display: grid; gap: 1rem; }
+.lp-modulo-cartao {
+  position: relative;
+  display: flex;
+  min-height: 124px;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid rgba(23, 25, 26, 0.1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 30px -30px rgba(48, 38, 16, 0.32), inset 0 1px 0 #fff;
+  transition: transform 350ms var(--lp-curva), border-color 350ms var(--lp-curva), box-shadow 350ms var(--lp-curva);
+}
+.lp-modulo-cartao h3 { color: #17191a; font-size: 1.05rem; font-weight: 650; letter-spacing: -0.025em; }
+.lp-modulo-cartao p { margin-top: 0.35rem; color: #5d5d63; font-size: 0.9rem; line-height: 1.55; }
+.lp-modulo-cartao:hover {
+  z-index: 2;
+  border-color: rgba(167, 125, 22, 0.48);
+  box-shadow: 0 22px 42px -28px rgba(111, 83, 19, 0.3), inset 0 1px 0 #fff;
+  transform: translateY(-3px);
+}
+.lp-modulos-nucleo {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 148px;
+  place-items: center;
+  padding: 1rem;
+  border: 1px solid rgba(167, 125, 22, 0.36);
+  border-radius: 50%;
+  background: #fffdfa;
+  box-shadow: 0 24px 48px -34px rgba(128, 95, 17, 0.42), inset 0 1px 0 #fff;
+}
+.lp-modulos-logo { position: relative; z-index: 1; }
+.lp-modulos-logo > div { width: 7rem; height: 7rem; }
+.lp-modulos-linhas { display: none; }
+
+@media (min-width: 768px) {
+  .lp-modulos-mapa { grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr) minmax(0, 1fr); align-items: stretch; gap: clamp(1rem, 4vw, 4rem); min-height: 560px; }
+  .lp-modulos-coluna { grid-template-rows: repeat(3, 1fr); }
+  .lp-modulo-cartao { min-height: 0; }
+  .lp-modulos-nucleo { align-self: center; min-height: 0; aspect-ratio: 1; }
+  .lp-modulos-linhas { position: absolute; inset: 0; z-index: -1; display: block; width: 100%; height: 100%; overflow: visible; }
+  .lp-modulos-linhas .lp-modulos-conexao {
+    fill: none;
+    stroke: rgba(150, 123, 54, 0.46);
+    stroke-width: 1.15;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    vector-effect: non-scaling-stroke;
+    animation: lp-modulos-conexao 6s cubic-bezier(0.22, 1, 0.36, 1) infinite both;
+  }
+  .lp-modulos-linhas .lp-modulos-conexao:nth-child(2) { animation-delay: 0.35s; }
+  .lp-modulos-linhas .lp-modulos-conexao:nth-child(3) { animation-delay: 0.7s; }
+  .lp-modulos-linhas .lp-modulos-conexao:nth-child(4) { animation-delay: 1.05s; }
+  .lp-modulos-linhas .lp-modulos-conexao:nth-child(5) { animation-delay: 1.4s; }
+  .lp-modulos-linhas .lp-modulos-conexao:nth-child(6) { animation-delay: 1.75s; }
+}
+
+@keyframes lp-modulos-conexao {
+  0%, 8% { opacity: 0; stroke-dashoffset: 1; }
+  24%, 58% { opacity: 0.82; stroke-dashoffset: 0; }
+  74%, 100% { opacity: 0.24; stroke-dashoffset: 0; }
+}
+
+@media (min-width: 1024px) {
+  .lp-modulos-mapa { gap: clamp(2rem, 6vw, 5.5rem); min-height: 610px; }
+  .lp-modulo-cartao { padding: 1.65rem; }
+}
+
 @media (min-width: 1024px) {
   .lp-plano-descricao { min-height: 4.5em; }
   .lp-hero [data-hero-parallax] { min-height: 650px; min-height: min(78svh, 850px); }
-  .lp-terreno { margin-top: -1rem; min-height: 180px; }
   .lp-modulos .lp-card:first-child { border-radius: 2rem 1.5rem 1.5rem 1.5rem; }
 }
 @media (max-width: 639px) {
@@ -1275,11 +1395,13 @@ body:has(.lp-root) {
   .lp-telas-pausa { position: absolute; right: 4px; bottom: 4px; margin-top: 0; }
   .lp-permissoes { font-size: 0.75rem; }
   .lp-telas-legenda { min-height: 5.25rem; }
+  .lp-modulos-nucleo { order: -1; min-height: 156px; border-radius: 50%; }
+  .lp-modulo-cartao { min-height: 0; padding: 1.25rem; }
   .lp-hero [data-hero-parallax] { padding-top: 7.5rem; gap: 2rem; }
   .lp-hero .lp-titulo { font-size: clamp(2.5rem, 10.6vw, 4rem); }
-  .lp-terreno { min-height: 135px; }
   .lp-footer-topo { align-items: flex-start; flex-direction: column; }
-  .lp-footer-orbita { top: 30%; right: -65%; width: 140%; }
+  .lp-footer-feixe { left: 62%; width: 12rem; }
+  .lp-footer-grade { background-size: 3.5rem 3.5rem; }
   .lp-footer-assinatura { font-size: 15vw; }
 }
 @media (max-width: 379px) {
