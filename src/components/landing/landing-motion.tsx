@@ -30,6 +30,7 @@ export function LandingMotion({ children }: { children: ReactNode }) {
         .fromTo(q("[data-hero='texto']"), { opacity: 0, y: 18 }, { opacity: 1, y: 0 }, 0.65)
         .fromTo(q("[data-hero='acoes']"), { opacity: 0, y: 18 }, { opacity: 1, y: 0 }, 0.78)
         .fromTo(q("[data-hero='nota']"), { opacity: 0 }, { opacity: 1, duration: 1 }, 0.95)
+        .fromTo(q("[data-hero='palco']"), { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 1.6 }, 0.45)
         .fromTo(q("[data-hero='terreno']"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.8, ease: "power3.out" }, 0.3);
 
       const hero = q("[data-hero-secao]")[0];

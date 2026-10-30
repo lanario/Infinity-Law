@@ -1185,6 +1185,63 @@ body:has(.lp-root) {
   }
 }
 
+/* Telas do hero: painéis de vidro escuro empilhados em 3D. */
+.lp-tela {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.1em;
+  background: linear-gradient(180deg, #151517 0%, #0b0b0c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 40px 80px -30px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+  backface-visibility: hidden;
+}
+
+.lp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  white-space: nowrap;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+  background: rgba(16, 13, 6, 0.92);
+  padding: 0.55em 0.95em;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #f5f0de;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 40px -14px rgba(0, 0, 0, 0.9),
+    0 0 24px -8px rgba(212, 175, 55, 0.45);
+}
+
+.lp-sem-barra {
+  scrollbar-width: none;
+}
+
+.lp-sem-barra::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cantoneiras em volta do palco das telas. */
+.lp-cantos::before {
+  content: "";
+  position: absolute;
+  inset: 2% 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) top left / 14px 1px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) top left / 1px 14px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) top right / 14px 1px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) top right / 1px 14px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) bottom left / 14px 1px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) bottom left / 1px 14px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) bottom right / 14px 1px,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) bottom right / 1px 14px;
+  background-repeat: no-repeat;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-marquee,
   .lp-anel {

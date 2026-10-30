@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { LandingMotion } from "./landing-motion";
+import { HeroTelas } from "./hero-telas";
 import { LandingNav } from "./landing-nav";
 import { TerrainCanvas } from "./terrain-canvas";
 
@@ -243,39 +244,48 @@ export function LandingPage() {
             <div className="absolute inset-y-0 right-[max(1rem,calc(50%-36rem))] w-px bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
           </div>
 
-          <div data-hero-parallax className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-4 pt-28 text-center sm:px-6 sm:pt-32">
-            <p data-hero="pilula" className="lp-pilula">
-              <span className="lp-ponto" aria-hidden="true" />
-              Gestão jurídica com DataJud e DJEN
-            </p>
-            <h1
-              data-hero="titulo"
-              className="lp-titulo mx-auto mt-7 max-w-5xl text-[clamp(2.75rem,8.2vw,7.25rem)]"
-            >
-              <span className="block text-white">
-                <Palavras texto="Seu escritório," />
-              </span>
-              {/* background-clip: text não atravessa filhos transformados; o gradiente vai em cada palavra. */}
-              <span className="block">
-                <Palavras texto="sem prazo perdido." className="lp-cinza" />
-              </span>
-            </h1>
-            <p data-hero="texto" className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-neutral-400 sm:text-lg">
-              Processos sincronizados, intimações monitoradas, agenda da equipe, financeiro e comunicação com clientes em
-              um só sistema, feito para a rotina da advocacia brasileira.
-            </p>
-            <div data-hero="acoes" className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href="/signup" className="lp-btn lp-btn-ouro h-12 w-full px-6 text-[15px] sm:w-auto">
-                Criar conta do escritório
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <Link href="/login" className="lp-btn lp-btn-escuro h-12 w-full px-6 text-[15px] sm:w-auto">
-                Já tenho conta
-              </Link>
+          <div
+            data-hero-parallax
+            className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)] 2xl:max-w-7xl items-center gap-10 px-4 pb-4 pt-28 sm:px-6 sm:pt-32 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-8 lg:pt-36"
+          >
+            <div>
+              <p data-hero="pilula" className="lp-pilula">
+                <span className="lp-ponto" aria-hidden="true" />
+                Gestão jurídica com DataJud e DJEN
+              </p>
+              <h1
+                data-hero="titulo"
+                className="lp-titulo mt-7 text-[clamp(2.6rem,9vw,4.75rem)] lg:text-[clamp(3.25rem,4.25vw,3.75rem)]"
+              >
+                <span className="block text-white">
+                  <Palavras texto="Seu escritório," />
+                </span>
+                {/* background-clip: text não atravessa filhos transformados; o gradiente vai em cada palavra. */}
+                <span className="block">
+                  <Palavras texto="sem prazo perdido." className="lp-cinza" />
+                </span>
+              </h1>
+              <p data-hero="texto" className="mt-7 max-w-lg text-base leading-relaxed text-neutral-400 sm:text-lg">
+                Processos sincronizados, intimações monitoradas, agenda da equipe, financeiro e comunicação com clientes
+                em um só sistema, feito para a rotina da advocacia brasileira.
+              </p>
+              <div data-hero="acoes" className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link href="/signup" className="lp-btn lp-btn-ouro h-12 w-full px-6 text-[15px] sm:w-auto">
+                  Criar conta do escritório
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link href="/login" className="lp-btn lp-btn-escuro h-12 w-full px-6 text-[15px] sm:w-auto">
+                  Já tenho conta
+                </Link>
+              </div>
+              <p data-hero="nota" className="mt-6 max-w-sm text-xs leading-relaxed text-neutral-500">
+                Sem instalação. Dados isolados por escritório e acesso controlado por cargo.
+              </p>
             </div>
-            <p data-hero="nota" className="mx-auto mt-6 max-w-sm text-xs leading-relaxed text-neutral-500">
-              Sem instalação. Dados isolados por escritório e acesso controlado por cargo.
-            </p>
+
+            <div data-hero="palco">
+              <HeroTelas />
+            </div>
           </div>
 
           <div data-terreno-parallax className="relative -mt-16 min-h-[300px] flex-1">
