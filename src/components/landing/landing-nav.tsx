@@ -14,16 +14,8 @@ const LINKS = [
 ];
 
 export function LandingNav() {
-  const [rolou, setRolou] = useState(false);
   const [aberto, setAberto] = useState(false);
   const botaoRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const aoRolar = () => setRolou(window.scrollY > 24);
-    aoRolar();
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    return () => window.removeEventListener("scroll", aoRolar);
-  }, []);
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)");
@@ -45,10 +37,10 @@ export function LandingNav() {
   }, [aberto]);
 
   return (
-    <header className="lp-header fixed inset-x-0 top-3 z-50 px-4 sm:top-4">
+    <header className="lp-header px-4 pt-3 sm:pt-4">
       <nav
         aria-label="Principal"
-        data-rolou={rolou || aberto}
+        data-menu-aberto={aberto || undefined}
         className="lp-nav mx-auto max-w-6xl rounded-2xl"
       >
         <div className="flex h-14 items-center justify-between gap-3 pr-2">

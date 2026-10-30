@@ -97,26 +97,123 @@ const MODULOS: Modulo[] = [
   },
 ];
 
+// Ilustrações decorativas (aria-hidden): o texto de cada cartão carrega o conteúdo.
+function IlustracaoIsolamento() {
+  return (
+    <div className="lp-seg-cofres">
+      {["Escritório A", "Seu escritório", "Escritório C"].map((nome, i) => (
+        <div key={nome} className={`lp-seg-cofre ${i === 1 ? "is-seu" : ""}`}>
+          <Lock className="h-4 w-4" />
+          <span>{nome}</span>
+          <i />
+          <i />
+          <i />
+        </div>
+      ))}
+      <span className="lp-seg-rls lp-seg-rls-1">RLS</span>
+      <span className="lp-seg-rls lp-seg-rls-2">RLS</span>
+    </div>
+  );
+}
+
+function IlustracaoCargos() {
+  const cargos: [string, boolean[]][] = [
+    ["Sócio", [true, true, true]],
+    ["Advogado", [true, true, false]],
+    ["Estagiário", [true, false, false]],
+  ];
+  return (
+    <div className="lp-seg-cargos">
+      <div className="lp-seg-cargos-topo">
+        <span />
+        <span>Ler</span>
+        <span>Editar</span>
+        <span>Excluir</span>
+      </div>
+      {cargos.map(([cargo, acessos]) => (
+        <div key={cargo} className="lp-seg-cargos-linha">
+          <span>{cargo}</span>
+          {acessos.map((ligado, i) => (
+            <span key={i} className={`lp-seg-chave ${ligado ? "is-ligada" : ""}`} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function IlustracaoRegistro() {
+  const eventos = [
+    ["09:12", "Dra. Paula", "editou prazo"],
+    ["09:40", "Marcos", "anexou documento"],
+    ["10:05", "Ana", "exportou relatório"],
+    ["10:31", "Dra. Paula", "alterou cargo"],
+  ];
+  return (
+    <div className="lp-seg-log">
+      <ul className="lp-seg-log-trilha">
+        {[0, 1].map((copia) =>
+          eventos.map(([hora, quem, acao]) => (
+            <li key={`${copia}-${hora}`}>
+              <span className="lp-seg-log-hora">{hora}</span>
+              <span className="lp-seg-log-ponto" />
+              <span>
+                <b>{quem}</b> {acao}
+              </span>
+            </li>
+          )),
+        )}
+      </ul>
+    </div>
+  );
+}
+
+function IlustracaoLgpd() {
+  return (
+    <div className="lp-seg-lgpd">
+      <span className="lp-seg-escudo">
+        <ShieldCheck className="h-8 w-8" />
+      </span>
+      <ul>
+        {["Finalidade definida", "Acesso mínimo necessário", "Conexão criptografada"].map((item) => (
+          <li key={item}>
+            <Check className="h-3.5 w-3.5" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const SEGURANCA = [
   {
     icone: Lock,
     titulo: "Isolamento por escritório",
     texto: "Cada escritório só enxerga os próprios dados. As regras de acesso são aplicadas no banco, linha a linha.",
+    Ilustracao: IlustracaoIsolamento,
+    classe: "lg:col-span-4",
   },
   {
     icone: KeyRound,
     titulo: "Acesso pelo cargo",
     texto: "Permissões por módulo e por ação. Quem cuida da agenda não precisa ver o financeiro.",
+    Ilustracao: IlustracaoCargos,
+    classe: "lg:col-span-2",
   },
   {
     icone: ScrollText,
     titulo: "Registro de ações",
     texto: "Operações sensíveis ficam registradas para o escritório saber quem fez o quê e quando.",
+    Ilustracao: IlustracaoRegistro,
+    classe: "lg:col-span-2",
   },
   {
     icone: ShieldCheck,
     titulo: "Pensado para a LGPD",
     texto: "Dados de clientes tratados com finalidade definida, acesso mínimo necessário e conexão sempre criptografada.",
+    Ilustracao: IlustracaoLgpd,
+    classe: "lg:col-span-4",
   },
 ];
 
@@ -314,7 +411,7 @@ export function LandingPage() {
         </section>
 
         {/* Como funciona */}
-        <section id="como-funciona" className="lp-section scroll-mt-24">
+        <section id="como-funciona" className="lp-section">
           <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:py-20 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-20 lg:py-28">
             <div className="lg:sticky lg:top-32 lg:self-start">
               <Cabecalho
@@ -352,7 +449,7 @@ export function LandingPage() {
         </section>
 
         {/* Módulos */}
-        <section id="modulos" className="lp-section lp-modulos scroll-mt-24 border-t border-black/[0.06]">
+        <section id="modulos" className="lp-section lp-modulos border-t border-black/[0.06]">
           <div className="lp-section-luz" data-parallax="70" aria-hidden="true" />
           <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:py-28">
             <Cabecalho
@@ -386,44 +483,43 @@ export function LandingPage() {
         </section>
 
         {/* Segurança e LGPD */}
-        <section id="seguranca" className="lp-section lp-seguranca scroll-mt-24 border-t border-black/[0.06] bg-white/60">
-          <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 py-16 sm:py-20 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-28">
-            <div>
+        <section id="seguranca" className="lp-section lp-seguranca border-t border-black/[0.06] bg-white/60">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-28">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
               <Cabecalho
                 rotulo="Segurança e LGPD"
                 titulo="Sigilo profissional começa"
                 destaque="na arquitetura."
-                texto="Dados de clientes são sensíveis. Por isso o isolamento entre escritórios e o controle de acesso ficam no núcleo do sistema."
               />
-              <div aria-hidden="true" className="lp-seguranca-selo relative mx-auto mt-14 hidden h-56 w-56 lg:block" data-parallax="-35">
-                <span className="lp-anel h-56 w-56" />
-                <span className="lp-anel h-40 w-40 [animation-delay:-2s]" />
-                <span className="lp-anel h-24 w-24 [animation-delay:-4s]" />
-                <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D4AF37]/40 bg-[#FBF6E9] text-[#805F11] shadow-[0_0_60px_-6px_rgba(212,175,55,0.6)]">
-                  <ShieldCheck className="h-7 w-7" />
-                </span>
-              </div>
+              <p className="max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:pb-2" data-reveal>
+                Dados de clientes são sensíveis. Por isso o isolamento entre escritórios e o controle de acesso ficam no
+                núcleo do sistema.
+              </p>
             </div>
 
-            <ul className="grid gap-4 sm:grid-cols-2">
-              {SEGURANCA.map((item) => {
-                const Icone = item.icone;
-                return (
-                  <li key={item.titulo} data-spotlight data-reveal className="lp-card p-6">
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+              {SEGURANCA.map(({ icone: Icone, titulo, texto, Ilustracao, classe }) => (
+                <li key={titulo} data-spotlight data-reveal className={`lp-card lp-seg-cartao flex flex-col ${classe}`}>
+                  <div className="lp-seg-palco" aria-hidden="true">
+                    <Ilustracao />
+                  </div>
+                  <div className="flex items-start gap-3 p-6 pt-5">
                     <span className="lp-icone">
                       <Icone className="h-5 w-5" aria-hidden="true" />
                     </span>
-                    <h3 className="mt-5 text-lg font-semibold tracking-tight text-[#17191a]">{item.titulo}</h3>
-                    <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{item.texto}</p>
-                  </li>
-                );
-              })}
+                    <div>
+                      <h3 className="text-lg font-semibold tracking-tight text-[#17191a]">{titulo}</h3>
+                      <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{texto}</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
         {/* Planos */}
-        <section id="planos" className="lp-section lp-planos scroll-mt-24 border-t border-black/[0.06]">
+        <section id="planos" className="lp-section lp-planos border-t border-black/[0.06]">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:py-28">
             <Cabecalho
               rotulo="Planos"
@@ -468,7 +564,7 @@ export function LandingPage() {
         </section>
 
         {/* FAQ */}
-        <section id="duvidas" className="lp-section lp-duvidas scroll-mt-24 border-t border-black/[0.06]">
+        <section id="duvidas" className="lp-section lp-duvidas border-t border-black/[0.06]">
           <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:py-20 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-20 lg:py-28">
             <Cabecalho rotulo="Dúvidas" titulo="Perguntas" destaque="frequentes." />
             <div className="divide-y divide-black/[0.08] border-y border-black/[0.08]">
