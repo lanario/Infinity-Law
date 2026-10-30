@@ -519,7 +519,10 @@ export function LandingPage() {
         </section>
 
         {/* Planos */}
-        <section id="planos" className="lp-section lp-planos border-t border-black/[0.06]">
+        <section id="planos" className="lp-section lp-planos overflow-hidden border-t border-black/[0.06]">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+            <HeroFundo />
+          </div>
           <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:py-28">
             <Cabecalho
               rotulo="Planos"
