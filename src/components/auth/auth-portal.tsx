@@ -343,15 +343,15 @@ export function AuthPortal({ inicial, avisoInicial }: AuthPortalProps) {
 
           <div className="auth-lamina-conteudo">
             <div ref={marcaRef} className="auth-marca">
-              <div className="flex items-center gap-3">
-                <Logo size="md" />
-                <span className="rounded-full border border-[#805F11]/30 bg-[#D4AF37]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#805F11]">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <Logo size="md" className="whitespace-nowrap" />
+                <span className="whitespace-nowrap rounded-full border border-[#805F11]/30 bg-[#D4AF37]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#805F11]">
                   {marca.etiqueta}
                 </span>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-[2.1rem] font-semibold leading-[1.12] tracking-tight text-[#17191A]">
+                <h2 className="text-[clamp(1.75rem,2.4vw,2.1rem)] font-semibold leading-[1.12] tracking-tight text-[#17191A]">
                   {marca.titulo}
                 </h2>
                 <p className="max-w-[32ch] text-sm leading-relaxed text-[#5C6367]">
