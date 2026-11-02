@@ -72,9 +72,9 @@ export default async function IntimacoesPage() {
     : null;
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Intimações" />
-      <main className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-16 space-y-6">
         <DjenIntimacoesPanel
           monitoramentos={monitoramentos}
           publicacoes={publicacoes}

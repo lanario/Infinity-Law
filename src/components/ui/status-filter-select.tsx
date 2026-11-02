@@ -109,10 +109,13 @@ export function StatusFilterSelect({
                 <Select.Item
                   key={option.value}
                   value={option.value}
-                  className={cn(
-                    "flex w-full cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-700 outline-none transition select-none dark:text-zinc-200",
-                    "data-[highlighted]:bg-gold-soft/70 data-[highlighted]:text-[#17191a] dark:data-[highlighted]:bg-[#D4AF37]/15 dark:data-[highlighted]:text-[#E5C158]",
-                    "data-[selected]:bg-gold-soft/70 data-[selected]:font-bold data-[selected]:text-[#17191a] dark:data-[selected]:bg-[#D4AF37]/20 dark:data-[selected]:text-[#E5C158]"
+                  className={(state) => cn(
+                    "flex w-full cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs outline-none transition-colors select-none",
+                    state.selected
+                      ? "bg-[#F4E7BC] font-bold text-[#7A5C0B] dark:bg-[#D4AF37]/25 dark:text-[#F0D477]"
+                      : state.highlighted
+                        ? "bg-gold-soft/70 font-semibold text-gold-dark dark:bg-[#D4AF37]/10 dark:text-[#D9BF6A]"
+                        : "font-semibold text-stone-700 dark:text-zinc-200"
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-2">

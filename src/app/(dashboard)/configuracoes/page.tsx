@@ -30,9 +30,9 @@ export default async function ConfiguracoesPage() {
     : undefined;
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Configurações" />
-      <div className="space-y-5 p-4 sm:p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <ConfiguracoesWorkspace
           profile={{
             name: profile?.nome ?? user.email ?? "Usuário",
@@ -46,7 +46,7 @@ export default async function ConfiguracoesPage() {
           currentUserId={user.id ?? ""}
           canWrite={canWrite}
         />
-      </div>
+      </main>
     </div>
   );
 }

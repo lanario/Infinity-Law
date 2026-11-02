@@ -190,7 +190,7 @@ export async function ProcessoDetalhe({
   const corpo = (
     <div>
       {!embedded && <Header title="Detalhes do Processo" />}
-      <div className={embedded ? "space-y-6 p-4 sm:p-6" : "p-6 space-y-6 max-w-4xl"}>
+      <div className={embedded ? "space-y-6 p-4 sm:p-6" : "w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-6"}>
 
         {searchParams?.criado === "1" && <AvisoCriado />}
 

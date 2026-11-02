@@ -184,7 +184,7 @@ function MiniCalendar({
                 <motion.span
                   aria-hidden="true"
                   layoutId={shouldReduceMotion ? undefined : "agenda-mini-calendar-selection"}
-                  transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 42 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 650, damping: 32 }}
                   className="absolute inset-0 z-0 rounded-full bg-[#17191a] dark:bg-gold"
                 />
               )}
@@ -674,7 +674,7 @@ export function AgendaTopbar({
   const segmentClass = (active: boolean) => cn("relative isolate shrink-0 rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:px-3 sm:text-[11px]", active ? "text-white dark:text-neutral-950" : "text-stone-500 hover:bg-white hover:text-stone-800 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100");
   const segmentHighlight = shouldReduceMotion
     ? <span aria-hidden="true" className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm dark:bg-gold" />
-    : <motion.span aria-hidden="true" layoutId="agenda-view-mode-selection" transition={{ type: "spring", stiffness: 520, damping: 42 }} className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm dark:bg-gold" />;
+    : <motion.span aria-hidden="true" layoutId="agenda-view-mode-selection" transition={{ type: "spring", stiffness: 650, damping: 32 }} className="absolute inset-0 z-0 rounded-lg bg-[#17191a] shadow-sm dark:bg-gold" />;
   const modeItems: Array<{ value: AgendaCalendarMode; label: string }> = [{ value: "day", label: "Dia" }, { value: "week", label: "Semana" }, { value: "month", label: "Mês" }, { value: "agenda", label: "Lista" }];
 
   return <div className="space-y-2.5 rounded-2xl border border-stone-200 bg-white p-2.5 shadow-[0_6px_18px_-18px_rgba(23,25,26,.45)] sm:p-3">
@@ -688,7 +688,7 @@ export function AgendaTopbar({
         <button type="button" onClick={onNext} aria-label="Próximo período" className="flex h-9 w-8 items-center justify-center rounded-xl text-stone-500 transition hover:bg-stone-100 hover:text-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:w-9"><ChevronRight className="h-4 w-4" aria-hidden="true" /></button>
       </div>
       <p title={title} className="min-w-0 flex-1 basis-[8rem] truncate px-0.5 text-xs font-extrabold leading-tight text-[#303334] first-letter:uppercase dark:text-zinc-100 sm:px-1 sm:text-sm">{title}</p>
-      <div className="inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-stone-200/60 p-1 dark:bg-zinc-800/90" role="group" aria-label="Visualização da agenda">
+      <div className="inline-flex max-w-full shrink-0 items-center gap-0.5 overflow-x-auto rounded-xl bg-stone-200/60 p-1 dark:bg-zinc-800/90" role="group" aria-label="Visualização da agenda">
         {modeItems.map((item) => {
           const isActive = mode === item.value;
           return <button key={item.value} type="button" onClick={() => onModeChange(item.value)} aria-pressed={isActive} className={segmentClass(isActive)}>{isActive && segmentHighlight}<span className="relative z-10">{item.label}</span></button>;
@@ -698,6 +698,6 @@ export function AgendaTopbar({
       <StatusFilterSelect value={selectedType} options={typeOptions} onChange={(value) => onTypeChange(value as AgendaEventTypeFilter)} ariaLabel="Filtrar agenda por tipo de evento" align="end" triggerClassName="h-9 min-w-0 shrink-0 text-[11px]" />
     </div>
     {(mode === "day" || mode === "team") && <AgendaWeekStrip dateKey={dateKey} onSelectDate={onSelectDate} />}
-    {canWrite && <div className="flex justify-end"><button type="button" onClick={onCreate} className="inline-flex h-9 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gold px-3 text-[11px] font-extrabold text-neutral-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-gold-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 dark:text-neutral-950 sm:w-auto sm:px-3.5"><Plus className="h-4 w-4" aria-hidden="true" /> Agendar</button></div>}
+    {canWrite && <div className="flex justify-end"><button type="button" onClick={onCreate} className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gold px-3 text-xs font-extrabold text-neutral-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-gold-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 dark:text-neutral-950 sm:h-9 sm:w-auto sm:px-3.5 sm:text-[11px]"><Plus className="h-4 w-4" aria-hidden="true" /> Agendar</button></div>}
   </div>;
 }

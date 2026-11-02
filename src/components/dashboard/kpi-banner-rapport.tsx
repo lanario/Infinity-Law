@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const kpiContainerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.05 },
+    transition: { staggerChildren: 0.02 },
   },
 };
 
@@ -24,7 +24,7 @@ const kpiCardVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.22, ease: "easeOut" },
+    transition: { duration: 0.12, ease: "easeOut" },
   },
 };
 
@@ -267,36 +267,37 @@ export function KPIBannerRapport({ kpis, className }: KPIBannerRapportProps) {
       {/* Card Primário (Hero Card - Honorários a Receber) */}
       <motion.article
         variants={kpiCardVariants}
-        className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 relative overflow-hidden group hover:border-[#D4AF37]/50 transition-all duration-300"
+        className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between rounded-2xl border border-gray-200/80 bg-white p-4 sm:p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 relative overflow-hidden group hover:border-[#D4AF37]/50 transition-all duration-150"
       >
         {/* Topo */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-[#FBF6E9] text-[#9A7A1A] dark:bg-[#D4AF37]/10 dark:text-[#D4AF37]">
-              <DollarSign className="h-5 w-5" aria-hidden="true" />
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-[#FBF6E9] text-[#9A7A1A] dark:bg-[#D4AF37]/10 dark:text-[#D4AF37]">
+              <DollarSign className="h-4.5 w-4.5 sm:h-5 sm:w-5" aria-hidden="true" />
             </div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
+            <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
               HONORÁRIOS A RECEBER
             </h2>
           </div>
           <Link
             href="/financeiro"
-            className="inline-flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-[#9A7A1A] dark:text-zinc-400 dark:hover:text-[#D4AF37] transition-colors"
+            className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-gray-600 hover:text-[#9A7A1A] dark:text-zinc-400 dark:hover:text-[#D4AF37] transition-colors"
           >
-            Ver financeiro
+            <span className="hidden sm:inline">Ver financeiro</span>
+            <span className="sm:hidden">Ver</span>
             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>
 
         {/* Meio: Valor em destaque + Micro-gráfico Sparkline */}
-        <div className="my-5 flex items-center justify-between gap-4 flex-1">
+        <div className="my-4 sm:my-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 flex-1">
           <div className="min-w-0">
-            <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-zinc-100 tabular-nums">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-zinc-100 tabular-nums break-words">
               <CountUpNumber value={kpis.honorariosAReceber} currency />
             </p>
             <p
               className={cn(
-                "mt-1.5 text-xs font-semibold flex items-center gap-1",
+                "mt-1 sm:mt-1.5 text-xs font-semibold flex items-center gap-1",
                 trend === "up" && "text-emerald-600 dark:text-emerald-400",
                 trend === "down" && "text-rose-600 dark:text-rose-400",
                 trend === "flat" && "text-[#9A7A1A] dark:text-[#D4AF37]"
@@ -308,22 +309,22 @@ export function KPIBannerRapport({ kpis, className }: KPIBannerRapportProps) {
               </span>
             </p>
           </div>
-          <div className="shrink-0 flex items-center justify-end">
+          <div className="shrink-0 flex items-center justify-start sm:justify-end">
             <Sparkline
               points={kpis.sparklinePoints}
               trend={trend}
               variacaoPercentual={kpis.variacaoPercentual}
               isPositive={isPositive}
-              className="w-28 sm:w-36 h-10"
+              className="w-24 sm:w-28 md:w-36 h-9 sm:h-10"
             />
           </div>
         </div>
 
         {/* Base: Sub-métricas executivas */}
-        <div className="border-t border-gray-100 dark:border-zinc-800/80 pt-4 mt-auto grid grid-cols-2 gap-4">
+        <div className="border-t border-gray-100 dark:border-zinc-800/80 pt-3.5 sm:pt-4 mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <p className="text-xs font-medium text-gray-500 dark:text-zinc-400">A vencer</p>
-            <p className="text-base sm:text-lg font-bold text-gray-800 dark:text-zinc-200 tabular-nums mt-0.5">
+            <p className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-zinc-200 tabular-nums mt-0.5">
               <CountUpNumber value={honorariosPendentes} currency />
             </p>
           </div>
@@ -331,7 +332,7 @@ export function KPIBannerRapport({ kpis, className }: KPIBannerRapportProps) {
             <p className="text-xs font-medium text-gray-500 dark:text-zinc-400">Em atraso</p>
             <p
               className={cn(
-                "text-base sm:text-lg font-bold tabular-nums mt-0.5",
+                "text-sm sm:text-base lg:text-lg font-bold tabular-nums mt-0.5",
                 honorariosVencidos > 0
                   ? "text-amber-600 dark:text-amber-400"
                   : "text-gray-800 dark:text-zinc-200"
@@ -344,14 +345,14 @@ export function KPIBannerRapport({ kpis, className }: KPIBannerRapportProps) {
       </motion.article>
 
       {/* Container dos Cards Satélites (4 cards ao redor) */}
-      <div className="lg:col-span-7 xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+      <div className="lg:col-span-7 xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 h-full">
         {satelliteCards.map((card) => {
           const Icon = card.icon;
           return (
             <motion.article
               key={card.key}
               variants={kpiCardVariants}
-              className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 flex flex-col justify-between hover:border-[#D4AF37]/40 transition-all duration-200 group"
+              className="rounded-2xl border border-gray-200/80 bg-white p-4 sm:p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 flex flex-col justify-between hover:border-[#D4AF37]/40 transition-all duration-150 group"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">

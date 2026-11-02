@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { motion, useReducedMotion, useReducedMotionConfig } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useReducedMotionConfig } from "framer-motion";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -161,6 +161,19 @@ interface ProcessHoverPreviewPosition {
   placement: "right" | "left" | "overlay";
 }
 
+function getProcessPreviewPlacement(bounds: DOMRect, viewportWidth: number): ProcessHoverPreviewPosition["placement"] {
+  const margin = 12;
+  const gap = 10;
+  const preferredWidth = Math.min(416, viewportWidth - margin * 2);
+  const rightSpace = viewportWidth - bounds.right - gap - margin;
+  const leftSpace = bounds.left - gap - margin;
+  const minimumSideWidth = Math.min(280, preferredWidth);
+
+  if (rightSpace >= minimumSideWidth) return "right";
+  if (leftSpace >= minimumSideWidth) return "left";
+  return "overlay";
+}
+
 export function ProcessosList({ processos, currentSearch, currentStatus }: ProcessosListProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -170,7 +183,9 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
   const [clientSearch, setClientSearch] = useState("");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [visibleLimit, setVisibleLimit] = useState(PAGE_SIZE);
+  const [loadingProcess, setLoadingProcess] = useState<{ id: string; client: string; number: string; type: string } | null>(null);
   const [activePreview, setActivePreview] = useState<{ id: string; anchor: HTMLElement } | null>(null);
+  const [previewOpeningPlacement, setPreviewOpeningPlacement] = useState<ProcessHoverPreviewPosition["placement"]>("right");
   const [previewPosition, setPreviewPosition] = useState<ProcessHoverPreviewPosition | null>(null);
   const previewPanelRef = useRef<HTMLDivElement | null>(null);
   const previewCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -188,6 +203,8 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
 
   function openPreview(id: string, anchor: HTMLElement) {
     clearPreviewCloseTimer();
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    setPreviewOpeningPlacement(getProcessPreviewPlacement(anchor.getBoundingClientRect(), viewportWidth));
     setPreviewPosition(null);
     setActivePreview({ id, anchor });
   }
@@ -231,17 +248,12 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
       const preferredWidth = Math.min(416, viewportWidth - margin * 2);
       const rightSpace = viewportWidth - bounds.right - gap - margin;
       const leftSpace = bounds.left - gap - margin;
-      const minimumSideWidth = Math.min(280, preferredWidth);
-      let placement: ProcessHoverPreviewPosition["placement"] = "overlay";
-      let width = preferredWidth;
-
-      if (rightSpace >= minimumSideWidth) {
-        placement = "right";
-        width = Math.min(preferredWidth, rightSpace);
-      } else if (leftSpace >= minimumSideWidth) {
-        placement = "left";
-        width = Math.min(preferredWidth, leftSpace);
-      }
+      const placement = getProcessPreviewPlacement(bounds, viewportWidth);
+      const width = placement === "right"
+        ? Math.min(preferredWidth, rightSpace)
+        : placement === "left"
+          ? Math.min(preferredWidth, leftSpace)
+          : preferredWidth;
 
       const maxHeight = viewportHeight - margin * 2;
       panel.style.width = `${width}px`;
@@ -276,6 +288,7 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
 
   useEffect(() => setSearch(currentSearch), [currentSearch]);
   useEffect(() => setSelectedStatus(currentStatus || "ativo"), [currentStatus]);
+  useEffect(() => setLoadingProcess(null), [pathname]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -315,6 +328,7 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
 
   const visibleProcesses = useMemo(() => filteredProcesses.slice(0, visibleLimit), [filteredProcesses, visibleLimit]);
   const hiddenCount = filteredProcesses.length - visibleProcesses.length;
+  const isOpeningProcess = loadingProcess !== null && pathname === "/processos";
 
   useEffect(() => {
     if (activePreview && !visibleProcesses.some((process) => process.id === activePreview.id)) {
@@ -350,7 +364,7 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-2.5 sm:gap-3 grid-cols-1 sm:grid-cols-3">
         {[
           { label: "Processos cadastrados", value: processos.length, accent: "bg-[#17191a] dark:bg-zinc-100" },
           { label: "Em andamento", value: statusCounts.ativo ?? 0, accent: "bg-emerald-500" },
@@ -358,7 +372,7 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
         ].map((stat) => (
           <div
             key={stat.label}
-            className="flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white px-4 py-3.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900"
+            className="flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white px-3.5 py-3 sm:px-4 sm:py-3.5 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900"
           >
             <span className={cn("h-8 w-1 rounded-full", stat.accent)} aria-hidden="true" />
             <div>
@@ -369,8 +383,8 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
         ))}
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-stone-200/80 bg-white p-3 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-4 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row md:items-center">
+      <div className="flex flex-col gap-2.5 sm:gap-3 rounded-2xl border border-stone-200/80 bg-white p-3 shadow-[0_8px_24px_-20px_rgba(23,25,26,0.4)] dark:border-zinc-800 dark:bg-zinc-900 sm:p-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:gap-3 md:flex-row md:items-center">
           <label className="relative block min-w-0 flex-1 sm:max-w-md">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 dark:text-zinc-500" aria-hidden="true" />
             <input
@@ -487,7 +501,7 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
           <Link
             href="/processos/novo"
             aria-label="Criar novo processo"
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gold px-5 text-sm font-bold text-white shadow-[0_10px_24px_-14px_rgba(23,25,26,0.65)] transition duration-200 hover:-translate-y-0.5 hover:bg-gold-hover hover:shadow-[0_14px_28px_-14px_rgba(23,25,26,0.55)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/25 sm:w-auto"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gold px-5 text-sm font-bold text-white shadow-[0_10px_24px_-14px_rgba(23,25,26,0.65)] transition duration-120 hover:-translate-y-0.5 hover:bg-gold-hover hover:shadow-[0_14px_28px_-14px_rgba(23,25,26,0.55)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/25 sm:w-auto"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Novo Processo
@@ -546,13 +560,20 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
             </motion.div>
           ) : (
             <div
-              className={cn("grid gap-3", view === "grid" ? "sm:grid-cols-2 2xl:grid-cols-3" : "grid-cols-1")}
+              className={cn("grid gap-3.5 sm:gap-4", view === "grid" ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}
             >
                 {visibleProcesses.map((process) => {
                   const clientNames = process.clientes.map((client) => client.nome);
                   const primaryClient = clientNames[0] ?? "Cliente não vinculado";
                   const syncDate = process.ultima_sync_cnj ? new Date(process.ultima_sync_cnj) : null;
                   const isHovered = activePreview?.id === process.id;
+                  const previewPlacement = previewPosition?.placement ?? previewOpeningPlacement;
+                  const previewInitialClipPath = previewPlacement === "left"
+                    ? "inset(0 0 0 100% round 0.45rem 1.25rem 0.45rem 1.25rem)"
+                    : previewPlacement === "overlay"
+                      ? "inset(0 50% 0 50% round 1.25rem 0.45rem 1.25rem 0.45rem)"
+                      : "inset(0 100% 0 0 round 1.25rem 0.45rem 1.25rem 0.45rem)";
+                  const previewInitialX = previewPlacement === "left" ? 8 : previewPlacement === "right" ? -8 : 0;
 
                   return (
                     <article
@@ -575,7 +596,19 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
                         view === "list" && "sm:flex sm:items-stretch"
                       )}
                                           >
-                      <Link href={`/processos/${process.id}`} className="block h-full min-w-0 flex-1 p-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold">
+                      <Link
+                        href={`/processos/${process.id}`}
+                        onClick={(event) => {
+                          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                          setLoadingProcess({
+                            id: process.id,
+                            client: clientNames.join(", ") || "Cliente não vinculado",
+                            number: process.numero_cnj ?? process.numero_protocolo ?? process.processo_originario ?? "Número ainda não informado",
+                            type: process.tipo_acao ?? PHASE_LABEL[process.fase ?? ""] ?? process.fase ?? "Processo em andamento",
+                          });
+                        }}
+                        className="block h-full min-w-0 flex-1 p-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+                      >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex min-w-0 items-start gap-3">
                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#17191a] text-gold shadow-sm dark:bg-zinc-800 dark:text-[#E5C158]">
@@ -625,9 +658,19 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
                       {isHovered && typeof document !== "undefined" && createPortal(
                           <motion.div
                             ref={previewPanelRef}
-                            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.985 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: shouldReduceMotion ? 0 : 0.16 }}
+                            initial={shouldReduceMotion ? false : { opacity: 0, clipPath: previewInitialClipPath, x: previewInitialX }}
+                            animate={{
+                              opacity: 1,
+                              clipPath: "inset(0 0 0 0 round 1.25rem 0.45rem 1.25rem 0.45rem)",
+                              x: 0,
+                            }}
+                            transition={shouldReduceMotion
+                              ? { duration: 0 }
+                              : {
+                                  opacity: { duration: 0.12, ease: "easeOut" },
+                                  clipPath: { duration: 0.15, ease: [0.16, 1, 0.3, 1] },
+                                  x: { duration: 0.15, ease: [0.16, 1, 0.3, 1] },
+                                }}
                             aria-hidden="true"
                             data-placement={previewPosition?.placement ?? "overlay"}
                             onPointerEnter={clearPreviewCloseTimer}
@@ -737,6 +780,60 @@ export function ProcessosList({ processos, currentSearch, currentStatus }: Proce
             </div>
           )}
       </div>
+      <AnimatePresence>
+        {isOpeningProcess && loadingProcess && (
+          <motion.div
+            key={`process-loading-${loadingProcess.id}`}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.12 }}
+            className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-[#111211]/65 px-4 pb-8 pt-[9vh] backdrop-blur-md"
+            aria-busy="true"
+          >
+            <motion.section
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={shouldReduceMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.14, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-xl overflow-hidden rounded-3xl border border-gold/25 bg-[radial-gradient(ellipse_at_top_left,rgba(212,175,55,0.16),transparent_55%),#17191a] text-white shadow-[0_30px_100px_-30px_rgba(0,0,0,0.8)]"
+              aria-labelledby="process-loading-title"
+            >
+              <div className="flex items-start gap-3.5 px-5 py-5 sm:gap-4 sm:px-7 sm:py-6">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10 text-gold shadow-[0_0_28px_-10px_rgba(212,175,55,0.6)]">
+                  <BriefcaseBusiness className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gold">Abrindo processo...</p>
+                    <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-300">Processo</span>
+                  </div>
+                  <h2 id="process-loading-title" className="mt-1 truncate text-base font-black uppercase tracking-wide sm:text-lg">{loadingProcess.client}</h2>
+                  <p className="mt-1 truncate text-[11px] font-mono text-stone-300">{loadingProcess.number}</p>
+                  <p className="mt-1 flex items-center gap-1.5 text-[11px] text-stone-400">
+                    <span className={cn("h-1.5 w-1.5 rounded-full bg-gold", !shouldReduceMotion && "animate-pulse")} aria-hidden="true" />
+                    {loadingProcess.type}
+                  </p>
+                </div>
+              </div>
+              <div className="border-t border-white/10 px-5 pb-4 pt-3 sm:px-7 sm:pb-5">
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+                  {shouldReduceMotion ? (
+                    <div className="h-full w-2/5 rounded-full bg-gradient-to-r from-gold-dark via-gold to-white" />
+                  ) : (
+                    <motion.div
+                      className="h-full w-2/5 rounded-full bg-gradient-to-r from-gold-dark via-gold to-white shadow-[0_0_18px_rgba(212,175,55,0.5)]"
+                      animate={{ x: ["-100%", "260%"] }}
+                      transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                  )}
+                </div>
+                <p className="mt-2.5 text-[10px] text-stone-400" role="status" aria-live="polite">Carregando dados, movimentações e histórico do processo…</p>
+              </div>
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

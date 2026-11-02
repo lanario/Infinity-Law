@@ -73,9 +73,11 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
   });
   if (profile === "error") {
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Processos" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/processos" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12">
+          <QueryErrorState retryHref="/processos" />
+        </main>
       </div>
     );
   }
@@ -105,11 +107,11 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
     logQueryFailures("ProcessosPage", [{ operation: "processos-list", error }]);
     const guidance = queryErrorGuidance(error);
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Processos" />
-        <div className="p-4 sm:p-6">
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12">
           <QueryErrorState retryHref="/processos" {...guidance} />
-        </div>
+        </main>
       </div>
     );
   }
@@ -150,15 +152,15 @@ export default async function ProcessosPage({ searchParams }: PageProps) {
       : "ativo";
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Processos" />
-      <div className="p-4 sm:p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <ProcessosList
           processos={processos}
           currentSearch={searchParams.search ?? ""}
           currentStatus={currentStatus}
         />
-      </div>
+      </main>
     </div>
   );
 }

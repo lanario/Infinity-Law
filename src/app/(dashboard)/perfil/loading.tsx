@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PerfilLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Meu perfil" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando informações do perfil...
@@ -11,7 +11,7 @@ export default function PerfilLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5"
       >
         {/* Card do Perfil com Avatar e Dados Principais */}
         <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function IntimacoesLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Intimações" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando intimações e monitoramentos do DJEN...
@@ -11,7 +11,7 @@ export default function IntimacoesLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-5 px-3 py-4 sm:px-6 sm:py-6 lg:px-8"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-16 space-y-6"
       >
         {/* Barra de status de monitoramento e sincronização */}
         <section className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">

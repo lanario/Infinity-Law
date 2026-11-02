@@ -3,14 +3,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PlanosLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Planos" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando informações da assinatura e planos...
       </p>
 
-      <main aria-busy="true" className="mx-auto max-w-4xl p-4 sm:p-6">
-        <section className="overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <main aria-busy="true" className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
+        <section className="w-full max-w-7xl mx-auto overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
           {/* Topo do Card de Assinatura */}
           <div className="p-6 sm:p-9 space-y-4">
             <Skeleton className="h-12 w-12 rounded-2xl" />

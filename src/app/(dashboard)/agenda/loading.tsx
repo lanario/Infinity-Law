@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AgendaLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Agenda" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando agenda de compromissos e prazos...
@@ -11,7 +11,7 @@ export default function AgendaLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5"
       >
         {/* Barra de ferramentas: Navegação de data + Seletor de visualização (Mês/Semana/Dia/Equipe) + Botão Novo */}
         <div className="flex flex-col gap-3 rounded-2xl border border-stone-200/80 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between sm:p-4">

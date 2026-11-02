@@ -1,4 +1,4 @@
-﻿import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/server/current-profile";
 import { Header } from "@/components/layout/header";
@@ -37,9 +37,9 @@ export default async function AgendaPage() {
   ]);
   if (profile === "error") {
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Agenda" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/agenda" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12"><QueryErrorState retryHref="/agenda" /></main>
       </div>
     );
   }
@@ -55,17 +55,17 @@ export default async function AgendaPage() {
   if (failedQueryOperations(dataResults).length > 0) {
     logQueryFailures("AgendaPage", dataResults);
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Agenda" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/agenda" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12"><QueryErrorState retryHref="/agenda" /></main>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Agenda" />
-      <div className="p-4 sm:p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <CalendarView
           initialEventos={eventosResult.data ?? []}
           clientes={clientesResult.data ?? []}
@@ -75,7 +75,8 @@ export default async function AgendaPage() {
           canWrite={profile.can("agenda", "write")}
           canDelete={profile.can("agenda", "delete")}
         />
-      </div>
+      </main>
     </div>
   );
 }
+

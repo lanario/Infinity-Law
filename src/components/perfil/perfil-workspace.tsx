@@ -350,7 +350,7 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
               </div>
             </div>
             <div className="h-[1px] bg-[#F1F1F6] dark:bg-zinc-800" />
-            <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:p-5">
+            <div className="grid gap-x-4 gap-y-4 p-4 grid-cols-1 sm:grid-cols-2 sm:p-5">
               <label className="block sm:col-span-2">
                 <span className="text-xs font-semibold text-stone-600 dark:text-zinc-400">Nome completo</span>
                 <input
@@ -432,7 +432,7 @@ export function PerfilWorkspace({ presentation = "page" }: { presentation?: "pag
               </div>
             </div>
             <div className="h-[1px] bg-[#F1F1F6] dark:bg-zinc-800" />
-            <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:p-5">
+            <div className="grid gap-x-4 gap-y-4 p-4 grid-cols-1 sm:grid-cols-2 sm:p-5">
               <label className="block min-w-0">
                 <span className="text-xs font-semibold text-stone-600 dark:text-zinc-400">Telefone</span>
                 <input

@@ -3,13 +3,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProcessoDetalheLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Detalhes do Processo" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando detalhes do processo...
       </p>
 
-      <main aria-busy="true" className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
+      <main aria-busy="true" className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-4 rounded" />

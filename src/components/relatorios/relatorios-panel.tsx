@@ -62,8 +62,8 @@ export function RelatoriosPanel() {
   }
 
   return (
-    <div className="max-w-5xl space-y-5">
-      <div className="grid gap-3 sm:grid-cols-3">
+    <div className="w-full space-y-5">
+      <div className="grid gap-2.5 sm:gap-3 grid-cols-1 sm:grid-cols-3">
         {[
           { label: "Relatórios disponíveis", value: "03", icon: ChartNoAxesColumnIncreasing },
           { label: "Formatos de exportação", value: "PDF · XLSX", icon: FileText },
@@ -75,7 +75,7 @@ export function RelatoriosPanel() {
         <div className="mb-5 flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold dark:bg-zinc-800 dark:text-[#E5C158]"><CalendarRange className="h-5 w-5" /></span><div><h2 className="text-sm font-black text-[#17191a] dark:text-zinc-100">Gerar relatório</h2><p className="mt-1 text-xs text-stone-400 dark:text-zinc-400">Selecione a visão e o período para exportar.</p></div></div>
         <div>
           <label className="mb-2 block text-xs font-semibold text-stone-600 dark:text-zinc-300">Tipo de relatório</label>
-          <div className="grid gap-2 md:grid-cols-3">
+          <div className="grid gap-2 grid-cols-1 sm:grid-cols-3">
             {RELATORIOS.map((r) => (
               <button
                 key={r.id}

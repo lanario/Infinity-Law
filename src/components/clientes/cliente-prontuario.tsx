@@ -332,7 +332,7 @@ export function ClienteProntuario({
         </Link>
       )} />
 
-      <main className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8">
+      <main className="w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-1.5 text-[10px] font-semibold text-stone-400 dark:text-zinc-500">
           <Link href="/clientes" className="transition hover:text-gold-dark dark:hover:text-[#E5C158]">Clientes</Link><span aria-hidden="true">/</span><span className="truncate text-stone-600 dark:text-zinc-300">{cliente.nome}</span>
         </div>

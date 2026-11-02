@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ComunicacaoLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Comunicação" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando painel de comunicação e mensagens...
@@ -11,7 +11,7 @@ export default function ComunicacaoLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-5 p-4 sm:p-6"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5"
       >
         {/* Painel superior: Compositor WhatsApp + Gerenciador de Templates */}
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(340px,.85fr)]">

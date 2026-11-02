@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="dashboard-root flex h-screen bg-[#FAFAFA] overflow-hidden dark:bg-zinc-950">
+    <div className="dashboard-root fixed inset-0 flex overflow-hidden bg-[#FAFAFA] dark:bg-[#101213]">
       {/* Sidebar com variantes Desktop e Mobile */}
       <Sidebar />
 
@@ -18,7 +18,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
           "ml-0"
         )}
       >
-        <main className="flex-1 overflow-y-auto min-w-0">
+        <main className="flex-1 overflow-y-auto min-w-0 bg-transparent">
           {children}
         </main>
       </div>

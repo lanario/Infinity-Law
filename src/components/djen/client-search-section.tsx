@@ -2,7 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { AlertTriangle, BadgeCheck, FileSearch, LoaderCircle, Link2, Search } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  AlertTriangle,
+  BadgeCheck,
+  Building2,
+  Calendar,
+  ChevronDown,
+  FileSearch,
+  ExternalLink,
+  Link2,
+  LoaderCircle,
+  Search,
+  User,
+  Users,
+} from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { normalizeCnjNumber, validateDateRange } from "@/lib/djen/validation";
 
@@ -60,6 +74,12 @@ function formatDate(value: string | null | undefined) {
     : "Data não informada";
 }
 
+function calculatePresetStartDate(todayStr: string, days: number): string {
+  const d = new Date(`${todayStr}T00:00:00.000Z`);
+  d.setUTCDate(d.getUTCDate() - (days - 1));
+  return d.toISOString().slice(0, 10);
+}
+
 function getMatchingProcesses(processes: ClientProcess[], communication: CandidateCommunication) {
   const number = normalizeCnjNumber(communication.numero_processo);
   if (!number) return [];
@@ -74,6 +94,8 @@ export function DjenClientSearchSection({
   podeAssociarProcesso,
 }: DjenClientSearchSectionProps) {
   const router = useRouter();
+  const reduceMotion = useReducedMotion() ?? false;
+
   const [clientes, setClientes] = useState<DjenClient[]>([]);
   const [clientesLoading, setClientesLoading] = useState(false);
   const [clientesLoadingMore, setClientesLoadingMore] = useState(false);
@@ -87,6 +109,7 @@ export function DjenClientSearchSection({
   const [processosProximoOffset, setProcessosProximoOffset] = useState<number | null>(null);
   const [processosError, setProcessosError] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [expandedHashes, setExpandedHashes] = useState<Set<string>>(() => new Set());
   const [selectedProcessByHash, setSelectedProcessByHash] = useState<Record<string, string>>({});
   const [searching, setSearching] = useState(false);
   const [associatingHash, setAssociatingHash] = useState<string | null>(null);
@@ -103,6 +126,26 @@ export function DjenClientSearchSection({
     [clientes, clienteId]
   );
 
+  function applyPreset(days: number) {
+    const start = calculatePresetStartDate(today, days);
+    setDataInicio(start);
+    setDataFim(today);
+  }
+
+  function isPresetActive(days: number): boolean {
+    const start = calculatePresetStartDate(today, days);
+    return dataInicio === start && dataFim === today;
+  }
+
+  function toggleExpanded(hash: string) {
+    setExpandedHashes((current) => {
+      const next = new Set(current);
+      if (next.has(hash)) next.delete(hash);
+      else next.add(hash);
+      return next;
+    });
+  }
+
   useEffect(() => {
     if (!podePesquisar) return;
 
@@ -113,7 +156,9 @@ export function DjenClientSearchSection({
       .then((payload) => {
         if (cancelled) return;
         if (!Array.isArray(payload.clientes)) {
-          throw new Error(typeof payload.error === "string" ? payload.error : "Não foi possível carregar os clientes.");
+          throw new Error(
+            typeof payload.error === "string" ? payload.error : "Não foi possível carregar os clientes."
+          );
         }
         setClientes(payload.clientes as DjenClient[]);
         setClientesProximoOffset(typeof payload.proximoOffset === "number" ? payload.proximoOffset : null);
@@ -130,7 +175,9 @@ export function DjenClientSearchSection({
         if (!cancelled) setClientesLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [podePesquisar]);
 
   async function loadMoreClients() {
@@ -140,7 +187,9 @@ export function DjenClientSearchSection({
       const response = await fetch(`/api/djen/clientes?offset=${clientesProximoOffset}`, { cache: "no-store" });
       const payload = await readResponse(response);
       if (!response.ok || !Array.isArray(payload.clientes)) {
-        throw new Error(typeof payload.error === "string" ? payload.error : "Não foi possível carregar mais clientes.");
+        throw new Error(
+          typeof payload.error === "string" ? payload.error : "Não foi possível carregar mais clientes."
+        );
       }
       setClientes((current) => [...current, ...(payload.clientes as DjenClient[])]);
       setClientesProximoOffset(typeof payload.proximoOffset === "number" ? payload.proximoOffset : null);
@@ -172,7 +221,9 @@ export function DjenClientSearchSection({
       .then((payload) => {
         if (cancelled) return;
         if (!Array.isArray(payload.processos)) {
-          throw new Error(typeof payload.error === "string" ? payload.error : "Não foi possível carregar os processos.");
+          throw new Error(
+            typeof payload.error === "string" ? payload.error : "Não foi possível carregar os processos."
+          );
         }
         setProcessos(payload.processos as ClientProcess[]);
         setProcessosProximoOffset(typeof payload.proximoOffset === "number" ? payload.proximoOffset : null);
@@ -186,7 +237,9 @@ export function DjenClientSearchSection({
         if (!cancelled) setProcessosLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [clienteId, podeLerProcessos]);
 
   async function loadMoreProcesses() {
@@ -198,7 +251,9 @@ export function DjenClientSearchSection({
       const response = await fetch(`/api/djen/clientes/processos?${params.toString()}`, { cache: "no-store" });
       const payload = await readResponse(response);
       if (!response.ok || !Array.isArray(payload.processos)) {
-        throw new Error(typeof payload.error === "string" ? payload.error : "Não foi possível carregar mais processos.");
+        throw new Error(
+          typeof payload.error === "string" ? payload.error : "Não foi possível carregar mais processos."
+        );
       }
       setProcessos((current) => [...current, ...(payload.processos as ClientProcess[])]);
       setProcessosProximoOffset(typeof payload.proximoOffset === "number" ? payload.proximoOffset : null);
@@ -241,7 +296,7 @@ export function DjenClientSearchSection({
         return;
       }
 
-      const nextCandidates = Array.isArray(payload.candidates) ? payload.candidates as Candidate[] : [];
+      const nextCandidates = Array.isArray(payload.candidates) ? (payload.candidates as Candidate[]) : [];
       setCandidates(nextCandidates);
       const uniqueCount = typeof payload.uniqueCount === "number" ? payload.uniqueCount : nextCandidates.length;
       const totalCount = typeof payload.totalCount === "number" ? payload.totalCount : uniqueCount;
@@ -253,9 +308,12 @@ export function DjenClientSearchSection({
       });
       setMessage({
         kind: "success",
-        text: payload.semResultados === true
-          ? "Consulta concluída. O DJEN não retornou publicações para o período escolhido."
-          : `Consulta concluída: ${uniqueCount} resultado(s) único(s) candidato(s) por nome${payload.truncated === true ? `; exibindo os primeiros ${nextCandidates.length}` : ""}.`,
+        text:
+          payload.semResultados === true
+            ? "Consulta concluída. O DJEN não retornou publicações para o período escolhido."
+            : `Consulta concluída: ${uniqueCount} resultado(s) único(s) candidato(s) por nome${
+                payload.truncated === true ? `; exibindo os primeiros ${nextCandidates.length}` : ""
+              }.`,
       });
     } catch {
       setMessage({ kind: "error", text: "Não foi possível consultar o DJEN. Tente novamente." });
@@ -289,10 +347,15 @@ export function DjenClientSearchSection({
         return;
       }
 
-      const numeroProcesso = typeof payload.numeroProcesso === "string" ? payload.numeroProcesso : "processo selecionado";
-      setCandidates((current) => current.map((item) => item.comunicacao.hash === candidate.comunicacao.hash
-        ? { ...item, associadaAoProcesso: numeroProcesso }
-        : item));
+      const numeroProcesso =
+        typeof payload.numeroProcesso === "string" ? payload.numeroProcesso : "processo selecionado";
+      setCandidates((current) =>
+        current.map((item) =>
+          item.comunicacao.hash === candidate.comunicacao.hash
+            ? { ...item, associadaAoProcesso: numeroProcesso }
+            : item
+        )
+      );
       setMessage({
         kind: "success",
         text: `Publicação associada manualmente a ${numeroProcesso}. Nenhum processo ou prazo foi criado automaticamente.`,
@@ -306,242 +369,429 @@ export function DjenClientSearchSection({
   }
 
   return (
-    <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
-      <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-gold-soft p-2.5 text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
-          <FileSearch className="h-5 w-5" aria-hidden="true" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100">Busca de publicações por cliente</h2>
-          <p className="mt-1 max-w-3xl text-sm text-gray-500 dark:text-zinc-400">
-            Selecione um cliente cadastrado. A consulta externa usa somente o nome da parte e o período; CPF/CNPJ é exibido mascarado apenas para distinguir o cadastro interno.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200" role="note">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-        <p>
-          Resultados por nome são candidatos e não comprovam a identidade do cliente. Revise o nome da parte, o número do processo e o teor. Nada será vinculado até uma associação manual a um processo já cadastrado.
-        </p>
-      </div>
-
-      {!podePesquisar ? (
-        <p className="mt-4 text-sm text-gray-500 dark:text-zinc-400">Seu perfil não tem permissão para consultar o DJEN por cliente.</p>
-      ) : (
-        <form onSubmit={searchByClient} className="mt-5 grid gap-3 border-t border-gray-100 pt-5 dark:border-zinc-800 lg:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] lg:items-end">
-          <div className="text-xs font-medium text-gray-600 dark:text-zinc-300">
-            <label htmlFor="djen-cliente" className="block">Cliente cadastrado</label>
-            <select
-              id="djen-cliente"
-              value={clienteId}
-              onChange={(event) => setClienteId(event.target.value)}
-              disabled={clientesLoading || processosLoadingMore || searching}
-              required
-              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-100"
-            >
-              <option value="">{clientesLoading ? "Carregando clientes…" : "Selecione um cliente"}</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>
-                  {cliente.nome}{cliente.documentoMascarado ? ` · ${cliente.documentoMascarado}` : ""}
-                </option>
-              ))}
-            </select>
-          {clientesProximoOffset !== null && (
-            <button
-              type="button"
-              onClick={loadMoreClients}
-              disabled={clientesLoadingMore || searching}
-              className="mt-1 text-left text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
-            >
-              {clientesLoadingMore ? "Carregando…" : `Carregar mais clientes (${clientes.length} carregados)`}
-            </button>
-          )}
+    <div className="space-y-6">
+      {/* Formulário Principal de Busca por Cliente */}
+      <section className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-[#17191A] sm:p-6">
+        <div className="flex items-start gap-3.5">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gold/10 text-gold-dark dark:bg-gold/15 dark:text-[#E5C158]">
+            <FileSearch className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <h2 className="text-base font-bold text-stone-900 dark:text-zinc-100 sm:text-lg">
+              Pesquisa de Publicações por Nome do Cliente
+            </h2>
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-stone-500 dark:text-zinc-400">
+              Localize intimações públicas correspondentes ao nome de partes cadastradas no sistema.
+              A API do DJEN realiza a correspondência fonética e textual pelo nome; o documento do cliente não é transmitido.
+            </p>
           </div>
-          <DatePicker label="De" value={dataInicio} max={today} onChange={setDataInicio} inputClassName="h-10 rounded-lg dark:bg-zinc-800/60 dark:text-zinc-100" />
-          <DatePicker label="Até" value={dataFim} max={today} onChange={setDataFim} inputClassName="h-10 rounded-lg dark:bg-zinc-800/60 dark:text-zinc-100" />
-          <button
-            type="submit"
-            disabled={searching || clientesLoading || clientesLoadingMore || !clienteId}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-          >
-            {searching ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            {searching ? "Consultando…" : "Buscar no DJEN"}
-          </button>
-          <p className="text-xs text-gray-400 dark:text-zinc-500 lg:col-span-4">
-            Período máximo de 30 dias. A consulta usa o nome do cadastro selecionado; o documento completo nunca é enviado ao CNJ.
-          </p>
-        </form>
-      )}
+        </div>
 
-      {message && (
+        {/* Alerta de Conformidade e Responsabilidade */}
         <div
-          className={`mt-4 rounded-lg border px-4 py-3 text-sm ${message.kind === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300" : "border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"}`}
-          role="status"
-          aria-live="polite"
+          className="mt-5 flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/70 p-4 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+          role="note"
         >
-          {message.text}
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          <p>
+            Resultados retornados são <strong>candidatos preliminares</strong> por homonímia. É imprescindível revisar o
+            número dos autos, vara e teor antes de associar a um processo cadastrado.
+          </p>
         </div>
-      )}
 
-      {selectedClient && podeLerProcessos && (
-        <div className="mt-3 text-xs text-gray-400 dark:text-zinc-400" aria-live="polite">
-          {processosLoading
-            ? "Carregando processos já vinculados a este cliente…"
-            : processosError
-              ? processosError
-              : `${processos.length} processo(s) existente(s) vinculados ao cliente carregados para revisão${processosProximoOffset !== null ? "; há mais opções, use “Carregar mais processos” abaixo" : ""}.`}
-        </div>
-      )}
+        {!podePesquisar ? (
+          <div className="mt-5 rounded-xl border border-stone-200 bg-stone-50 p-4 text-xs text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+            Seu perfil não possui permissão para consultar o DJEN por cliente.
+          </div>
+        ) : (
+          <form onSubmit={searchByClient} className="mt-6 space-y-4 border-t border-stone-100 pt-5 dark:border-zinc-800/80">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {/* Seletor de Cliente com Documento Mascarado */}
+              <div>
+                <label htmlFor="djen-cliente-select" className="block text-xs font-semibold text-stone-700 dark:text-zinc-300">
+                  Cliente Cadastrado
+                </label>
+                <div className="mt-1.5 relative">
+                  <select
+                    id="djen-cliente-select"
+                    value={clienteId}
+                    onChange={(event) => setClienteId(event.target.value)}
+                    disabled={clientesLoading || processosLoadingMore || searching}
+                    required
+                    className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3.5 text-sm font-medium text-stone-900 outline-none transition hover:border-stone-300 focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600"
+                  >
+                    <option value="">
+                      {clientesLoading ? "Carregando catálogo de clientes…" : "Selecione o cliente cadastrado"}
+                    </option>
+                    {clientes.map((cliente) => (
+                      <option key={cliente.id} value={cliente.id}>
+                        {cliente.nome} {cliente.documentoMascarado ? `(${cliente.documentoMascarado})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-      {selectedClient && processosProximoOffset !== null && podeLerProcessos && (
-        <button
-          type="button"
-          onClick={loadMoreProcesses}
-          disabled={processosLoadingMore || processosLoading}
-          className="mt-2 text-xs font-medium text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
-        >
-          {processosLoadingMore ? "Carregando…" : `Carregar mais processos (${processos.length} carregados)`}
-        </button>
-      )}
+                {/* Status e Carregar Mais Clientes */}
+                <div className="mt-1.5 flex flex-wrap items-center justify-between text-[11px] text-stone-500 dark:text-zinc-400">
+                  <span>
+                    {clientes.length > 0 ? `${clientes.length} cliente(s) carregados` : "Nenhum cliente disponível"}
+                  </span>
+                  {clientesProximoOffset !== null && (
+                    <button
+                      type="button"
+                      onClick={loadMoreClients}
+                      disabled={clientesLoadingMore || searching}
+                      className="font-semibold text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
+                    >
+                      {clientesLoadingMore ? "Carregando mais…" : "+ Carregar mais clientes"}
+                    </button>
+                  )}
+                </div>
 
+                {/* Preview do Cliente Selecionado */}
+                {selectedClient && (
+                  <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-stone-200/70 bg-stone-50/80 px-3.5 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/15 text-gold-dark dark:text-[#E5C158]">
+                      {selectedClient.tipo === "pj" ? (
+                        <Building2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      ) : (
+                        <User className="h-3.5 w-3.5" aria-hidden="true" />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-bold text-stone-900 dark:text-zinc-100">
+                        {selectedClient.nome}
+                      </p>
+                      <p className="font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+                        {selectedClient.documentoMascarado ?? "Sem documento informado"} ·{" "}
+                        <span className="uppercase">{selectedClient.tipo}</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Intervalo de Datas com Presets Rápidos */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-stone-700 dark:text-zinc-300">
+                    Período da Consulta
+                  </label>
+                  {/* Presets de Data Rápidos */}
+                  <div className="flex items-center gap-1.5">
+                    {[
+                      { label: "7 dias", days: 7 },
+                      { label: "15 dias", days: 15 },
+                      { label: "30 dias", days: 30 },
+                    ].map((preset) => {
+                      const active = isPresetActive(preset.days);
+                      return (
+                        <button
+                          key={preset.days}
+                          type="button"
+                          onClick={() => applyPreset(preset.days)}
+                          className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition ${
+                            active
+                              ? "bg-gold text-[#17191A] shadow-sm"
+                              : "border border-stone-200 bg-white text-stone-600 hover:border-gold/40 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-1.5 grid grid-cols-2 gap-3">
+                  <DatePicker
+                    label="Data Inicial"
+                    value={dataInicio}
+                    max={today}
+                    onChange={setDataInicio}
+                    className="w-full"
+                    inputClassName="h-11 rounded-xl bg-white dark:bg-zinc-900 dark:text-zinc-100"
+                  />
+                  <DatePicker
+                    label="Data Final"
+                    value={dataFim}
+                    max={today}
+                    onChange={setDataFim}
+                    className="w-full"
+                    inputClassName="h-11 rounded-xl bg-white dark:bg-zinc-900 dark:text-zinc-100"
+                  />
+                </div>
+
+                <p className="mt-2 text-[11px] leading-4 text-stone-400 dark:text-zinc-500">
+                  Máximo de 30 dias por requisição imposto pelo CNJ.
+                </p>
+              </div>
+            </div>
+
+            {/* Botão de Submissão */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="submit"
+                disabled={searching || clientesLoading || clientesLoadingMore || !clienteId}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gold px-6 text-xs font-bold text-[#17191A] shadow-sm transition hover:bg-gold-hover hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/25 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {searching ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin text-[#17191A]" aria-hidden="true" />
+                ) : (
+                  <Search className="h-4 w-4 text-[#17191A]" aria-hidden="true" />
+                )}
+                {searching ? "Consultando DJEN…" : "Pesquisar Candidatos no DJEN"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Notificações e Mensagens da Consulta */}
+        {message && (
+          <div
+            className={`mt-5 rounded-xl border px-4 py-3 text-xs leading-relaxed ${
+              message.kind === "success"
+                ? "border-emerald-200 bg-emerald-50/80 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                : "border-rose-200 bg-rose-50/80 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            {message.text}
+          </div>
+        )}
+
+        {/* Processos existentes do cliente para vínculo */}
+        {selectedClient && podeLerProcessos && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 pt-3 text-xs text-stone-500 dark:border-zinc-800/80 dark:text-zinc-400">
+            <span>
+              {processosLoading
+                ? "Carregando processos cadastrados do cliente…"
+                : processosError
+                ? processosError
+                : `${processos.length} processo(s) existente(s) vinculados a este cliente.`}
+            </span>
+            {processosProximoOffset !== null && (
+              <button
+                type="button"
+                onClick={loadMoreProcesses}
+                disabled={processosLoadingMore || processosLoading}
+                className="font-semibold text-gold-dark hover:text-gold disabled:opacity-50 dark:text-[#E5C158]"
+              >
+                {processosLoadingMore ? "Carregando…" : "+ Carregar mais processos"}
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Resultados e Candidatos Retornados */}
       {resultsMeta && candidates.length > 0 && (
-        <div className="mt-5 border-t border-gray-100 pt-4 dark:border-zinc-800">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+        <section className="space-y-4" aria-labelledby="candidatos-encontrados-heading">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
-                Candidatos encontrados para {selectedClient?.nome ?? "o cliente selecionado"}
+              <h3 id="candidatos-encontrados-heading" className="text-base font-bold text-stone-900 dark:text-zinc-100">
+                Publicações Candidatas para {selectedClient?.nome}
               </h3>
-              <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
-                {resultsMeta.uniqueCount} publicação(ões) única(s) retornada(s); {resultsMeta.candidateCount} exibida(s){resultsMeta.totalCount !== resultsMeta.uniqueCount ? ` (${resultsMeta.totalCount} item(ns) bruto(s) informado(s) pelo CNJ antes de remover hashes repetidos)` : ""}{selectedClient ? ` na consulta de ${selectedClient.nome}` : ""}. Lista temporária, removida ao sair da tela.
+              <p className="mt-0.5 text-xs text-stone-500 dark:text-zinc-400">
+                {resultsMeta.uniqueCount} publicação(ões) única(s) localizada(s). Resultados temporários para conferência e associação.
               </p>
             </div>
             {resultsMeta.truncated && (
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+              <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
                 Exibindo os primeiros {candidates.length}
               </span>
             )}
           </div>
 
-          <div className="mt-3 space-y-3">
+          <div className="space-y-3.5">
             {candidates.map((candidate) => {
               const item = candidate.comunicacao;
               const matchingProcesses = getMatchingProcesses(processos, item);
               const caseNumber = item.numeroprocessocommascara ?? item.numero_processo ?? "Processo não informado";
               const isAssociated = Boolean(candidate.associadaAoProcesso);
+              const isExpanded = expandedHashes.has(item.hash);
 
               return (
-                <article key={item.hash} className="rounded-xl border border-gray-200 p-4 dark:border-zinc-800 dark:bg-zinc-900">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
+                <motion.article
+                  key={item.hash}
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={reduceMotion ? undefined : { y: -2 }}
+                  viewport={{ once: true, margin: "-20px" }}
+                  transition={{ duration: reduceMotion ? 0 : 0.25, ease: "easeOut" }}
+                  className="rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm transition hover:border-gold/30 hover:shadow-md dark:border-zinc-800/80 dark:bg-[#17191A] dark:hover:border-gold/30 sm:p-6"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-gold-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
+                        <span className="inline-flex items-center rounded-full bg-gold/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gold-dark dark:bg-gold/15 dark:text-[#E5C158]">
                           Candidato por nome
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-zinc-400">Disponibilizada em {formatDate(item.data_disponibilizacao)}</span>
+                        {item.siglaTribunal && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-stone-200/70 bg-stone-50 px-2 py-0.5 text-[10px] font-semibold text-stone-600 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300">
+                            <Building2 className="h-3 w-3" aria-hidden="true" />
+                            {item.siglaTribunal}
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 text-xs text-stone-500 dark:text-zinc-400">
+                          <Calendar className="h-3 w-3" aria-hidden="true" />
+                          Disponibilizada em {formatDate(item.data_disponibilizacao)}
+                        </span>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-gray-900 dark:text-zinc-100">
-                        Nome da parte: {item.nomeParte ?? "Não informado pelo DJEN"}
+
+                      <p className="mt-2.5 text-sm font-bold text-stone-900 dark:text-zinc-100">
+                        Nome da parte no diário:{" "}
+                        <span className="font-semibold text-gold-dark dark:text-[#E5C158]">
+                          {item.nomeParte ?? "Não informado pelo DJEN"}
+                        </span>
                       </p>
-                      <p className="mt-1 break-all font-mono text-xs text-gray-600 dark:text-zinc-300">{caseNumber}</p>
-                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-zinc-400">
-                        {item.siglaTribunal && <span>{item.siglaTribunal}</span>}
-                        {item.nomeOrgao && <span>{item.nomeOrgao}</span>}
-                        {item.nomeClasse && <span>{item.nomeClasse}</span>}
+
+                      <p className="mt-1 break-all font-mono text-sm font-bold text-stone-800 dark:text-zinc-200">
+                        {caseNumber}
+                      </p>
+
+                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500 dark:text-zinc-400">
+                        {item.nomeOrgao && <span><strong>Órgão:</strong> {item.nomeOrgao}</span>}
+                        {item.nomeClasse && <span><strong>Classe:</strong> {item.nomeClasse}</span>}
                       </div>
+
+                      {item.destinatarios && item.destinatarios.length > 0 && (
+                        <div className="mt-2 flex items-start gap-1.5 text-xs text-stone-600 dark:text-zinc-400">
+                          <Users className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-400 dark:text-zinc-500" aria-hidden="true" />
+                          <p className="leading-5">
+                            <strong>Destinatários:</strong>{" "}
+                            {item.destinatarios.map((destinatario) => destinatario.nome).filter(Boolean).join(", ") ||
+                              "não informados"}
+                          </p>
+                        </div>
+                      )}
                     </div>
+
                     {item.link && (
                       <a
                         href={item.link}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold dark:text-[#E5C158]"
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm transition hover:border-gold hover:text-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:border-gold dark:hover:text-[#E5C158]"
                       >
                         Abrir no tribunal
-                        <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                       </a>
                     )}
                   </div>
 
-                  {item.destinatarios && item.destinatarios.length > 0 && (
-                    <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">
-                      Destinatários: {item.destinatarios.map((destinatario) => destinatario.nome).filter(Boolean).join(", ") || "não informados"}
-                    </p>
-                  )}
-
+                  {/* Teor expansível animado com Framer Motion */}
                   {item.texto && (
-                    <details className="mt-3 rounded-lg bg-gray-50 px-3 py-2.5 dark:bg-zinc-800/60">
-                      <summary className="cursor-pointer text-xs font-medium text-gray-600 outline-none focus-visible:ring-2 focus-visible:ring-gold dark:text-zinc-300">
-                        Revisar teor da publicação
-                      </summary>
-                      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-gray-700 dark:text-zinc-200">{item.texto}</p>
-                    </details>
+                    <div className="mt-3.5 border-t border-stone-100 pt-3 dark:border-zinc-800/80">
+                      <button
+                        type="button"
+                        onClick={() => toggleExpanded(item.hash)}
+                        aria-expanded={isExpanded}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 transition hover:text-gold-dark dark:text-zinc-400 dark:hover:text-[#E5C158]"
+                      >
+                        <span>{isExpanded ? "Ocultar teor da publicação" : "Revisar teor completo da publicação"}</span>
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-gold" : ""}`}
+                          aria-hidden="true"
+                        />
+                      </button>
+
+                      <motion.div
+                        initial={false}
+                        animate={isExpanded ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+                        transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-2.5 rounded-xl border border-stone-200/80 bg-stone-50/70 p-4 font-mono text-xs leading-relaxed text-stone-800 dark:border-zinc-800/80 dark:bg-[#101213] dark:text-zinc-200">
+                          <p className="whitespace-pre-wrap select-text">{item.texto}</p>
+                        </div>
+                      </motion.div>
+                    </div>
                   )}
 
+                  {/* Caixa de Associação Manual com Processo */}
                   {isAssociated ? (
-                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300" role="status">
-                      <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                    <div
+                      className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-xs font-semibold text-emerald-800 dark:text-emerald-300"
+                      role="status"
+                    >
+                      <BadgeCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
                       Associação manual registrada no processo {candidate.associadaAoProcesso}.
                     </div>
                   ) : (
-                    <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50/70 p-3 dark:border-amber-500/25 dark:bg-amber-500/10">
+                    <div className="mt-4 rounded-xl border border-stone-200/80 bg-stone-50/60 p-4 dark:border-zinc-800/80 dark:bg-[#101213]">
                       {podeAssociarProcesso && podeLerProcessos ? (
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                          <label className="min-w-0 flex-1 text-xs font-medium text-gray-700 dark:text-zinc-200">
-                            Processo existente do cliente
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                          <label className="min-w-0 flex-1 text-xs font-semibold text-stone-700 dark:text-zinc-300">
+                            Associar a Processo Existente do Cliente
                             <select
                               value={selectedProcessByHash[item.hash] ?? ""}
-                              onChange={(event) => setSelectedProcessByHash((current) => ({
-                                ...current,
-                                [item.hash]: event.target.value,
-                              }))}
+                              onChange={(event) =>
+                                setSelectedProcessByHash((current) => ({
+                                  ...current,
+                                  [item.hash]: event.target.value,
+                                }))
+                              }
                               disabled={processosLoading || associatingHash === item.hash}
-                              className="mt-1.5 block w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/10 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                              className="mt-1.5 h-10 block w-full rounded-xl border border-stone-200 bg-white px-3 text-xs outline-none transition focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
                             >
-                              <option value="">Selecione manualmente um processo</option>
+                              <option value="">Selecione o processo correspondente…</option>
                               {matchingProcesses.map((processo) => (
-                                <option key={processo.id} value={processo.id}>{processo.numero_cnj}</option>
+                                <option key={processo.id} value={processo.id}>
+                                  {processo.numero_cnj} (Mesmo CNJ)
+                                </option>
                               ))}
+                              {processos
+                                .filter((p) => !matchingProcesses.some((m) => m.id === p.id))
+                                .map((processo) => (
+                                  <option key={processo.id} value={processo.id}>
+                                    {processo.numero_cnj}
+                                  </option>
+                                ))}
                             </select>
                           </label>
+
                           <button
                             type="button"
                             onClick={() => associateCandidate(candidate)}
-                            disabled={!candidate.associacaoDisponivel || !selectedProcessByHash[item.hash] || Boolean(associatingHash) || processosLoading}
-                            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#17191a] px-3 text-xs font-semibold text-white transition hover:bg-[#303334] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                            disabled={
+                              !candidate.associacaoDisponivel ||
+                              !selectedProcessByHash[item.hash] ||
+                              Boolean(associatingHash) ||
+                              processosLoading
+                            }
+                            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-gold px-4 text-xs font-bold text-[#17191A] shadow-sm transition hover:bg-gold-hover hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/25 disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            {associatingHash === item.hash ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />}
-                            {associatingHash === item.hash ? "Associando…" : "Associar manualmente"}
+                            {associatingHash === item.hash ? (
+                              <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Link2 className="h-3.5 w-3.5" />
+                            )}
+                            {associatingHash === item.hash ? "Associando…" : "Associar ao Processo"}
                           </button>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-600 dark:text-zinc-300">
+                        <p className="text-xs text-stone-600 dark:text-zinc-400">
                           {podeLerProcessos
-                            ? "Seu perfil não pode associar publicações a processos."
-                            : "A associação exige acesso de leitura e escrita em processos."}
+                            ? "Seu perfil não possui autorização para vincular publicações a processos."
+                            : "A associação exige permissão de acesso a processos."}
                         </p>
                       )}
+
                       {matchingProcesses.length === 0 && (
-                        <p className="mt-2 text-xs text-gray-600 dark:text-zinc-300">
-                          Não há processo deste cliente com o mesmo número CNJ. Cadastre ou vincule o processo manualmente antes de associar; esta busca não cria processos.
+                        <p className="mt-2 text-[11px] leading-4 text-stone-500 dark:text-zinc-400">
+                          Nota: Nenhum processo deste cliente possui o mesmo CNJ desta publicação. Você pode selecionar outro processo do cliente acima ou cadastrá-lo previamente.
                         </p>
                       )}
-                      {!candidate.associacaoDisponivel && (
-                        <p className="mt-2 text-xs text-gray-600 dark:text-zinc-300">
-                          Este resultado é muito extenso para uma associação segura nesta sessão. Revise-o no tribunal; nenhuma associação será feita por este botão.
-                        </p>
-                      )}
-                      <p className="mt-2 text-[11px] leading-5 text-gray-500 dark:text-zinc-400">
-                        A confirmação grava a publicação no processo que você selecionar. O nome é apenas uma pista de busca; não cria cliente, processo ou prazo.
-                      </p>
                     </div>
                   )}
-                </article>
+                </motion.article>
               );
             })}
           </div>
-        </div>
+        </section>
       )}
-    </section>
+    </div>
   );
 }

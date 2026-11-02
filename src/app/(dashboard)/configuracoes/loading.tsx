@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ConfiguracoesLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Configurações" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando configurações do sistema...
@@ -11,7 +11,7 @@ export default function ConfiguracoesLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] p-4 sm:p-6"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5"
       >
         <div className="grid items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
           {/* Navegação lateral de seções */}

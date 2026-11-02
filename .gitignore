@@ -31,12 +31,16 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Backups locais de edição (otimização de performance)
+# Backups locais de edição (otimização de performance e segurança)
 /.backup-perf/
+/.backup-movimentos/
 *.bak
 *.bak-*
+*.backup*
+.*.backup*
+.backup-*
 
 # OS
 .DS_Store
 Thumbs.db
-/.backup-movimentos/
+

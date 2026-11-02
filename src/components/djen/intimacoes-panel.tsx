@@ -1,14 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { startTransition, useState, type FormEvent } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Gavel } from "lucide-react";
+import { startTransition, useMemo, useState, type FormEvent } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { BellRing, FileSearch, ScrollText } from "lucide-react";
 import { DjenMonitoringSection } from "@/components/djen/intimacoes-monitoring-section";
 import { DjenPublicationsSection } from "@/components/djen/intimacoes-publications-section";
 import { DjenClientSearchSection } from "@/components/djen/client-search-section";
 import { validateDateRange } from "@/lib/djen/validation";
 import type { DjenIntimacoesPanelProps, Message, Monitoramento } from "./types";
+
+type TabKey = "publicacoes" | "monitoramento" | "cliente";
 
 function formatDate(value: string | null) {
   if (!value) return "Data não informada";
@@ -40,6 +42,8 @@ export function DjenIntimacoesPanel({
 }: DjenIntimacoesPanelProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
+
+  const [activeTab, setActiveTab] = useState<TabKey>("publicacoes");
   const [numeroOab, setNumeroOab] = useState("");
   const [ufOab, setUfOab] = useState("SP");
   const [dataInicio, setDataInicio] = useState(defaultStartDate);
@@ -49,6 +53,11 @@ export function DjenIntimacoesPanel({
   const [updatingMonitorId, setUpdatingMonitorId] = useState<string | null>(null);
   const [deletingMonitorId, setDeletingMonitorId] = useState<string | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
+
+  const activeMonitorsCount = useMemo(
+    () => monitoramentos.filter((m) => m.ativo).length,
+    [monitoramentos]
+  );
 
   async function addMonitor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -113,7 +122,7 @@ export function DjenIntimacoesPanel({
           : "Não foi possível consultar o DJEN.";
         const waitSeconds = typeof payload.waitSeconds === "number" ? payload.waitSeconds : null;
         const rateLimit = typeof payload.rateLimit === "object" && payload.rateLimit !== null
-          ? payload.rateLimit as Record<string, unknown>
+          ? (payload.rateLimit as Record<string, unknown>)
           : null;
         const remaining = typeof rateLimit?.remaining === "string"
           ? ` Consultas restantes informadas pelo CNJ: ${rateLimit.remaining}.`
@@ -222,77 +231,172 @@ export function DjenIntimacoesPanel({
     }
   }
 
+  const tabs: Array<{
+    id: TabKey;
+    label: string;
+    icon: typeof ScrollText;
+    badge?: string | number;
+    badgeVariant?: "gold" | "emerald" | "neutral";
+  }> = [
+    {
+      id: "publicacoes",
+      label: "Publicações Salvas",
+      icon: ScrollText,
+      badge: publicacoes.length,
+      badgeVariant: "gold",
+    },
+    {
+      id: "monitoramento",
+      label: "Monitoramento de OABs",
+      icon: BellRing,
+      badge: `${activeMonitorsCount} ativa${activeMonitorsCount === 1 ? "" : "s"}`,
+      badgeVariant: activeMonitorsCount > 0 ? "emerald" : "neutral",
+    },
+    {
+      id: "cliente",
+      label: "Pesquisa por Cliente",
+      icon: FileSearch,
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <motion.div
-        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
+      {/* Segmented Control - Modern Onyx & Gold */}
+      <nav
+        aria-label="Abas do painel de intimações"
+        className="relative flex items-center gap-1.5 overflow-x-auto rounded-2xl border border-stone-200/80 bg-stone-100/80 p-1.5 backdrop-blur-sm dark:border-zinc-800/80 dark:bg-[#17191A]"
       >
-        <DjenPublicationsSection
-          publicacoes={publicacoes}
-          associacoes={associacoes}
-          monitoramentos={monitoramentos}
-          processos={processos}
-          podeLerProcessos={podeLerProcessos}
-          publicationError={publicationError}
-          relatedDataError={relatedDataError}
-        />
-      </motion.div>
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          const Icon = tab.icon;
 
-      <section aria-labelledby="consultas-djen-heading">
-        <div className="mb-4 flex items-center gap-3 border-b border-gray-200 pb-3 dark:border-zinc-800">
-          <div className="rounded-xl bg-gold-soft p-2 text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
-            <Gavel className="h-4 w-4" aria-hidden="true" />
-          </div>
-          <div>
-            <h2 id="consultas-djen-heading" className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
-              Monitoramento e consultas
-            </h2>
-            <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
-              Atualize as publicações por OAB ou localize candidatos pelo cadastro do cliente.
-            </p>
-          </div>
-        </div>
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.2, delay: reduceMotion ? 0 : 0.04, ease: "easeOut" }}
-          className="space-y-6"
-        >
-          <DjenMonitoringSection
-            monitoramentos={monitoramentos}
-            podeEditar={podeEditar}
-            podeExcluir={podeExcluir}
-            today={today}
-            dataInicio={dataInicio}
-            dataFim={dataFim}
-            onDataInicioChange={setDataInicio}
-            onDataFimChange={setDataFim}
-            numeroOab={numeroOab}
-            onNumeroOabChange={setNumeroOab}
-            ufOab={ufOab}
-            onUfOabChange={setUfOab}
-            saving={saving}
-            syncingMonitorId={syncingMonitorId}
-            updatingMonitorId={updatingMonitorId}
-            deletingMonitorId={deletingMonitorId}
-            message={message}
-            loadError={monitoringError}
-            onAddMonitor={addMonitor}
-            onSynchronize={synchronize}
-            onSetMonitorActive={setMonitorActive}
-            onDeleteMonitor={deleteMonitor}
-          />
-          <DjenClientSearchSection
-            today={today}
-            defaultStartDate={defaultStartDate}
-            podePesquisar={podePesquisarCliente}
-            podeLerProcessos={podeLerProcessos}
-            podeAssociarProcesso={podeAssociarProcesso}
-          />
-        </motion.div>
-      </section>
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative z-10 flex min-h-[44px] shrink-0 sm:flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 sm:px-4 sm:text-sm ${
+                isActive
+                  ? "text-[#101213] dark:text-zinc-100"
+                  : "text-stone-600 hover:text-stone-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="intimacoesActiveTab"
+                  className="absolute inset-0 z-[-1] rounded-xl border border-stone-200/70 bg-white shadow-sm dark:border-zinc-700/60 dark:bg-[#101213] dark:shadow-black/40"
+                  transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 650, damping: 32 }}
+                />
+              )}
+              <Icon
+                className={`h-4 w-4 shrink-0 transition-colors ${
+                  isActive
+                    ? "text-gold-dark dark:text-[#E5C158]"
+                    : "text-stone-400 dark:text-zinc-500"
+                }`}
+                aria-hidden="true"
+              />
+              <span className="whitespace-nowrap">{tab.label}</span>
+              {tab.badge !== undefined && (
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold leading-none transition-colors ${
+                    tab.badgeVariant === "gold"
+                      ? "bg-gold/15 text-gold-dark dark:bg-gold/20 dark:text-[#E5C158]"
+                      : tab.badgeVariant === "emerald"
+                      ? "bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
+                      : "bg-stone-200 text-stone-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Conteúdo dinâmico com AnimatePresence */}
+      <AnimatePresence mode="wait">
+        {activeTab === "publicacoes" && (
+          <motion.div
+            key="tab-publicacoes"
+            role="tabpanel"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.12, ease: "easeOut" }}
+          >
+            <DjenPublicationsSection
+              publicacoes={publicacoes}
+              associacoes={associacoes}
+              monitoramentos={monitoramentos}
+              processos={processos}
+              podeLerProcessos={podeLerProcessos}
+              publicationError={publicationError}
+              relatedDataError={relatedDataError}
+              onGoToMonitoring={() => setActiveTab("monitoramento")}
+              onGoToClientSearch={() => setActiveTab("cliente")}
+            />
+          </motion.div>
+        )}
+
+        {activeTab === "monitoramento" && (
+          <motion.div
+            key="tab-monitoramento"
+            role="tabpanel"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.12, ease: "easeOut" }}
+          >
+            <DjenMonitoringSection
+              monitoramentos={monitoramentos}
+              podeEditar={podeEditar}
+              podeExcluir={podeExcluir}
+              today={today}
+              dataInicio={dataInicio}
+              dataFim={dataFim}
+              onDataInicioChange={setDataInicio}
+              onDataFimChange={setDataFim}
+              numeroOab={numeroOab}
+              onNumeroOabChange={setNumeroOab}
+              ufOab={ufOab}
+              onUfOabChange={setUfOab}
+              saving={saving}
+              syncingMonitorId={syncingMonitorId}
+              updatingMonitorId={updatingMonitorId}
+              deletingMonitorId={deletingMonitorId}
+              message={message}
+              loadError={monitoringError}
+              onAddMonitor={addMonitor}
+              onSynchronize={synchronize}
+              onSetMonitorActive={setMonitorActive}
+              onDeleteMonitor={deleteMonitor}
+            />
+          </motion.div>
+        )}
+
+        {activeTab === "cliente" && (
+          <motion.div
+            key="tab-cliente"
+            role="tabpanel"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.12, ease: "easeOut" }}
+          >
+            <DjenClientSearchSection
+              today={today}
+              defaultStartDate={defaultStartDate}
+              podePesquisar={podePesquisarCliente}
+              podeLerProcessos={podeLerProcessos}
+              podeAssociarProcesso={podeAssociarProcesso}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

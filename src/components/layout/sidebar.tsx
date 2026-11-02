@@ -12,7 +12,6 @@ import {
   DollarSign,
   Calendar,
   Gavel,
-  MessageCircle,
   BarChart3,
   Settings,
   Wallet,
@@ -81,15 +80,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/intimacoes",
     icon: Gavel,
     modulo: "comunicacao",
-  },
-  {
-    label: "Comunicação",
-    href: "/comunicacao",
-    icon: MessageCircle,
-    modulo: "comunicacao",
-    subitems: [
-      { label: "WhatsApp", href: "/comunicacao", icon: MessageCircle },
-    ],
   },
   {
     label: "Relatórios",
@@ -255,7 +245,7 @@ function SidebarNavItem({
         aria-hidden="true"
         initial={false}
         animate={{ width: isCollapsed ? 48 : 248 }}
-        transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: reduceMotion ? 0 : 0.12, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           "pointer-events-none absolute left-[18px] top-0 z-0 h-12 rounded-2xl border transition-colors",
           isActive
@@ -313,7 +303,7 @@ function SidebarNavItem({
               type="button"
               whileHover={reduceMotion ? undefined : { x: 4 }}
               whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 450, damping: 26 }}
+              transition={{ type: "spring", stiffness: 650, damping: 28 }}
               onPointerEnter={() => router.prefetch(item.href)}
               onClick={() => {
                 if (isCollapsed) {
@@ -337,7 +327,8 @@ function SidebarNavItem({
               href={item.href}
               whileHover={reduceMotion ? undefined : { x: 4 }}
               whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 450, damping: 26 }}
+              transition={{ type: "spring", stiffness: 650, damping: 28 }}
+              onPointerEnter={() => router.prefetch(item.href)}
               onClick={onNavigate}
               aria-current={pathname === item.href ? "page" : undefined}
               aria-label={item.label}
@@ -358,7 +349,7 @@ function SidebarNavItem({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeInOut" }}
+                transition={{ duration: reduceMotion ? 0 : 0.12, ease: "easeInOut" }}
                 className="w-[280px] overflow-hidden"
               >
                 <div className="ml-[34px] w-[232px] py-1">
@@ -370,11 +361,12 @@ function SidebarNavItem({
                           key={sub.href}
                           href={sub.href}
                           onClick={onNavigate}
+                          onPointerEnter={() => router.prefetch(sub.href)}
                           whileHover={reduceMotion ? undefined : { x: 4 }}
                           whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                          transition={{ type: "spring", stiffness: 450, damping: 26 }}
+                          transition={{ type: "spring", stiffness: 650, damping: 28 }}
                           className={cn(
-                            "group flex h-10 items-center rounded-xl pr-3 text-[13px] font-medium transition-colors border",
+                            "group flex min-h-[44px] sm:min-h-[40px] items-center rounded-xl pr-3 text-[13px] font-medium transition-colors border",
                             isSubActive
                               ? "bg-[#D4AF37]/20 text-[#D4AF37] dark:text-[#E5C158] font-semibold border-[#D4AF37]/40 shadow-xs"
                               : "bg-transparent text-gray-500 hover:text-[#D4AF37] hover:bg-[#D4AF37]/15 dark:text-zinc-400 dark:hover:text-[#D4AF37] dark:hover:bg-[#D4AF37]/15 border-transparent hover:border-[#D4AF37]/35",
@@ -416,7 +408,7 @@ function SidebarNavItem({
             type="button"
             whileHover={reduceMotion ? undefined : { x: 4 }}
             whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 450, damping: 26 }}
+            transition={{ type: "spring", stiffness: 650, damping: 28 }}
             onPointerEnter={() => router.prefetch(item.href)}
             onClick={() => {
               router.push(item.href);
@@ -444,7 +436,8 @@ function SidebarNavItem({
             href={item.href}
             whileHover={reduceMotion ? undefined : { x: 4 }}
             whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 450, damping: 26 }}
+            transition={{ type: "spring", stiffness: 650, damping: 28 }}
+            onPointerEnter={() => router.prefetch(item.href)}
             onClick={onNavigate}
             aria-current={pathname === item.href ? "page" : undefined}
             aria-label={item.label}
@@ -482,9 +475,10 @@ function SidebarNavItem({
                     key={sub.href}
                     href={sub.href}
                     onClick={onNavigate}
+                    onPointerEnter={() => router.prefetch(sub.href)}
                     whileHover={reduceMotion ? undefined : { x: 4 }}
                     whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 26 }}
+                    transition={{ type: "spring", stiffness: 650, damping: 28 }}
                     className={cn(
                       "block px-3 py-1.5 rounded-xl text-xs font-medium transition-colors border",
                       isSubActive
@@ -501,9 +495,10 @@ function SidebarNavItem({
             <MotionLink
               href={item.href}
               onClick={onNavigate}
+              onPointerEnter={() => router.prefetch(item.href)}
               whileHover={reduceMotion ? undefined : { x: 4 }}
               whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 450, damping: 26 }}
+              transition={{ type: "spring", stiffness: 650, damping: 28 }}
               className="block px-3 py-1.5 rounded-xl text-xs font-medium text-[#D4AF37] bg-transparent hover:bg-[#D4AF37]/15 border border-transparent hover:border-[#D4AF37]/35 transition-colors"
             >
               Acessar {item.label}
@@ -521,9 +516,10 @@ function SidebarNavItem({
         <motion.button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
+          onPointerEnter={() => router.prefetch(item.href)}
           whileHover={reduceMotion ? undefined : { x: 4 }}
           whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 450, damping: 26 }}
+          transition={{ type: "spring", stiffness: 650, damping: 28 }}
           className={cn(
             "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-colors duration-150 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/30 border",
             isActive
@@ -561,7 +557,7 @@ function SidebarNavItem({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeInOut" }}
+              transition={{ duration: reduceMotion ? 0 : 0.12, ease: "easeInOut" }}
               className="overflow-hidden"
             >
               <div className="space-y-1 my-1 pl-3">
@@ -572,9 +568,10 @@ function SidebarNavItem({
                       key={sub.href}
                       href={sub.href}
                       onClick={onNavigate}
+                      onPointerEnter={() => router.prefetch(sub.href)}
                       whileHover={reduceMotion ? undefined : { x: 4 }}
                       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                      transition={{ type: "spring", stiffness: 450, damping: 26 }}
+                      transition={{ type: "spring", stiffness: 650, damping: 28 }}
                       className={cn(
                         "group flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-colors duration-150 border",
                         isSubActive
@@ -610,9 +607,10 @@ function SidebarNavItem({
       <MotionLink
         href={item.href}
         onClick={onNavigate}
+        onPointerEnter={() => router.prefetch(item.href)}
         whileHover={reduceMotion ? undefined : { x: 4 }}
         whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 450, damping: 26 }}
+        transition={{ type: "spring", stiffness: 650, damping: 28 }}
         aria-current={pathname === item.href ? "page" : undefined}
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-colors duration-150 group border",
@@ -646,6 +644,7 @@ export function Sidebar() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Tab") setIsKeyboardNavigation(true);
+      if (event.key === "Escape" && isMobileOpen) setIsMobileOpen(false);
     };
     const handlePointerDown = () => {
       setIsKeyboardNavigation(false);
@@ -658,7 +657,7 @@ export function Sidebar() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("pointerdown", handlePointerDown);
     };
-  }, []);
+  }, [isMobileOpen, setIsMobileOpen]);
 
   const handlePointerEnter = (event: React.PointerEvent<HTMLElement>) => {
     if (event.pointerType === "mouse") setIsPointerHovering(true);
@@ -679,7 +678,7 @@ export function Sidebar() {
       <motion.aside
         initial={false}
         animate={{ width: isCompact ? 84 : 280 }}
-        transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: reduceMotion ? 0 : 0.12, ease: [0.16, 1, 0.3, 1] }}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={() => setIsPointerHovering(false)}
         onFocusCapture={() => {
@@ -719,9 +718,9 @@ export function Sidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.2 }}
+            transition={{ duration: reduceMotion ? 0 : 0.14 }}
             onClick={() => setIsMobileOpen(false)}
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
             aria-hidden="true"
           />
         )}
@@ -733,16 +732,16 @@ export function Sidebar() {
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ duration: reduceMotion ? 0 : 0.25, ease: "easeInOut" }}
-            className="fixed inset-y-0 left-0 w-[280px] bg-white border-r border-gray-100 flex flex-col z-50 lg:hidden shadow-2xl dark:bg-[#141618] dark:border-zinc-800"
+            transition={{ duration: reduceMotion ? 0 : 0.14, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-y-0 left-0 w-[min(280px,85vw)] bg-white border-r border-gray-100 flex flex-col z-50 lg:hidden shadow-2xl dark:bg-[#141618] dark:border-zinc-800"
           >
             {/* Header Mobile com botão de fechar */}
-            <div className="h-20 flex items-center justify-between px-5 border-b border-gray-100 dark:border-zinc-800">
+            <div className="h-20 flex items-center justify-between px-4 sm:px-5 border-b border-gray-100 dark:border-zinc-800">
               <SidebarBrand isCollapsed={false} />
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-[#D4AF37] hover:bg-[#D4AF37]/15 transition-colors cursor-pointer dark:text-zinc-400 dark:hover:text-[#D4AF37] dark:hover:bg-[#D4AF37]/15"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 rounded-xl text-gray-400 hover:text-[#D4AF37] hover:bg-[#D4AF37]/15 transition-colors cursor-pointer dark:text-zinc-400 dark:hover:text-[#D4AF37] dark:hover:bg-[#D4AF37]/15"
                 aria-label="Fechar menu"
               >
                 <X className="h-5 w-5" />
@@ -750,7 +749,7 @@ export function Sidebar() {
             </div>
 
             {/* Lista de navegação mobile */}
-            <nav className="flex-1 px-3.5 py-2 space-y-1 overflow-y-auto">
+            <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto overscroll-y-contain">
               {NAV_ITEMS.map((item) => (
                 <SidebarNavItem
                   key={item.href}

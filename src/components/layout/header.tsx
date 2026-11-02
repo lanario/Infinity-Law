@@ -52,23 +52,23 @@ export function Header({ title, actions }: HeaderProps) {
 
   return (
     <header className="infinity-header sticky top-0 z-20 h-[72px] border-b border-stone-200/90 bg-[#fcfcfb]/90 backdrop-blur-xl dark:border-zinc-800/90 dark:bg-[#141618]/90">
-      <div className="relative flex h-full items-center justify-between gap-3 px-3 sm:px-5 lg:px-7">
+      <div className="relative flex h-full items-center justify-between gap-2 sm:gap-3 px-3 sm:px-6 lg:px-8 2xl:px-10">
         <div className="infinity-header-grid" aria-hidden="true" />
 
-        <div className="relative flex min-w-0 items-center gap-2.5 sm:gap-3">
+        <div className="relative flex min-w-0 flex-1 items-center gap-1.5 sm:gap-3">
           {/* Botão de Menu Hamburger para Mobile */}
           <button
             type="button"
             onClick={() => setIsMobileOpen(true)}
-            className="-ml-1 rounded-xl p-2 text-gray-500 transition-colors hover:bg-gold-soft hover:text-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25 dark:text-zinc-400 dark:hover:bg-gold/15 dark:hover:text-[#E5C158] lg:hidden"
+            className="-ml-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl p-2 text-gray-500 transition-colors hover:bg-gold-soft hover:text-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25 dark:text-zinc-400 dark:hover:bg-gold/15 dark:hover:text-[#E5C158] lg:hidden"
             aria-label="Abrir menu lateral"
           >
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {title ? (
-              <h1 className="truncate text-base font-black leading-tight tracking-tight text-[#17191a] dark:text-zinc-100 sm:text-xl">
+              <h1 className="truncate text-sm font-black leading-tight tracking-tight text-[#17191a] dark:text-zinc-100 sm:text-lg lg:text-xl">
                 {title}
               </h1>
             ) : (
@@ -82,7 +82,7 @@ export function Header({ title, actions }: HeaderProps) {
           </div>
         </div>
 
-        <div className="relative flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="relative flex shrink-0 items-center gap-1 sm:gap-2">
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,7 +119,7 @@ export function NewButton({
   href?: string;
 }) {
   const cls =
-    "flex items-center gap-1.5 px-3 py-1.5 bg-gold text-white text-sm font-medium rounded-xl hover:bg-gold-hover shadow-xs transition-colors";
+    "flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 min-h-[40px] sm:min-h-0 bg-gold text-white text-xs sm:text-sm font-medium rounded-xl hover:bg-gold-hover shadow-xs transition-colors shrink-0";
   if (href) {
     return (
       <Link href={href} className={cls}>

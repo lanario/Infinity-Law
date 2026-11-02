@@ -11,11 +11,11 @@ export default async function RelatoriosPage() {
   if (!profile) redirect("/login");
   if (!profile.can("relatorios", "read")) redirect("/dashboard");
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Relatórios" />
-      <div className="p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <RelatoriosPanel />
-      </div>
+      </main>
     </div>
   );
 }

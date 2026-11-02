@@ -395,7 +395,7 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
   return (
     // lg:isolate contém os z-index sticky da agenda (z-30..50) abaixo da sidebar global (z-30) quando ela expande no hover; no mobile o drawer da agenda precisa ficar acima do header.
     <div className="space-y-4 lg:isolate">
-      <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
+      <div className={cn("grid min-w-0 gap-3 transition-[grid-template-columns] duration-120 motion-reduce:transition-none", agendaSidebarCollapsed ? "lg:grid-cols-[minmax(0,1fr)]" : "lg:grid-cols-[260px_minmax(0,1fr)]")}>
         <AgendaSidebar
           events={filteredByType}
           members={membros}
@@ -474,8 +474,8 @@ export function CalendarView({ initialEventos, clientes, processos, membros, ini
       </div>
 
       <AnimatePresence>
-        {modalOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-end justify-center bg-[#17191a]/45 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
-          <motion.section ref={modalRef} tabIndex={-1} initial={{ opacity: 0, y: 14, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.2 }} role="dialog" aria-modal="true" aria-labelledby="evento-modal-title" className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-stone-200 bg-[#fcfcfb] p-5 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-6">
+        {modalOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} className="fixed inset-0 z-50 flex items-end justify-center bg-[#17191a]/45 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
+          <motion.section ref={modalRef} tabIndex={-1} initial={{ opacity: 0, y: 14, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.12 }} role="dialog" aria-modal="true" aria-labelledby="evento-modal-title" className="max-h-[90vh] w-full max-w-2xl overflow-y-auto overscroll-y-contain rounded-t-3xl border border-stone-200 bg-[#fcfcfb] p-5 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-6">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17191a] text-gold dark:bg-zinc-800"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span><div><h2 id="evento-modal-title" className="text-base font-black text-[#17191a] dark:text-zinc-100">{editingId ? "Detalhes do evento" : "Novo evento"}</h2><p className="mt-0.5 text-xs text-stone-400 dark:text-zinc-400">Adicione as informações para a equipe</p></div></div>
               <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200" aria-label="Fechar formulário"><X className="h-4 w-4" aria-hidden="true" /></button>

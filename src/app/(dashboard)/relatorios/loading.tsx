@@ -3,13 +3,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function RelatoriosLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Relatórios" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando painel de relatórios...
       </p>
 
-      <main aria-busy="true" className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+      <main aria-busy="true" className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         {/* 3 mini cards métricos no topo */}
         <div className="grid gap-3 sm:grid-cols-3">
           {Array.from({ length: 3 }, (_, i) => (

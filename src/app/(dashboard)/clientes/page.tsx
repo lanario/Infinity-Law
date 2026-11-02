@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/server/current-profile";
@@ -68,9 +68,9 @@ export default async function ClientesPage({ searchParams }: PageProps) {
   ]);
   if (profile === "error") {
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Clientes" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/clientes" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12"><QueryErrorState retryHref="/clientes" /></main>
       </div>
     );
   }
@@ -80,9 +80,9 @@ export default async function ClientesPage({ searchParams }: PageProps) {
   if (!page.ok) {
     logQueryFailures("ClientesPage", [{ operation: "clientes-list", error: page.error }]);
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Clientes" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/clientes" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12"><QueryErrorState retryHref="/clientes" /></main>
       </div>
     );
   }
@@ -95,9 +95,9 @@ export default async function ClientesPage({ searchParams }: PageProps) {
   if (failedQueryOperations(queryResults).length > 0) {
     logQueryFailures("ClientesPage", queryResults);
     return (
-      <div>
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
         <Header title="Clientes" />
-        <div className="p-4 sm:p-6"><QueryErrorState retryHref="/clientes" /></div>
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12"><QueryErrorState retryHref="/clientes" /></main>
       </div>
     );
   }
@@ -105,9 +105,9 @@ export default async function ClientesPage({ searchParams }: PageProps) {
   const { data: clientes, nextCursor, hasMore } = page;
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Clientes" />
-      <div className="p-4 sm:p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}>
           <ClienteTableWrapper
             initialData={clientes}
@@ -123,7 +123,7 @@ export default async function ClientesPage({ searchParams }: PageProps) {
             }}
           />
         </Suspense>
-      </div>
+      </main>
     </div>
   );
 }

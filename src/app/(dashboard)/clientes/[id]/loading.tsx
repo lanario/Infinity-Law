@@ -12,7 +12,7 @@ export default function ClienteFichaLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8"
+        className="w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 space-y-4 sm:space-y-5"
       >
         {/* Card do Cliente (Avatar + Nome + Subtítulo) */}
         <section className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl">

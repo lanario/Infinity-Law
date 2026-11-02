@@ -132,7 +132,7 @@ export function UserMenu() {
                   setOpen(false);
                   setProfileOpen(true);
                 }}
-                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-gold-soft/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 dark:hover:bg-zinc-800/80"
+                className="group flex w-full items-center gap-3 rounded-2xl bg-transparent px-3 py-3 text-left transition-colors hover:bg-gold-soft/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 dark:bg-transparent dark:hover:bg-[#D4AF37]/15"
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-100 text-stone-600 transition-colors group-hover:bg-white group-hover:text-gold-dark dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-zinc-700 dark:group-hover:text-[#E5C158]">
                   <UserRound className="h-4 w-4" aria-hidden="true" />
@@ -145,7 +145,7 @@ export function UserMenu() {
               <Link
                 href="/planos"
                 onClick={() => setOpen(false)}
-                className="group flex items-center gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-gold-soft/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 dark:hover:bg-zinc-800/80"
+                className="group flex items-center gap-3 rounded-2xl bg-transparent px-3 py-3 transition-colors hover:bg-gold-soft/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 dark:bg-transparent dark:hover:bg-[#D4AF37]/15"
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-100 text-stone-600 transition-colors group-hover:bg-white group-hover:text-gold-dark dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-zinc-700 dark:group-hover:text-[#E5C158]">
                   <Layers3 className="h-4 w-4" aria-hidden="true" />

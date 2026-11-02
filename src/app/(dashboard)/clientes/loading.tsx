@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientesLoading() {
   return (
-    <div className="min-h-screen bg-[#fbfaf8] dark:bg-zinc-950">
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Clientes" />
       <p className="sr-only" role="status" aria-live="polite">
         Carregando lista de clientes...
@@ -11,7 +11,7 @@ export default function ClientesLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-4 px-3 py-4 sm:space-y-5 sm:px-6 sm:py-6 lg:px-8"
+        className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5"
       >
         {/* Grid de 3 mini cards métricos no topo */}
         <div className="grid gap-3 sm:grid-cols-3">

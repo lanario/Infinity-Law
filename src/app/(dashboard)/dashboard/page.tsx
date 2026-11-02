@@ -454,7 +454,7 @@ export default async function DashboardPage() {
 
       <DashboardHeaderRapport />
 
-      <main className="mx-auto max-w-[1720px] px-4 sm:px-6 lg:px-8 py-6 space-y-7 relative z-10">
+      <main className="w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-16 space-y-6 sm:space-y-7 relative z-10">
         {result.status === "error" ? (
           <section
             role="alert"
@@ -474,18 +474,18 @@ export default async function DashboardPage() {
 
             <section
               aria-label="Histórico financeiro e carteira processual"
-              className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch"
             >
               <div className="lg:col-span-7 xl:col-span-8">
                 <CourtTrendsChart
-                  className="h-full min-h-[380px]"
+                  className="h-full min-h-[320px] sm:min-h-[380px]"
                   data={result.data.trends}
                   hasRecords={result.data.hasTrendRecords}
                 />
               </div>
               <div className="lg:col-span-5 xl:col-span-4">
                 <AreasDistributionCard
-                  className="h-full min-h-[380px]"
+                  className="h-full min-h-[320px] sm:min-h-[380px]"
                   data={result.data.areasDistribution}
                   totalAtivos={result.data.processosAtivos}
                 />
@@ -494,13 +494,13 @@ export default async function DashboardPage() {
 
             <section
               aria-label="Agenda e movimentações dos processos"
-              className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch"
+              className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6 items-stretch"
             >
               <div className="xl:col-span-7">
-                <CriticalDocketCard className="h-full min-h-[460px]" events={result.data.prazosEventos} />
+                <CriticalDocketCard className="h-full min-h-[340px] sm:min-h-[460px]" events={result.data.prazosEventos} />
               </div>
               <div className="xl:col-span-5">
-                <CnjRadarCard className="h-full min-h-[460px]" movements={result.data.radarMovements} />
+                <CnjRadarCard className="h-full min-h-[340px] sm:min-h-[460px]" movements={result.data.radarMovements} />
               </div>
             </section>
           </>

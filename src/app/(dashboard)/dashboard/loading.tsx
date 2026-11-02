@@ -169,7 +169,7 @@ export default function DashboardLoading() {
 
       <main
         aria-busy="true"
-        className="mx-auto max-w-[1720px] space-y-7 px-4 py-6 relative z-10 sm:px-6 lg:px-8"
+        className="w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-16 space-y-6 sm:space-y-7 relative z-10"
       >
         <div aria-hidden="true" className="space-y-7">
           <KpiBannerSkeleton />

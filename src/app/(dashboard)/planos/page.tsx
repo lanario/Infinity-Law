@@ -34,18 +34,18 @@ export default async function PlanosPage() {
   const planLabel = plan ? PLAN_LABELS[plan] ?? plan : "Não informado";
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Planos" />
-      <div className="p-4 sm:p-6">
-        <section className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-24px_rgba(23,25,26,0.45)] dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="bg-gradient-to-br from-gold-soft/70 via-white to-white p-6 dark:from-[#D4AF37]/15 dark:via-zinc-900 dark:to-zinc-900 sm:p-9">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
+        <section className="w-full max-w-7xl mx-auto overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-[0_12px_36px_-24px_rgba(23,25,26,0.45)] dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="bg-gradient-to-br from-gold-soft/70 via-white to-white p-5 dark:from-[#D4AF37]/15 dark:via-zinc-900 dark:to-zinc-900 sm:p-9">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-soft text-gold-dark dark:bg-[#D4AF37]/15 dark:text-[#E5C158]">
               <Layers3 className="h-6 w-6" aria-hidden="true" />
             </span>
             <p className="mt-6 text-[10px] font-black uppercase tracking-[0.16em] text-gold-dark dark:text-[#E5C158]">Assinatura do escritório</p>
             <h2 className="mt-1 text-2xl font-black tracking-tight text-[#17191a] dark:text-zinc-100">Plano atual</h2>
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <span className="text-3xl font-black tracking-tight text-[#17191a] dark:text-zinc-100">{planLabel}</span>
+              <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#17191a] dark:text-zinc-100">{planLabel}</span>
               {plan && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300">
                   <BadgeCheck className="h-4 w-4" aria-hidden="true" /> Ativo
@@ -53,7 +53,7 @@ export default async function PlanosPage() {
               )}
             </div>
           </div>
-          <div className="border-t border-stone-100 p-6 dark:border-zinc-800 sm:p-9">
+          <div className="border-t border-stone-100 p-5 dark:border-zinc-800 sm:p-9">
             <div className="flex items-start gap-3 rounded-2xl border border-stone-100 bg-stone-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/60 sm:p-5">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-gold-dark dark:text-[#E5C158]" aria-hidden="true" />
               <div>
@@ -68,7 +68,7 @@ export default async function PlanosPage() {
             </p>
           </div>
         </section>
-      </div>
+      </main>
     </div>
   );
 }

@@ -73,7 +73,14 @@ export default async function FinanceiroPage({ searchParams }: { searchParams?: 
   ]);
 
   if (profile === "error") {
-    return <div><Header title="Financeiro" /><div className="p-4 sm:p-6"><QueryErrorState retryHref="/financeiro" /></div></div>;
+    return (
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
+        <Header title="Financeiro" />
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12">
+          <QueryErrorState retryHref="/financeiro" />
+        </main>
+      </div>
+    );
   }
   if (!profile) redirect("/login");
   if (!profile.can("financeiro", "read")) redirect("/dashboard");
@@ -86,13 +93,20 @@ export default async function FinanceiroPage({ searchParams }: { searchParams?: 
   ];
   if (failedQueryOperations(queryResults).length > 0) {
     logQueryFailures("FinanceiroPage", queryResults);
-    return <div><Header title="Financeiro" /><div className="p-4 sm:p-6"><QueryErrorState retryHref="/financeiro" /></div></div>;
+    return (
+      <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
+        <Header title="Financeiro" />
+        <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12">
+          <QueryErrorState retryHref="/financeiro" />
+        </main>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="min-h-full flex flex-col bg-[#fcfcfb] dark:bg-[#101213]">
       <Header title="Financeiro" />
-      <div className="p-4 sm:p-6">
+      <main className="flex-1 w-full px-3 py-4 sm:px-6 sm:py-6 lg:px-8 2xl:px-10 pb-20 sm:pb-12 space-y-5">
         <FinanceiroSummary
           parcelas={parcelasResult.data ?? []}
           movimentacoes={movimentacoesResult.data ?? []}
@@ -103,7 +117,8 @@ export default async function FinanceiroPage({ searchParams }: { searchParams?: 
           hoje={hoje}
           canWrite={profile.can("financeiro", "write")}
         />
-      </div>
+      </main>
     </div>
   );
 }
+
