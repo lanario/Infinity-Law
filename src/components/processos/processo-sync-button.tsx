@@ -25,9 +25,11 @@ export function ProcessoSyncButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ numeroCNJ, processoId }),
       });
-      await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError("Não foi possível sincronizar. Tente novamente.");
+        setError(
+          typeof data?.error === "string" ? data.error : "Não foi possível sincronizar. Tente novamente."
+        );
         return;
       }
       startTransition(() => router.refresh());
